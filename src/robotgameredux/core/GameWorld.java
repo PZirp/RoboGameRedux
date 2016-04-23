@@ -51,6 +51,7 @@ public class GameWorld extends JFrame{
 		tileSet[10][5].setCalpestabile(false);
 		this.addMouseListener(new InputHandler2());
 		runGameLoop();
+		//Prova
 	}
 	
 
