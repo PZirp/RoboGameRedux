@@ -1,57 +1,44 @@
 package robotgameredux.core;
 
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Vector;
-
-import javax.swing.JFrame;
-
+import javax.swing.JPanel;
 import robotgameredux.actors.*;
-import robotgameredux.input.InputHandler;
 
-public class GameWorld extends JFrame{
+public class GameWorld extends JPanel{
 
 	private static final long serialVersionUID = 7321125104091891404L;
 
-	private final static int HEIGHT = 1280/64;
-	private final static int LENGHT = 720/64;
+	private final static int GRID_HEIGHT = 1280/64;
+	private final static int GRID_LENGHT = 720/64;
 	
 	
-	public static void main(String[] args) {
-		GameWorld gw = new GameWorld();
-		gw.initWorld();
-		gw.initScreen();
-	}
-
-	private void initScreen() {
-		this.setTitle("RobotGame Redux");
+	public GameWorld() {
 		this.setSize(1280, 720);
-		this.setUndecorated(true);
 		this.setLayout(null);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setVisible(true);
+		this.initWorld();
 	}
 	
 	private void initWorld() {
 		actors = new Vector<GameObject>();
-		tileSet = new Tile[HEIGHT][LENGHT];
+		tileSet = new Tile[GRID_HEIGHT][GRID_LENGHT];
+		robotController = new RobotController(this);
 
-
-		for (int i = 0; i < HEIGHT; i++) {
-			for (int j = 0; j < LENGHT; j++) {
+		for (int i = 0; i < GRID_HEIGHT; i++) {
+			for (int j = 0; j < GRID_LENGHT; j++) {
 				 tileSet[i][j] = new Tile();
 			}
 		}
 		
-		actors.add(new Robot(this));
-		actors.get(0).setCoords(new Vector2(1,0));
-		tileSet[1][0].setCalpestabile(false);
-		actors.add(new Robot(this));
-		actors.get(1).setCoords(new Vector2(10,5));
-		tileSet[10][5].setCalpestabile(false);
 		this.addMouseListener(new InputHandler2());
+		
+		actors.addElement(robotController.createRobot(new Vector2(1,0)));
+		actors.addElement(robotController.createRobot(new Vector2(10, 5)));
+		tileSet[1][0].setCalpestabile(false);
+		tileSet[10][5].setCalpestabile(false);
+		
 		runGameLoop();
-		//Prova
 	}
 	
 
@@ -70,11 +57,20 @@ public class GameWorld extends JFrame{
 		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(false);
 	}
 	
+	public Boolean getPaused() {
+		return this.paused;
+	}
+	
+	public void setPaused(Boolean paused) {
+		this.paused = paused;
+	}
+	
 	private void runGameLoop() {
 		
 		Thread loop = new Thread()
-			{ public void run() {
-				gameLoop();
+			{ 
+				public void run() {
+					gameLoop();
 			}
 		};
 		loop.start();
@@ -83,40 +79,49 @@ public class GameWorld extends JFrame{
 	private void gameLoop() {
 		
 		while(isRunning) {
-			
-			//processInput();
-			for(int i = 0; i < actors.size(); i++) {
-				actors.get(i).update();
+			System.out.println(paused);
+			if(!paused){
+				
+				/*
+				 * GameWorld vede i vari attori solo come GameObjects, non gli interessa se sono robot attaccanti, di supporto, stazioni o ostacoli. Utilizza i metodi
+				 * update() e render() di GameObject per causarne l'aggiornamento e il render a prescindere dal tipo tramite polimorfismo.
+				 * "Utilizza" i vari controller per far processare l'input ai componenti interattivi 
+				 */
+				
+				robotController.update(); //Processa l'input
+				//Aggiorna gli stati dei vari componenti
+				for(int i = 0; i < actors.size(); i++) {
+					actors.get(i).update();
+				}
+				//Disegna i vari componenti
+				for(int i = 0; i < actors.size(); i++) {
+					actors.get(i).render();
+				}
+				try {
+					Thread.sleep(16);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			for(int i = 0; i < actors.size(); i++) {
-				actors.get(i).render();
-			}			
-			try {
-				Thread.sleep(8);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}			
 		}
 	}
-
+	
+	private Boolean paused = false;
 	private Boolean isRunning = true;
 	private Vector<GameObject> actors;
 	private Tile[][] tileSet;
+	private RobotController robotController;
 	
-	class InputHandler2 implements MouseListener{
+	class InputHandler2 extends MouseAdapter{
 		
 		public InputHandler2() {
 			
 		}
 		
 		@Override
-		public void mouseClicked(MouseEvent e) {
-
-		}
-
-		@Override
 		public void mouseEntered(MouseEvent e) {
+			System.out.println("ENTRATO");
 			Boolean trovato = false;
 			int i = 0;
 			while (!trovato) {
@@ -130,49 +135,19 @@ public class GameWorld extends JFrame{
 			}
 			
 		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
 		@Override
 		public void mousePressed(MouseEvent e) {
-			
+			/* Passa l'input ai controller */
 			Vector2 click = new Vector2(e.getX()/64, e.getY()/64);
 			System.out.println(click.toString());
-			if (active == null) {
-				for (int i = 0; i < actors.size(); i++) {
-					Robot robot = (Robot) actors.get(i);
-					if (robot.getCoords().x == click.x && robot.getCoords().y == click.y){
-						System.out.println("Il robot è alla posizione: " + robot.getCoords().toString());
-						active = robot;
-						System.out.println("Il robot è attivo prima del click? " + robot.getActive().toString());
-						robot.setActive(true);
-						System.out.println("Il robot è attivo dopo il click? " + robot.getActive().toString());
-					}
-				}
-			}
-			else {
-				if (click.x != e.getX() || click.y != e.getY()) {
-					active.setDest(click);
-					active.setState(1);
-					active = null;
-				}
-			}
+			robotController.setInput(click);
 		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}	
-		
-		Robot active;
 	}
-
 }
+
+
+
+
 
 
 

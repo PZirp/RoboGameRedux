@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import robotgameredux.actors.Robot;
+import robotgameredux.input.RobotStates;
+
 import javax.swing.JComponent;
 
 public class Visual extends JComponent{
@@ -42,7 +44,7 @@ public class Visual extends JComponent{
 	}
 	
 	public void setColor() {
-		if (robot.getActive() == true) {this.color = Color.RED;}
+		if (robot.getState() == RobotStates.ACTIVE) {this.color = Color.RED;}
 		else {this.color = Color.GREEN;}
 	}
 	

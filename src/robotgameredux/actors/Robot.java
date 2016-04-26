@@ -2,6 +2,7 @@ package robotgameredux.actors;
 
 import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Visual;
+import robotgameredux.input.RobotStates;
 import robotgameredux.core.GameWorld;
 
 public class Robot extends GameObject {
@@ -10,7 +11,7 @@ public class Robot extends GameObject {
 		this.reference = reference;
 		sprite = new Visual(this);
 		this.reference.add(sprite);
-		this.active = false;
+		this.state = RobotStates.INACTIVE;
 	}
 	
 	public void render() {
@@ -25,10 +26,9 @@ public class Robot extends GameObject {
 	}
 	
 	public void update() {
-		if (state == 1) {
+		if (state == RobotStates.MOVING) {
 			move(this.dest);
-			state = 0;
-			active = false;
+			state = RobotStates.INACTIVE;
 		}		
 	}
 		
@@ -37,7 +37,6 @@ public class Robot extends GameObject {
 		if (energy != 0) { 
 			if(dest.dst(this.getCoords()) < range) {
 				oldPos = this.getCoords();
-				//System.out.println("Old position: "+ oldPos);
 				if(dest.x == this.getCoords().x && dest.y == this.getCoords().y) {
 					System.out.println("Sei già sulla tile scelta");
 				}
@@ -54,21 +53,17 @@ public class Robot extends GameObject {
 			}
 		}
 	}
-	
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-	
-	public Boolean getActive() {
-		return active;
-	}
-	
+
 	public void setDest(Vector2 dest) {
 		this.dest = dest;
 	}
 	
-	public void setState(int state) {
+	public void setState(RobotStates state) {
 		this.state = state;
+	}
+	
+	public RobotStates getState() {
+		return this.state;
 	}
 	
 	private GameWorld reference;
@@ -79,7 +74,6 @@ public class Robot extends GameObject {
 	private Vector2 oldPos;
 	private int energy = 100;
 	private Visual sprite;
-	private Boolean active;
 	private Vector2 dest;
-	private int state;
+	private RobotStates state;
 }
