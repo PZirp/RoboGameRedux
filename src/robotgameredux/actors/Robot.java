@@ -28,12 +28,13 @@ public class Robot extends GameObject {
 	public void update() {
 		if (state == RobotStates.MOVING) {
 			move(this.dest);
+			dest = null;
 			state = RobotStates.INACTIVE;
 		}		
 	}
 		
 	public void move(Vector2 dest) {
-		
+		//Oldpos deve diventare variabile interna, non c'è bisogno di tenerla come variabile di istanza (per adesso è di istanza solo per la stampa)
 		if (energy != 0) { 
 			if(dest.dst(this.getCoords()) < range) {
 				oldPos = this.getCoords();
