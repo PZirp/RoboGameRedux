@@ -2,7 +2,7 @@ package robotgameredux.core;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import robotgameredux.actors.*;
 
@@ -21,7 +21,7 @@ public class GameWorld extends JPanel{
 	}
 	
 	private void initWorld() {
-		actors = new Vector<GameObject>();
+		actors = new ArrayList<GameObject>();
 		tileSet = new Tile[GRID_HEIGHT][GRID_LENGHT];
 		robotController = new RobotController(this);
 
@@ -33,8 +33,8 @@ public class GameWorld extends JPanel{
 		
 		this.addMouseListener(new InputHandler2());
 		
-		actors.addElement(robotController.createRobot(new Vector2(1,0)));
-		actors.addElement(robotController.createRobot(new Vector2(10, 5)));
+		actors.add(robotController.createRobot(new Vector2(1,0)));
+		actors.add(robotController.createRobot(new Vector2(10, 5)));
 		tileSet[1][0].setCalpestabile(false);
 		tileSet[10][5].setCalpestabile(false);
 		
@@ -109,7 +109,7 @@ public class GameWorld extends JPanel{
 	
 	private Boolean paused = false;
 	private Boolean isRunning = true;
-	private Vector<GameObject> actors;
+	private ArrayList<GameObject> actors;
 	private Tile[][] tileSet;
 	private RobotController robotController;
 	

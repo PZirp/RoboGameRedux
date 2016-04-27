@@ -1,6 +1,6 @@
 package robotgameredux.actors;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
 import robotgameredux.input.RobotStates;
@@ -13,20 +13,20 @@ public class RobotController {
    */
 	
 	GameWorld gameWorld;
-	Vector<Robot> robots;
+	ArrayList<Robot> robots;
 	Integer activeIndex;
 	Vector2 currentInput;
 	
 	public RobotController (GameWorld gameWorld) {
 		this.gameWorld = gameWorld;
 		this.activeIndex = null;
-		this.robots = new Vector<Robot>();
+		this.robots = new ArrayList<Robot>();
 	}
 	
 	public Robot createRobot(Vector2 position) {
 		Robot robot = new Robot(gameWorld);
 		robot.setCoords(position);
-		robots.addElement(robot);
+		robots.add(robot);
 		return robot;
 	}
 	
