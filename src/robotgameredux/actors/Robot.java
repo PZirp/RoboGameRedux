@@ -12,6 +12,8 @@ public class Robot extends GameObject {
 		sprite = new Visual(this);
 		this.reference.add(sprite);
 		this.state = RobotStates.INACTIVE;
+		System.out.println("Alla creazione del robot:");
+		System.out.println(this.state);
 	}
 	
 	public void render() {
@@ -52,6 +54,7 @@ public class Robot extends GameObject {
 			} else {
 				System.out.println("Movimento impossibile, supera il range");
 			}
+			this.setState(RobotStates.INACTIVE);
 		}
 	}
 
@@ -61,6 +64,7 @@ public class Robot extends GameObject {
 	
 	public void setState(RobotStates state) {
 		this.state = state;
+		//System.out.println(state.toString());
 	}
 	
 	public RobotStates getState() {

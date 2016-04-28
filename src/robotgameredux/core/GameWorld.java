@@ -98,7 +98,7 @@ public class GameWorld extends JPanel{
 					actors.get(i).render();
 				}
 				try {
-					Thread.sleep(16);
+					Thread.sleep(500);
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -121,7 +121,7 @@ public class GameWorld extends JPanel{
 		
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			System.out.println("ENTRATO");
+		/*	System.out.println("ENTRATO");
 			Boolean trovato = false;
 			int i = 0;
 			while (!trovato) {
@@ -132,7 +132,7 @@ public class GameWorld extends JPanel{
 					trovato = true;
 				}
 				trovato = true;
-			}
+			}*/
 			
 		}
 		@Override
