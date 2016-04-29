@@ -55,14 +55,9 @@ public class Robot extends GameObject {
 			if(dest.dst(this.getCoords()) < range) {
 				oldPos = this.getCoords();
 				//Da spostare nel controller?
-				if(dest.x == this.getCoords().x && dest.y == this.getCoords().y) {
-					System.out.println("Sei già sulla tile scelta");
-				}
-				else {
-					this.setCoords(dest);
-					energy--;
-					movementComplete(oldPos);
-				}
+				this.setCoords(dest);
+				energy--;
+				movementComplete(oldPos);
 			} else {
 				System.out.println("Movimento impossibile, supera il range");
 			}
@@ -80,6 +75,10 @@ public class Robot extends GameObject {
 	
 	public RobotStates getState() {
 		return this.state;
+	}
+	
+	public Visual getSprite(){
+		return sprite;
 	}
 	
 	private RobotController reference;

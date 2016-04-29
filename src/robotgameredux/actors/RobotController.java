@@ -69,7 +69,7 @@ public class RobotController {
 				Robot robot = robots.get(i);
 				if (robot.getCoords().x == currentInput.x && robot.getCoords().y == currentInput.y){
 					trovato = true;
-					actionSelector.showAction();
+					actionSelector.showAction(robot.getSprite());
 					activeRobot = robot; 
 					robot.setState(RobotStates.ACTIVE);
 					currentInput = null;
@@ -78,8 +78,8 @@ public class RobotController {
 			}			
 		}
 		else if (activeRobot != null && robotInput != null) {
-			if (robotInput == RobotStates.INACTIVE) {
-				activeRobot.setState(RobotStates.INACTIVE);
+			if (robotInput == RobotStates.DO_NOTHING) {
+				activeRobot.setState(RobotStates.DO_NOTHING);
 				actionSelector.resetInput();
 				activeRobot = null;
 			} 
@@ -87,10 +87,19 @@ public class RobotController {
 			else if (currentInput != null) {
 				if (robotInput == RobotStates.MOVING) {
 					//Possibile TileOccupiedException?
-					if (gameWorld.isTileFree(currentInput)) {
+					
+					if (activeRobot.getCoords().dst(currentInput) == 0) {
+						System.out.println("Sei già sulla tile scelta");
+						activeRobot.setState(RobotStates.INACTIVE);
+						activeRobot = null;
+					} else if (gameWorld.isTileFree(currentInput)) {
 						activeRobot.setState(RobotStates.MOVING);
 						activeRobot.setDest(currentInput);
 						actionSelector.resetInput();
+						activeRobot = null;
+					} else {
+						System.out.println("Tile scelta occupata!");
+						activeRobot.setState(RobotStates.INACTIVE);
 						activeRobot = null;
 					}
 				}
