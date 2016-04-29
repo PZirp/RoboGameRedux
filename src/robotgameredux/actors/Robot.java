@@ -6,11 +6,12 @@ import robotgameredux.input.RobotStates;
 import robotgameredux.core.GameWorld;
 
 public class Robot extends GameObject {
-
-	public Robot(GameWorld reference){
+//Bisogna passare su la sprite appena creata
+	public Robot(RobotController reference){
 		this.reference = reference;
 		sprite = new Visual(this);
-		this.reference.add(sprite);
+		this.reference.addToScreen(sprite); //Passa la sprite al controllore che comunica con il GameWorld (JPanel) e la aggiunge sullo schermo
+		//this.reference.add(sprite);
 		this.state = RobotStates.INACTIVE;
 		System.out.println("Alla creazione del robot:");
 		System.out.println(this.state);
@@ -30,9 +31,23 @@ public class Robot extends GameObject {
 	public void update() {
 		if (state == RobotStates.MOVING) {
 			move(this.dest);
-			dest = null;
-			state = RobotStates.INACTIVE;
-		}		
+		} else if (state == RobotStates.ATTACKING){
+			/*
+			 * attack(this.target);
+			 * target = null;
+			 * state = RobotStates.INACTIVE;
+			 */
+		}
+	}
+	
+	private void attack(Vector2 target) {
+		
+	}
+	
+	private void movementComplete(Vector2 oldPos) {
+		this.dest = null;
+		this.state = RobotStates.INACTIVE;
+		this.reference.updateMap(oldPos, this.getCoords());
 	}
 		
 	public void move(Vector2 dest) {
@@ -40,16 +55,14 @@ public class Robot extends GameObject {
 		if (energy != 0) { 
 			if(dest.dst(this.getCoords()) < range) {
 				oldPos = this.getCoords();
+				//Da spostare nel controller
 				if(dest.x == this.getCoords().x && dest.y == this.getCoords().y) {
 					System.out.println("Sei già sulla tile scelta");
 				}
 				else {
-					if(reference.isTileFree(dest)) {
-						reference.releaseTile(oldPos);
-						this.setCoords(dest);
-						energy--;
-						reference.occupyTile(this.getCoords());
-					}
+					this.setCoords(dest);
+					energy--;
+					movementComplete(oldPos);
 				}
 			} else {
 				System.out.println("Movimento impossibile, supera il range");
@@ -71,14 +84,16 @@ public class Robot extends GameObject {
 		return this.state;
 	}
 	
-	private GameWorld reference;
+	private RobotController reference;
+	private RobotStates state;
 	private int health = 100;
 	private int actionPoints = 2;
 	private int range = 5;
 	private int strenght = 10;
-	private Vector2 oldPos;
 	private int energy = 100;
-	private Visual sprite;
+	private Vector2 oldPos;
 	private Vector2 dest;
-	private RobotStates state;
+	private Vector2 target;
+	private Visual sprite;
 }
+

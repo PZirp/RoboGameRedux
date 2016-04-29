@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
+import robotgameredux.graphic.Visual;
 import robotgameredux.input.RobotActionDialog;
 import robotgameredux.input.RobotStates;
 
@@ -18,7 +19,7 @@ public class RobotController {
 	
 	GameWorld gameWorld;
 	ArrayList<Robot> robots;
-	Integer activeIndex;
+	Robot activeRobot;
 	Vector2 currentInput;
 	RobotActionDialog actionSelector;
 	
@@ -29,14 +30,14 @@ public class RobotController {
 	
 	public RobotController (GameWorld gameWorld) {
 		this.gameWorld = gameWorld;
-		this.activeIndex = null;
+		this.activeRobot = null;
 		this.robots = new ArrayList<Robot>();
 		this.actionSelector = new RobotActionDialog((JFrame)gameWorld.getParent(), false);
 		currentInput = null;
 	}
 	
 	public Robot createRobot(Vector2 position) {
-		Robot robot = new Robot(gameWorld);
+		Robot robot = new Robot(this);
 		robot.setCoords(position);
 		robots.add(robot);
 		return robot;
@@ -45,8 +46,7 @@ public class RobotController {
 	public void setInput(Vector2 currentInput) {
 		this.currentInput = currentInput;
 	}
-	
-	
+		
 	/*
 	 * Se c'è già un robot attivo, il Dialog non va visualizzato nuovamente.
 	 */
@@ -64,16 +64,16 @@ public class RobotController {
 		i = 0;
 		trovato = false;	
 		
-		if (this.currentInput != null && activeIndex == null) {
+		if (this.currentInput != null && activeRobot == null) {
 			while (!trovato && i < robots.size()) {
 				Robot robot = robots.get(i);
-				System.out.println(robot.getCoords());
-				System.out.println(this.currentInput.x + "--4");
+				//System.out.println(robot.getCoords());
+				//System.out.println(this.currentInput.x + "--4");
 				if (robot.getCoords().x == currentInput.x && robot.getCoords().y == currentInput.y){
 					trovato = true;
 					actionSelector.showAction();
 					//System.out.println("Il robot è alla posizione: " + robot.getCoords().toString());
-					activeIndex = i; 
+					activeRobot = robot; 
 					//System.out.println("Il robot è attivo prima del click? " + robot.getState().toString());
 					robot.setState(RobotStates.ACTIVE);
 					//System.out.println("Il robot è attivo dopo il click? " + robot.getState().toString());
@@ -82,19 +82,22 @@ public class RobotController {
 				i++;
 			}			
 		}
-		else if (activeIndex != null && robotInput != null) {
-			//System.out.println("HO TROVATO UN INPUT");			
+		else if (activeRobot != null && robotInput != null) {
 			if (robotInput == RobotStates.INACTIVE) {
-				robots.get(activeIndex).setState(RobotStates.INACTIVE);
+				activeRobot.setState(RobotStates.INACTIVE);
 				actionSelector.resetInput();
-				activeIndex = null;
-			}
+				activeRobot = null;
+			} 
+			//try catch qui per InsufficientEnergyException?
 			else if (currentInput != null) {
 				if (robotInput == RobotStates.MOVING) {
-					robots.get(activeIndex).setState(RobotStates.MOVING);
-					robots.get(activeIndex).setDest(currentInput);
-					actionSelector.resetInput();
-					activeIndex = null;
+					//Possibile TileOccupiedException?
+					if (gameWorld.isTileFree(currentInput)) {
+						activeRobot.setState(RobotStates.MOVING);
+						activeRobot.setDest(currentInput);
+						actionSelector.resetInput();
+						activeRobot = null;
+					}
 				}
 			} //Da rimuovere
 			else {
@@ -104,57 +107,15 @@ public class RobotController {
 		}
 		System.out.println("Fine update controller");
 		currentInput = null;
-	}	
-}
-
-/*		if (currentInput != null) {
-if (activeIndex == null) {
-	for (int i = 0; i < robots.size(); i++) {
-		Robot robot = robots.get(i);
-		if (robot.getCoords().x == currentInput.x && robot.getCoords().y == currentInput.y){
-			actionSelector.showAction();
-			System.out.println("Il robot è alla posizione: " + robot.getCoords().toString());
-			//activeIndex = i; //Se viene selezionato "Non fare nulla" questo non va fatto
-			System.out.println("Il robot è attivo prima del click? " + robot.getState().toString());
-			robot.setState(RobotStates.ACTIVE);
-			System.out.println("Il robot è attivo dopo il click? " + robot.getState().toString());
-			actionSelector.showAction();
-
-			if (actionSelector.getInput() != RobotStates.INACTIVE) {
-				RobotStates a = actionSelector.getInput();
-				System.out.println("Preso dal dialog");
-				System.out.println(a);
-				robot.setState(a);
-				activeIndex = i;
-			}
-			
-		}
-	}
-	currentInput = null;
-}
-else {
-	Robot active = robots.get(activeIndex);
-	//active.setState(RobotStates.MOVING);
-	switch(active.getState()) { 
-		case MOVING:
-			if (currentInput.x != active.getCoords().x || currentInput.y != active.getCoords().y) {
-				active.setDest(currentInput);
-				active.setState(RobotStates.MOVING);		
-			}
-			break;
-		case ATTACKING :
-			;
-		case ACTIVE:
-			;
-		case INACTIVE:
-			;
 	}
 	
-	if (currentInput.x != active.getCoords().x || currentInput.y != active.getCoords().y) {
-		active.setDest(currentInput);
-		active.setState(RobotStates.MOVING);		
+	public void addToScreen(Visual sprite) {
+		this.gameWorld.add(sprite);
 	}
-	currentInput = null;
-	activeIndex = null;
+	
+	public void updateMap(Vector2 oldPos, Vector2 coords) {
+		gameWorld.releaseTile(oldPos);
+		gameWorld.occupyTile(coords);
+	}
+	
 }
-}*/

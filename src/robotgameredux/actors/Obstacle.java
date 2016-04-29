@@ -3,6 +3,11 @@ package robotgameredux.actors;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
 
+/*
+ * Penso che il controllore degli ostacoli e delle stazioni sarà il GameWorld stesso
+ */
+
+
 public class Obstacle extends GameObject{
 	
 	public Obstacle (GameWorld reference) {
