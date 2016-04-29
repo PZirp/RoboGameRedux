@@ -11,7 +11,6 @@ public class Robot extends GameObject {
 		this.reference = reference;
 		sprite = new Visual(this);
 		this.reference.addToScreen(sprite); //Passa la sprite al controllore che comunica con il GameWorld (JPanel) e la aggiunge sullo schermo
-		//this.reference.add(sprite);
 		this.state = RobotStates.INACTIVE;
 		System.out.println("Alla creazione del robot:");
 		System.out.println(this.state);
@@ -55,7 +54,7 @@ public class Robot extends GameObject {
 		if (energy != 0) { 
 			if(dest.dst(this.getCoords()) < range) {
 				oldPos = this.getCoords();
-				//Da spostare nel controller
+				//Da spostare nel controller?
 				if(dest.x == this.getCoords().x && dest.y == this.getCoords().y) {
 					System.out.println("Sei già sulla tile scelta");
 				}
@@ -77,7 +76,6 @@ public class Robot extends GameObject {
 	
 	public void setState(RobotStates state) {
 		this.state = state;
-		//System.out.println(state.toString());
 	}
 	
 	public RobotStates getState() {

@@ -116,25 +116,8 @@ public class GameWorld extends JPanel{
 	class InputHandler2 extends MouseAdapter{
 		
 		public InputHandler2() {
-			
 		}
 		
-		@Override
-		public void mouseEntered(MouseEvent e) {
-		/*	System.out.println("ENTRATO");
-			Boolean trovato = false;
-			int i = 0;
-			while (!trovato) {
-				
-				Robot robot = (Robot) actors.get(i);
-				if (robot.getCoords().x == e.getX()/64 && robot.getCoords().y == e.getY()/64){
-					System.out.println("Il robot è alla posizione: " + robot.getCoords().toString());
-					trovato = true;
-				}
-				trovato = true;
-			}*/
-			
-		}
 		@Override
 		public void mousePressed(MouseEvent e) {
 			/* Passa l'input ai controller */

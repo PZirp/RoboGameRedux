@@ -67,16 +67,11 @@ public class RobotController {
 		if (this.currentInput != null && activeRobot == null) {
 			while (!trovato && i < robots.size()) {
 				Robot robot = robots.get(i);
-				//System.out.println(robot.getCoords());
-				//System.out.println(this.currentInput.x + "--4");
 				if (robot.getCoords().x == currentInput.x && robot.getCoords().y == currentInput.y){
 					trovato = true;
 					actionSelector.showAction();
-					//System.out.println("Il robot è alla posizione: " + robot.getCoords().toString());
 					activeRobot = robot; 
-					//System.out.println("Il robot è attivo prima del click? " + robot.getState().toString());
 					robot.setState(RobotStates.ACTIVE);
-					//System.out.println("Il robot è attivo dopo il click? " + robot.getState().toString());
 					currentInput = null;
 				}
 				i++;
@@ -105,7 +100,6 @@ public class RobotController {
 			}
 			currentInput = null;
 		}
-		System.out.println("Fine update controller");
 		currentInput = null;
 	}
 	

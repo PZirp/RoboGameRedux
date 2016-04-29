@@ -33,11 +33,7 @@ public class RobotActionDialog extends JDialog {
 	}
 	
 	public RobotStates getInput() {
-		//input = RobotStates.ATTACKING;
-		System.out.println("Adesso stampo l'input (dialog):");
-		System.out.println(input);
 		return input;
-		
 	}
 	
 	public void resetInput() {
