@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 
 import robotgameredux.actors.Robot;
 import robotgameredux.core.Vector2;
+import robotgameredux.graphic.Visual;
 
 public class RobotActionDialog extends JDialog {
 
@@ -21,14 +22,15 @@ public class RobotActionDialog extends JDialog {
 	public RobotActionDialog(JFrame owner, boolean modal) {
 		super(owner, modal);
 		this.setLayout(new BorderLayout());
+		this.setUndecorated(true);
 		this.initButtons();
 		this.pack();
 		input = null;
 
 	}
 	
-	public void showAction() {
-		this.setLocationRelativeTo(null);
+	public void showAction(Visual sprite) {
+		this.setLocationRelativeTo(sprite);
 		this.setVisible(true);		
 	}
 	
@@ -67,7 +69,7 @@ public class RobotActionDialog extends JDialog {
 		this.add(doNothingButton, BorderLayout.SOUTH);
 		doNothingButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				input = RobotStates.INACTIVE;
+				input = RobotStates.DO_NOTHING;
 				hideAction();
 			}
 		});

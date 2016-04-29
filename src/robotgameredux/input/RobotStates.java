@@ -5,6 +5,8 @@ public enum RobotStates {
 	INACTIVE, 
 	ACTIVE, 
 	MOVING,  	
-	ATTACKING;
+	ATTACKING,
+	DO_NOTHING,
+	TURN_OVER;
 	
 }

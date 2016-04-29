@@ -127,11 +127,3 @@ public class GameWorld extends JPanel{
 		}
 	}
 }
-
-
-
-
-
-
-
-
