@@ -4,7 +4,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JPanel;
+
 import robotgameredux.actors.*;
+import robotgameredux.weapons.Base;
 
 public class GameWorld extends JPanel{
 
@@ -61,6 +63,20 @@ public class GameWorld extends JPanel{
 		return this.paused;
 	}
 	
+	public Boolean isEnemeyAt(Vector2 target, Base wpn) {
+		//Da ripetere per ogni controllore
+		if (robotController.isRobot(target)) {
+
+			System.out.println("BAAH");
+			robotController.deliverAttack(wpn);
+			return true;
+		}
+		return false;
+	
+	}
+	
+	
+	
 	public void setPaused(Boolean paused) {
 		this.paused = paused;
 	}
@@ -106,6 +122,8 @@ public class GameWorld extends JPanel{
 			}
 		}
 	}
+	
+	
 	
 	private Boolean paused = false;
 	private Boolean isRunning = true;

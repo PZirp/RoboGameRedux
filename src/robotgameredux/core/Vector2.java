@@ -30,6 +30,10 @@ package robotgameredux.core;
  */
 
 
+/*
+ *  Aggiungere metodo equal e clone per l'amor di dio
+ */
+
 
 public class Vector2 {
 	

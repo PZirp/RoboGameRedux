@@ -47,6 +47,7 @@ public class Visual extends JComponent{
 		if (robot.getState() == RobotStates.ACTIVE) {this.color = Color.RED;}
 		else if (robot.getState() == RobotStates.INACTIVE ){this.color = Color.GREEN;}
 		else if (robot.getState() == RobotStates.DO_NOTHING ){this.color = Color.GREEN;}
+		if (robot.getHealth() == 10) {this.color = Color.BLUE;}
 	}
 	
 	Dimension preferredSize;

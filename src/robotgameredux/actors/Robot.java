@@ -2,6 +2,7 @@ package robotgameredux.actors;
 
 import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Visual;
+import robotgameredux.input.Faction;
 import robotgameredux.input.RobotStates;
 import robotgameredux.core.GameWorld;
 
@@ -24,23 +25,18 @@ public class Robot extends GameObject {
 			System.out.print("Energia insufficiente ");
 		}
 		System.out.println("Posizione: X = " + this.getCoords().x + " Y = " + this.getCoords().y);
+		System.out.println("Salute del robot: " + health);
 		sprite.update();
 	}
 	
 	public void update() {
-		if (state == RobotStates.MOVING) {
-			move(this.dest);
-		} else if (state == RobotStates.ATTACKING){
-			/*
-			 * attack(this.target);
-			 * target = null;
-			 * state = RobotStates.INACTIVE;
-			 */
+		if (state != RobotStates.INACTIVE) {
+			if (state == RobotStates.MOVING) {
+				move(this.dest);
+			} else if (state == RobotStates.ATTACKING){
+				
+			}
 		}
-	}
-	
-	private void attack(Vector2 target) {
-		
 	}
 	
 	private void movementComplete(Vector2 oldPos) {
@@ -50,7 +46,7 @@ public class Robot extends GameObject {
 	}
 		
 	public void move(Vector2 dest) {
-		//Oldpos deve diventare variabile interna, non c'è bisogno di tenerla come variabile di istanza (per adesso è di istanza solo per la stampa)
+		//Oldpos deve diventare variabile interna, non c'è bisogno di tenerla come variabile di istanza (per adesso è di istanza solo per la stampa). Oppure si?
 		if (energy != 0) { 
 			if(dest.dst(this.getCoords()) < range) {
 				oldPos = this.getCoords();
@@ -81,10 +77,23 @@ public class Robot extends GameObject {
 		return sprite;
 	}
 	
+	public int getHealth() {
+		return this.health;
+	}
+	
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	
+	public Faction getFaction() {
+		return this.faction;
+	}
+	
+	private Faction faction;
 	private RobotController reference;
 	private RobotStates state;
 	private int health = 100;
-	private int actionPoints = 2;
+	//private int actionPoints = 2;
 	private int range = 5;
 	private int strenght = 10;
 	private int energy = 100;
