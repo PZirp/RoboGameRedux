@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import robotgameredux.actors.*;
-import robotgameredux.weapons.Base;
+import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Weapon;
 
 public class GameWorld extends JPanel{
 
@@ -63,7 +64,28 @@ public class GameWorld extends JPanel{
 		return this.paused;
 	}
 	
-	public Boolean isEnemeyAt(Vector2 target, Base wpn) {
+	public Boolean isEnemeyAt(Vector2 target) {
+		//Da ripetere per ogni controllore
+		if (robotController.isRobot(target)) {
+			System.out.println("BAAH");
+			//robotController.deliverAttack(wpn);
+			return true;
+		}
+		return false;
+	
+	}
+	
+	public void addProjectile(Projectile projectile) {
+		actors.add(projectile);
+		this.add(projectile.getSprite());
+	}
+	
+	public void deliverAttack(Projectile projectile) {
+		this.remove(projectile.getSprite());
+		//Check targeted flag in various controller and deliver the attack to them
+	}
+
+	/*public Boolean isEnemeyAt(Vector2 target, Weapon wpn) {
 		//Da ripetere per ogni controllore
 		if (robotController.isRobot(target)) {
 
@@ -73,8 +95,7 @@ public class GameWorld extends JPanel{
 		}
 		return false;
 	
-	}
-	
+	}*/
 	
 	
 	public void setPaused(Boolean paused) {

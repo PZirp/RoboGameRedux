@@ -4,6 +4,11 @@ import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Visual;
 import robotgameredux.input.Faction;
 import robotgameredux.input.RobotStates;
+import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Weapon;
+
+import java.util.ArrayList;
+
 import robotgameredux.core.GameWorld;
 
 public class Robot extends GameObject {
@@ -11,10 +16,9 @@ public class Robot extends GameObject {
 	public Robot(RobotController reference){
 		this.reference = reference;
 		sprite = new Visual(this);
-		this.reference.addToScreen(sprite); //Passa la sprite al controllore che comunica con il GameWorld (JPanel) e la aggiunge sullo schermo
+		this.reference.addRobotToScreen(sprite); //Passa la sprite al controllore che comunica con il GameWorld (JPanel) e la aggiunge sullo schermo
 		this.state = RobotStates.INACTIVE;
-		System.out.println("Alla creazione del robot:");
-		System.out.println(this.state);
+		this.weapons = new ArrayList<Weapon>();
 	}
 	
 	public void render() {
@@ -34,7 +38,10 @@ public class Robot extends GameObject {
 			if (state == RobotStates.MOVING) {
 				move(this.dest);
 			} else if (state == RobotStates.ATTACKING){
-				
+				System.out.println("BANZAIIIIIIIIIIIIII");
+				if (target != null) {
+					attack();
+				}
 			}
 		}
 	}
@@ -45,7 +52,7 @@ public class Robot extends GameObject {
 		this.reference.updateMap(oldPos, this.getCoords());
 	}
 		
-	public void move(Vector2 dest) {
+	private void move(Vector2 dest) {
 		//Oldpos deve diventare variabile interna, non c'è bisogno di tenerla come variabile di istanza (per adesso è di istanza solo per la stampa). Oppure si?
 		if (energy != 0) { 
 			if(dest.dst(this.getCoords()) < range) {
@@ -60,7 +67,30 @@ public class Robot extends GameObject {
 			this.setState(RobotStates.INACTIVE);
 		}
 	}
+	
+	private void attack() { 
+		if (energy != 0) {
+			if(activeWeapon.hasBullets()) {
+				System.out.println("BUDI");
+				Projectile proj = activeWeapon.fire(target);
+				reference.addProjectileToWorld(proj);
+				this.state = RobotStates.INACTIVE;
+				this.target = null;
+			}
+			
+		}
+	}
+	
 
+	public void addWeapon(Weapon weapon) {
+		this.weapons.add(weapon);
+	}
+	
+	public void setActiveWeapon() {
+		this.activeWeapon = this.weapons.get(0);
+		System.out.println("Yo");
+	}
+	
 	public void setDest(Vector2 dest) {
 		this.dest = dest;
 	}
@@ -89,6 +119,10 @@ public class Robot extends GameObject {
 		return this.faction;
 	}
 	
+	public void setTarget(Vector2 target) {
+		this.target = target;
+	}
+	
 	private Faction faction;
 	private RobotController reference;
 	private RobotStates state;
@@ -101,5 +135,7 @@ public class Robot extends GameObject {
 	private Vector2 dest;
 	private Vector2 target;
 	private Visual sprite;
+	private ArrayList<Weapon> weapons;
+	private Weapon activeWeapon;
 }
 

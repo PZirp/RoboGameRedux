@@ -9,7 +9,8 @@ import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Visual;
 import robotgameredux.input.RobotActionDialog;
 import robotgameredux.input.RobotStates;
-import robotgameredux.weapons.Base;
+import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Weapon;
 
 public class RobotController {
   /* RobotController (creato in GameWorld) crea i robot e ne gestisce gli input.
@@ -41,6 +42,8 @@ public class RobotController {
 	public Robot createRobot(Vector2 position) {
 		Robot robot = new Robot(this);
 		robot.setCoords(position);
+		Weapon w = new Weapon(robot);
+		robot.addWeapon(w);
 		robots.add(robot);
 		return robot;
 	}
@@ -55,6 +58,7 @@ public class RobotController {
 	
 	public void update() {
 				
+		//In futuro passare lo state del world come parametro di questo metodo
 		/*
 		* Clicco un bottone sul dialog e setto lo stato del robot di conseguenza. Prendo l'indice del robot e lo tengo come attivo.
 		* Al click successivo parte l'else qui sotto. Switcho in base allo stato del robot e faccio qualcosa.
@@ -87,10 +91,18 @@ public class RobotController {
 				}
 				else if (robotInput == RobotStates.ATTACKING) {
 					System.out.println("CURRENT INPUT ATTACK: " + currentInput.toString());
-					if (gameWorld.isEnemeyAt(currentInput, new Base()) == true) {
+					/*if (gameWorld.isEnemeyAt(currentInput/*, new Base()) == true) {
 						activeRobot.setState(RobotStates.INACTIVE);
 						activeRobot = null;
+					}*/
+					
+					if (gameWorld.isEnemeyAt(currentInput)) {
+						activeRobot.setActiveWeapon();
+						activeRobot.setTarget(currentInput);
+						activeRobot.setState(RobotStates.ATTACKING);
+						activeRobot = null;
 					}
+					
 				}
 			} //Da rimuovere
 			else {
@@ -131,9 +143,15 @@ public class RobotController {
 		activeRobot = null;
 	}
 	
-	public void addToScreen(Visual sprite) {
+	public void addRobotToScreen(Visual sprite) {
 		this.gameWorld.add(sprite);
 	}
+	
+	public void addProjectileToWorld(Projectile projectile) {
+		this.gameWorld.addProjectile(projectile);
+	}
+	
+	
 	
 	public void updateMap(Vector2 oldPos, Vector2 coords) {
 		gameWorld.releaseTile(oldPos);
@@ -154,7 +172,7 @@ public class RobotController {
 		return false;		
 	}
 	
-	public void deliverAttack(Base wpn) {
+	public void deliverAttack(Weapon wpn) {
 		System.out.println("TARGET COORDINATES del" + target.getCoords().toString());
 		this.target.setHealth(wpn.getDamage()); 
 		target = null;

@@ -14,7 +14,7 @@ public class Visual extends JComponent{
 	private static final long serialVersionUID = 441178591544695129L;
 	
 	public Visual(Robot robot) {
-		this.setSize(100, 100);
+		//this.setSize(100, 100);
 		this.robot = robot;
 		this.setPreferredSize(new Dimension(64,64));
 	}
@@ -48,6 +48,7 @@ public class Visual extends JComponent{
 		else if (robot.getState() == RobotStates.INACTIVE ){this.color = Color.GREEN;}
 		else if (robot.getState() == RobotStates.DO_NOTHING ){this.color = Color.GREEN;}
 		if (robot.getHealth() == 10) {this.color = Color.BLUE;}
+		
 	}
 	
 	Dimension preferredSize;
