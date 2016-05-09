@@ -25,8 +25,9 @@ public class GameWorld extends JPanel{
 	
 	private void initWorld() {
 		actors = new ArrayList<GameObject>();
+		obstacles = new ArrayList<Obstacle>();
 		tileSet = new Tile[GRID_HEIGHT][GRID_LENGHT];
-		robotController = new RobotController(this);
+		robotController = new AttackRobotController(this);
 
 		for (int i = 0; i < GRID_HEIGHT; i++) {
 			for (int j = 0; j < GRID_LENGHT; j++) {
@@ -36,11 +37,12 @@ public class GameWorld extends JPanel{
 		
 		this.addMouseListener(new InputHandler2());
 		
+		obstacles.add(new Obstacle(this, new Vector2(5,5)));
 		actors.add(robotController.createRobot(new Vector2(1,0)));
 		actors.add(robotController.createRobot(new Vector2(10, 5)));
 		tileSet[1][0].setCalpestabile(false);
-		tileSet[10][5].setCalpestabile(false);
-		
+		tileSet[5][5].setCalpestabile(false);
+		tileSet[10][5].setCalpestabile(false);	
 		runGameLoop();
 	}
 	
@@ -52,19 +54,36 @@ public class GameWorld extends JPanel{
 			return false;
 	}
 	
-	public void releaseTile(Vector2 tile) {
-		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(true);
+	public boolean isObstacle(Vector2 obstacle) {
+		for (Obstacle obs : obstacles) {
+			if (obs.getCoords().x == obstacle.x && obs.getCoords().y == obstacle.y) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	public void occupyTile(Vector2 tile) {
-		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(false);
+	
+	public void removeFromWorld(GameObject go) {
+		Boolean trovato = false;
+		int i = 0;
+		while(!trovato && i < obstacles.size()) {
+				if (obstacles.get(i) == go){
+					System.out.println("FACCIO PULIZIA");
+					releaseTile(go.getCoords());
+					obstacles.remove(i);
+					//this.repaint(); //fare in maniera migliore
+					trovato = true;
+				}
+				i++;
+		}
 	}
 	
 	public Boolean getPaused() {
 		return this.paused;
 	}
 	
-	public Boolean isEnemeyAt(Vector2 target) {
+	/*public Boolean isEnemeyAt(Vector2 target) {
 		//Da ripetere per ogni controllore
 		if (robotController.isRobot(target)) {
 			System.out.println("BAAH");
@@ -73,15 +92,29 @@ public class GameWorld extends JPanel{
 		}
 		return false;
 	
-	}
+	}*/
 	
 	public void addProjectile(Projectile projectile) {
 		actors.add(projectile);
-		this.add(projectile.getSprite());
+		//this.add(projectile.getSprite());
+	}
+	
+	public void destroyObstacle(ActionObject obj) {
+		//Obstacle target;
+		Boolean trovato = false;
+		int i = 0;
+		while (!trovato && i < obstacles.size()) {
+			if (obstacles.get(i).getCoords().x == obj.getTarget().x && obstacles.get(i).getCoords().y == obj.getTarget(). y) {
+				obstacles.get(i).setAction(obj);
+				obstacles.get(i).setState(ObstacleState.BEING_ATTACKED);
+				trovato = true;
+			}
+		}
+		
 	}
 	
 	public void deliverAttack(Projectile projectile) {
-		this.remove(projectile.getSprite());
+		//this.remove(projectile.getSprite());
 		//Check targeted flag in various controller and deliver the attack to them
 	}
 
@@ -97,6 +130,14 @@ public class GameWorld extends JPanel{
 	
 	}*/
 	
+	
+	public void releaseTile(Vector2 tile) {
+		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(true);
+	}
+	
+	public void occupyTile(Vector2 tile) {
+		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(false);
+	}
 	
 	public void setPaused(Boolean paused) {
 		this.paused = paused;
@@ -130,10 +171,17 @@ public class GameWorld extends JPanel{
 				for(int i = 0; i < actors.size(); i++) {
 					actors.get(i).update();
 				}
+				for(int i = 0; i < obstacles.size(); i++) {
+					obstacles.get(i).update();
+				}
 				//Disegna i vari componenti
 				for(int i = 0; i < actors.size(); i++) {
 					actors.get(i).render();
 				}
+				for(int i = 0; i < obstacles.size(); i++) {
+					obstacles.get(i).render();
+				}
+				this.repaint(); //fare in maniera migliore
 				try {
 					Thread.sleep(500);
 				}
@@ -149,6 +197,7 @@ public class GameWorld extends JPanel{
 	private Boolean paused = false;
 	private Boolean isRunning = true;
 	private ArrayList<GameObject> actors;
+	private ArrayList<Obstacle> obstacles;
 	private Tile[][] tileSet;
 	private RobotController robotController;
 	
@@ -165,4 +214,6 @@ public class GameWorld extends JPanel{
 			robotController.setInput(click);
 		}
 	}
+
+	
 }

@@ -8,8 +8,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import robotgameredux.actors.Robot;
-import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Visual;
 
 public class RobotActionDialog extends JDialog {
@@ -18,9 +16,11 @@ public class RobotActionDialog extends JDialog {
 	private JButton moveButton;
 	private JButton attackButton;
 	private JButton doNothingButton;
+	private JButton pushButton;
+	private JButton destroyButton;
 	
 	public RobotActionDialog(JFrame owner, boolean modal) {
-		super(owner, modal);
+		super(owner, true);
 		this.setLayout(new BorderLayout());
 		this.setUndecorated(true);
 		this.initButtons();
@@ -30,7 +30,7 @@ public class RobotActionDialog extends JDialog {
 	}
 	
 	public void showAction(Visual sprite) {
-		this.setLocationRelativeTo(sprite);
+		this.setLocationRelativeTo(sprite);		
 		this.setVisible(true);		
 	}
 	
@@ -74,5 +74,22 @@ public class RobotActionDialog extends JDialog {
 			}
 		});
 		
+		destroyButton = new JButton("Distruggi ostacolo");
+		this.add(destroyButton, BorderLayout.EAST);
+		destroyButton.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				input = RobotStates.DESTROY_OBSTACLE;
+				hideAction();
+			}
+		});
+		
+		pushButton = new JButton("Spingi ostacolo");
+		this.add(pushButton, BorderLayout.WEST);
+		pushButton.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				input = RobotStates.PUSH_OBSTACLE;
+				hideAction();
+			}
+		});
 	}
 }

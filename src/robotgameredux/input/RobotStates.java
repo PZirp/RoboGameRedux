@@ -7,6 +7,8 @@ public enum RobotStates {
 	MOVING,  	
 	ATTACKING,
 	DO_NOTHING,
-	TURN_OVER;
+	TURN_OVER,
+	DESTROY_OBSTACLE,
+	PUSH_OBSTACLE;
 	
 }

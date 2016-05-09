@@ -4,7 +4,10 @@ import robotgameredux.core.Vector2;
 
 public abstract class GameObject {
 
-	public GameObject() {};
+
+	public GameObject(Vector2 coords) {
+		this.coords = coords;
+	}
 
 	public Vector2 getCoords() {
 		return coords;

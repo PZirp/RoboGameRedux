@@ -11,21 +11,22 @@ public class Projectile extends GameObject{
 	private Vector2 origin;
 	private Vector2 current;
 	private int dmg;
-	private ProjectileSprite sprite;
+	//private ProjectileSprite sprite;
 	
 	public Projectile(Vector2 target, Vector2 origin, int dmg) {
+		super(origin);
 		this.target = target;
-		this.origin = origin;
+		//this.origin = origin;
 		this.dmg = dmg;
 		this.current = origin;
-		this.sprite = new ProjectileSprite(this);
+		//this.sprite = new ProjectileSprite(this);
 	}
-	public void render() {
+	/*public void render() {
 		sprite.update();
 	}
 	public ProjectileSprite getSprite() {
 		return this.sprite;
-	}
+	}*/
 	
 	public Vector2 getTarget() {
 		return this.target;
