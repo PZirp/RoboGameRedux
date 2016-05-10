@@ -51,12 +51,27 @@ public class Obstacle extends GameObject{
 			
 		if (this.state == ObstacleState.BEING_PUSHED) {
 			if (currentAction.getStrenght() >= this.weight) {
-				Vector2 distance = this.getCoords().sub(currentAction.getOrigin());
-				Vector2 dest = this.getCoords().add(distance);
-				if (reference.isTileFree(dest)) {
+				// Posizione dell'attaccante rispetto all'ostacolo: Potrebbe essere utile per l'IA, per sapere dove stanno i robot nemici rispetto alla CPU
+				//Vector2 relativePosition = this.getCoords().sub(currentAction.getOrigin(), this.getCoords());
+
+				/*
+				 * Cosa fa: Calcolo la direzione in cui devo muovermi (direction) e la sommo alla posizone attuale. 
+				 * Se la nuova posizitione è libera, sposto l'ostacolo.
+				 * In questo caso basta calcolare la direzione in cui viene spinto, dato che la posizione del robo che spinge non è importante
+				 * e l'ostacolo spinto si muove solo di una casella, posso quindi direttamente sommare il risultato per ottenere la nuova posizione.
+				 * E avessi voluto, per esempio, orientare l'ostacolo verso il robot che spinge, avrei dovuto calcolare la posizione relativa del robot
+				 * rispetto all'ostacolo (sottraendo la posizione del robot alla posizione dell'ostacolo).
+				 */
+
+				// Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
+				
+				Vector2 direction = Vector2.sub(this.getCoords(), currentAction.getOrigin());
+				System.out.println(direction.toString() + "DIREZIONE");
+				Vector2 newPosition = direction.add(this.getCoords());
+				if (reference.isTileFree(newPosition)) {
 					reference.releaseTile(this.getCoords());
-					this.setCoords(dest);
-					reference.occupyTile(dest);
+					this.setCoords(newPosition);
+					reference.occupyTile(newPosition);
 				}
 			}
 		}

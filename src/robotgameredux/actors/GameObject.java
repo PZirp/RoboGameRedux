@@ -13,8 +13,8 @@ public abstract class GameObject {
 		return coords;
 	}
 	
-	public void setCoords(Vector2 newCoords) {
-		coords = newCoords;
+	public void setCoords(Vector2 coords) {
+		this.coords = coords;
 	}
 	
 

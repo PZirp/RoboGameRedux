@@ -248,6 +248,19 @@ public class Vector2 {
 	                return this;
 	        }
 	        
+	        
+
+	        /**
+	         * Sottrae due vettori senza modificare quello di partenza
+	         * @param v1 il primo vettore
+	         * @param v2 il secondo vettore
+	         * @return un nuovo vettore con il risultato della sottrazione
+	         */
+	        
+	        static public Vector2 sub(Vector2 v1, Vector2 v2) {
+	        	return new Vector2((v1.x - v2.x), (v1.y - v2.y));  
+	        }
+	        
 	        /**      
 	         * @return a temporary copy of this vector. Use with care as this is backed by a single static Vector2 instance. v1.tmp().add( v2.tmp() ) will not work!
 	         */

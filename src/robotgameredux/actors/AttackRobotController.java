@@ -68,8 +68,7 @@ public class AttackRobotController extends RobotController{
 				if (robotInput == RobotStates.MOVING) {
 					//Possibile TileOccupiedException? Catch qui
 					moveRobot();
-				}
-				else if (robotInput == RobotStates.ATTACKING) {
+				} else if (robotInput == RobotStates.ATTACKING) {
 					System.out.println("CURRENT INPUT ATTACK: " + currentInput.toString());
 					/*if (gameWorld.isEnemeyAt(currentInput/*, new Base()) == true) {
 						activeRobot.setState(RobotStates.INACTIVE);
@@ -83,11 +82,16 @@ public class AttackRobotController extends RobotController{
 						activeRobot = null;
 					}*/
 					
-				}
-				else if (robotInput == RobotStates.DESTROY_OBSTACLE) {
+				} else if (robotInput == RobotStates.DESTROY_OBSTACLE) {
 					if(gameWorld.isObstacle(currentInput)) {
 						activeRobot.setTarget(currentInput);
 						activeRobot.setState(RobotStates.DESTROY_OBSTACLE);
+						activeRobot = null;
+					}
+				} else if (robotInput == RobotStates.PUSH_OBSTACLE) {
+					if(gameWorld.isObstacle(currentInput)) {
+						activeRobot.setTarget(currentInput);
+						activeRobot.setState(RobotStates.PUSH_OBSTACLE);
 						activeRobot = null;
 					}
 				}
@@ -151,6 +155,10 @@ public class AttackRobotController extends RobotController{
 		System.out.println("TARGET COORDINATES del" + target.getCoords().toString());
 		this.target.setHealth(wpn.getDamage()); 
 		target = null;
+	}
+	
+	public void deliverPush(ActionObject obj) {
+		gameWorld.pushObstacle(obj);
 	}
 	
 	public void deliverDestroy(ActionObject obj) {

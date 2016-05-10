@@ -21,6 +21,8 @@ public abstract class RobotController {
 	
 	public abstract Robot createRobot(Vector2 position);
 	
+	public abstract void update();
+	
 	public void setInput(Vector2 currentInput) {
 		this.currentInput = currentInput;
 	}
@@ -28,8 +30,6 @@ public abstract class RobotController {
 	/*
 	 * Se c'è già un robot attivo, il Dialog non va visualizzato nuovamente.
 	 */
-	
-	public abstract void update();
 		
 	public void addRobotToScreen(Visual sprite) {
 		this.gameWorld.add(sprite);
@@ -41,6 +41,7 @@ public abstract class RobotController {
 	}
 	
 	//Da modificare facendo ritornare l'enum Faction in base a di chi è il robot
+	//Ci dovrebbe essere un metodo "checkFaction" o qualcosa del genere qui
 	
 
 }

@@ -13,8 +13,8 @@ public class GameWorld extends JPanel{
 
 	private static final long serialVersionUID = 7321125104091891404L;
 
-	private final static int GRID_HEIGHT = 1280/64;
-	private final static int GRID_LENGHT = 720/64;
+	private final static int GRID_LENGHT = 1280/64; //20
+	private final static int GRID_HEIGHT = 720/64; //11
 	
 	
 	public GameWorld() {
@@ -26,11 +26,11 @@ public class GameWorld extends JPanel{
 	private void initWorld() {
 		actors = new ArrayList<GameObject>();
 		obstacles = new ArrayList<Obstacle>();
-		tileSet = new Tile[GRID_HEIGHT][GRID_LENGHT];
+		tileSet = new Tile[GRID_LENGHT][GRID_HEIGHT];
 		robotController = new AttackRobotController(this);
 
-		for (int i = 0; i < GRID_HEIGHT; i++) {
-			for (int j = 0; j < GRID_LENGHT; j++) {
+		for (int i = 0; i < GRID_LENGHT; i++) {
+			for (int j = 0; j < GRID_HEIGHT; j++) {
 				 tileSet[i][j] = new Tile();
 			}
 		}
@@ -48,6 +48,11 @@ public class GameWorld extends JPanel{
 	
 
 	public boolean isTileFree(Vector2 tile) {
+		
+		if (tile.x >= GRID_LENGHT || tile.y >= GRID_HEIGHT || tile.x < 0 || tile.y < 0) {
+			return false;
+		}
+		
 		if (tileSet[(int) tile.x][(int) tile.y].isCalpestabile() == true)
 			return true;
 		else 
@@ -62,7 +67,6 @@ public class GameWorld extends JPanel{
 		}
 		return false;
 	}
-	
 	
 	public void removeFromWorld(GameObject go) {
 		Boolean trovato = false;
@@ -79,9 +83,6 @@ public class GameWorld extends JPanel{
 		}
 	}
 	
-	public Boolean getPaused() {
-		return this.paused;
-	}
 	
 	/*public Boolean isEnemeyAt(Vector2 target) {
 		//Da ripetere per ogni controllore
@@ -105,8 +106,24 @@ public class GameWorld extends JPanel{
 		int i = 0;
 		while (!trovato && i < obstacles.size()) {
 			if (obstacles.get(i).getCoords().x == obj.getTarget().x && obstacles.get(i).getCoords().y == obj.getTarget(). y) {
-				obstacles.get(i).setAction(obj);
-				obstacles.get(i).setState(ObstacleState.BEING_ATTACKED);
+				/*obstacles.get(i).setAction(obj);
+				obstacles.get(i).setState(ObstacleState.BEING_ATTACKED);*/
+				obstacles.get(i).destroy(obj);
+				trovato = true;
+			}
+		}
+		
+	}
+	
+	public void pushObstacle(ActionObject obj) {
+		//Obstacle target;
+		Boolean trovato = false;
+		int i = 0;
+		while (!trovato && i < obstacles.size()) {
+			if (obstacles.get(i).getCoords().x == obj.getTarget().x && obstacles.get(i).getCoords().y == obj.getTarget(). y) {
+				/*obstacles.get(i).setAction(obj);
+				obstacles.get(i).setState(ObstacleState.BEING_PUSHED);*/
+				obstacles.get(i).push(obj);
 				trovato = true;
 			}
 		}
@@ -130,6 +147,9 @@ public class GameWorld extends JPanel{
 	
 	}*/
 	
+	public Boolean getPaused() {
+		return this.paused;
+	}
 	
 	public void releaseTile(Vector2 tile) {
 		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(true);
