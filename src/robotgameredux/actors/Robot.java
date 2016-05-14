@@ -1,6 +1,7 @@
 package robotgameredux.actors;
 
 import robotgameredux.core.Vector2;
+import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
 import robotgameredux.input.Faction;
 import robotgameredux.input.RobotStates;
@@ -81,17 +82,17 @@ public abstract class Robot extends GameObject {
 		return this.state;
 	}
 	
-	public void setSprite(Visual sprite, RobotController reference) {
+	public void setSprite(Sprite sprite) {
 		/*fare meglio, non mi piace passare sia la sprite che il riferimento
 		*sarebbe forse meglio spostare la sprite nel robot specifico?
 		*Non posso semplicemente creare la sprite in questa classe generica perchè non userebbe la sprite giusta
 		*Quindi devo crearla nella sottoclasse in base al tipo e poi aggiungerla allo schermo
 		*/
 		this.sprite = sprite;
-		reference.addRobotToScreen(sprite); //Passa la sprite al controllore che comunica con il GameWorld (JPanel) e la aggiunge sullo schermo
+		//reference.addRobotToScreen(sprite); //Passa la sprite al controllore che comunica con il GameWorld (JPanel) e la aggiunge sullo schermo
 	}
 	
-	public Visual getSprite(){
+	public Sprite getSprite(){
 		return sprite;
 	}
 	
@@ -99,12 +100,28 @@ public abstract class Robot extends GameObject {
 		return this.health;
 	}
 	
-	public void setHealth(int health) {
-		this.health = health;
+	public void updateHealth(int health) {
+		int newHealth = this.health + health;
+		if (newHealth > 1000) 
+			this.health = 100;
+		else 
+			this.health = newHealth;
+	}
+	
+	public void damage(int damage) {
+		int effectiveDamage = damage - this.defence;
+		this.health =- effectiveDamage;
+		if (this.health <= 0) {
+			//set dead
+		}
 	}
 	
 	public Faction getFaction() {
 		return this.faction;
+	}
+	
+	public void setFaction(Faction faction) {
+		this.faction = faction;
 	}
 	
 	public void setTarget(Vector2 target) {
@@ -121,9 +138,10 @@ public abstract class Robot extends GameObject {
 	private int health = 100;
 	private int range = 5;
 	private int energy = 100;
+	private int defence = 10;
 	//private Vector2 oldPos;
 	private Vector2 dest;
 	private Vector2 target;
-	private Visual sprite;
+	private Sprite sprite;
 }
 

@@ -3,7 +3,9 @@ package robotgameredux.actors;
 
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
+import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
+import robotgameredux.input.Faction;
 
 public abstract class RobotController {
   /* RobotController (creato in GameWorld) crea i robot e ne gestisce gli input.
@@ -26,12 +28,15 @@ public abstract class RobotController {
 	public void setInput(Vector2 currentInput) {
 		this.currentInput = currentInput;
 	}
-		
+	
+	
+	
 	/*
 	 * Se c'è già un robot attivo, il Dialog non va visualizzato nuovamente.
 	 */
-		
-	public void addRobotToScreen(Visual sprite) {
+	
+	
+	public void addRobotToScreen(Sprite sprite) {
 		this.gameWorld.add(sprite);
 	}
 		

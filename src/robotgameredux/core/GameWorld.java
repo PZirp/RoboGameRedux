@@ -27,8 +27,9 @@ public class GameWorld extends JPanel{
 		actors = new ArrayList<GameObject>();
 		obstacles = new ArrayList<Obstacle>();
 		tileSet = new Tile[GRID_LENGHT][GRID_HEIGHT];
-		robotController = new AttackRobotController(this);
-
+		attackRobotController = new AttackRobotController(this);
+		supportRobotController = new SupportRobotController(this);
+		
 		for (int i = 0; i < GRID_LENGHT; i++) {
 			for (int j = 0; j < GRID_HEIGHT; j++) {
 				 tileSet[i][j] = new Tile();
@@ -38,8 +39,9 @@ public class GameWorld extends JPanel{
 		this.addMouseListener(new InputHandler2());
 		
 		obstacles.add(new Obstacle(this, new Vector2(5,5)));
-		actors.add(robotController.createRobot(new Vector2(1,0)));
-		actors.add(robotController.createRobot(new Vector2(10, 5)));
+		actors.add(attackRobotController.createRobot(new Vector2(1,0)));
+		actors.add(attackRobotController.createRobot(new Vector2(10, 5)));
+		actors.add(supportRobotController.createRobot(new Vector2(6,7)));
 		tileSet[1][0].setCalpestabile(false);
 		tileSet[5][5].setCalpestabile(false);
 		tileSet[10][5].setCalpestabile(false);	
@@ -135,6 +137,15 @@ public class GameWorld extends JPanel{
 		//Check targeted flag in various controller and deliver the attack to them
 	}
 
+	//da migliorare ovviamente
+	
+	public Boolean isFriendly(Vector2 target) {
+		if (attackRobotController.isFriendly(target) || supportRobotController.isFriendly(target)) {
+			return true;
+		}
+		return false;
+	}
+	
 	/*public Boolean isEnemeyAt(Vector2 target, Weapon wpn) {
 		//Da ripetere per ogni controllore
 		if (robotController.isRobot(target)) {
@@ -186,7 +197,8 @@ public class GameWorld extends JPanel{
 				 * "Utilizza" i vari controller per far processare l'input ai componenti interattivi 
 				 */
 				
-				robotController.update(); //Processa l'input
+				attackRobotController.update(); //Processa l'input
+				supportRobotController.update(); //Processa l'input
 				//Aggiorna gli stati dei vari componenti
 				for(int i = 0; i < actors.size(); i++) {
 					actors.get(i).update();
@@ -219,7 +231,8 @@ public class GameWorld extends JPanel{
 	private ArrayList<GameObject> actors;
 	private ArrayList<Obstacle> obstacles;
 	private Tile[][] tileSet;
-	private RobotController robotController;
+	private AttackRobotController attackRobotController;
+	private SupportRobotController supportRobotController;
 	
 	class InputHandler2 extends MouseAdapter{
 		
@@ -231,7 +244,8 @@ public class GameWorld extends JPanel{
 			/* Passa l'input ai controller */
 			Vector2 click = new Vector2(e.getX()/64, e.getY()/64);
 			System.out.println(click.toString());
-			robotController.setInput(click);
+			attackRobotController.setInput(click);
+			supportRobotController.setInput(click);
 		}
 	}
 

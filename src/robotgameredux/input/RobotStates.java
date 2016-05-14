@@ -10,7 +10,11 @@ public enum RobotStates {
 	TURN_OVER, // Generica
 	DESTROY_OBSTACLE, // Attaccante
 	PUSH_OBSTACLE, // Attaccante
-	USE_OBJECT; // Supporto o Generica (dipende da come implemento l'uso degli oggetti di cura/munizioni dati dal supporto) potrei aver bisogno di uno sttao GIVE_OBJECT
+	USE_OBJECT, //Generica (Supporto o Generica (dipende da come implemento l'uso degli oggetti di cura/munizioni dati dal supporto) potrei aver bisogno di uno sttao GIVE_OBJECT)
+	GIVE_OBJECT, //Supporto
+	TAKE_OBJECT; // Supporto
+	
+	
 	//Se proprio vogliamo essere sicuri che un robot combattente non possa finire in un stato del robot di supporto e viceversa,
 	//aggiungere un else alla fine di tutti gli stati validi e lanciare un'eccezione "InvalidStateException" da lì, ma mi pare esagerato
 

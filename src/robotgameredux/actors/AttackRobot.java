@@ -14,7 +14,8 @@ public class AttackRobot extends Robot{
 	public AttackRobot(AttackRobotController reference, Vector2 coords) {
 		super(reference, coords);
 		this.reference = reference;
-		this.setSprite(new Visual(this), reference);
+		this.setSprite(new Visual(this));
+		reference.addRobotToScreen(this.getSprite());
 		this.weapons = new ArrayList<Weapon>();		
 	}
 	
@@ -67,11 +68,11 @@ public class AttackRobot extends Robot{
 	}
 	
 	public void setActiveWeapon() {
+		//Test, da buttare ovviamente
 		this.activeWeapon = this.weapons.get(0);
 		System.out.println("Yo");
 	}	
 	
-	private Visual sprite;
 	private ArrayList<Weapon> weapons;
 	private Weapon activeWeapon;
 	private int strenght = 10;

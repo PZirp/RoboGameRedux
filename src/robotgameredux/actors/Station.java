@@ -1,6 +1,9 @@
 package robotgameredux.actors;
 
+import java.util.ArrayList;
+
 import robotgameredux.core.Vector2;
+import robotgameredux.tools.UsableTool;
 
 public class Station extends GameObject{
 
@@ -9,6 +12,6 @@ public class Station extends GameObject{
 		// TODO Auto-generated constructor stub
 	}
 
-	
+	private ArrayList<UsableTool> tools;
 	
 }

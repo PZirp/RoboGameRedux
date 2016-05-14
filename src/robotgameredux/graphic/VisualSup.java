@@ -9,10 +9,12 @@ import robotgameredux.input.RobotStates;
 
 import javax.swing.JComponent;
 
-public class VisualSup extends JComponent{
-		/**
-	 * 
+public class VisualSup extends Sprite{
+	/**
+	 *  
 	 */
+	
+	//Creare classe unica per le sprite che estende JComponent e poi estendere quella per le sprite dei vari gameobjects 
 	private static final long serialVersionUID = -1343989742137472214L;
 	
 	public VisualSup(Robot robot) {

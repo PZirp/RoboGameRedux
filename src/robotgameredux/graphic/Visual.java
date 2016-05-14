@@ -9,7 +9,7 @@ import robotgameredux.input.RobotStates;
 
 import javax.swing.JComponent;
 
-public class Visual extends JComponent{
+public class Visual extends Sprite{
 	
 	private static final long serialVersionUID = 441178591544695129L;
 	

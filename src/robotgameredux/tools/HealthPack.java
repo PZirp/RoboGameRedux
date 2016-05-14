@@ -1,5 +1,7 @@
 package robotgameredux.tools;
 
+import robotgameredux.actors.Robot;
+
 public class HealthPack implements UsableTool {
 
 	public HealthPack() {
@@ -7,11 +9,18 @@ public class HealthPack implements UsableTool {
 	};
 	
 	@Override
-	public void use() {
-		
+	public void use(Robot robot) {
+		robot.updateHealth(this.health);
 
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	private final String name = "Health pack";
 	private final int health;
+	
+	
 
 }

@@ -1,6 +1,6 @@
 package robotgameredux.input;
 
-import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -9,20 +9,18 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import robotgameredux.graphic.Sprite;
-import robotgameredux.graphic.Visual;
 
-public class RobotActionDialog extends JDialog {
-
+public class SupportDialog extends JDialog{
 	private RobotStates input;
 	private JButton moveButton;
-	private JButton attackButton;
+	private JButton takeObjectButton;
 	private JButton doNothingButton;
-	private JButton pushButton;
-	private JButton destroyButton;
+	private JButton useObjectButton;
+	private JButton giveObjectButton;
 	
-	public RobotActionDialog(JFrame owner, boolean modal) {
+	public SupportDialog(JFrame owner, boolean modal) {
 		super(owner, true);
-		this.setLayout(new GridLayout(0, 1));
+		this.setLayout(new BorderLayout());
 		this.setUndecorated(true);
 		this.initButtons();
 		this.pack();
@@ -43,53 +41,54 @@ public class RobotActionDialog extends JDialog {
 		input = null;
 	}
 	
-
+	public void hideAction() {
+		this.setVisible(false);
+	}
+	
 	private void initButtons() {
 		moveButton = new JButton("Muovi");
-		this.add(moveButton);
+		this.add(moveButton, BorderLayout.CENTER);
 		moveButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				input = RobotStates.MOVING;
-				setVisible(false);
+				hideAction();
 			}
 		});
 		
-		attackButton = new JButton("Attacca");
-		this.add(attackButton);
-		attackButton.addMouseListener(new MouseAdapter() {
+		takeObjectButton = new JButton("Prendi oggetto");
+		this.add(takeObjectButton, BorderLayout.NORTH);
+		takeObjectButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				input = RobotStates.ATTACKING;
-				setVisible(false);
+				input = RobotStates.TAKE_OBJECT;
+				hideAction();
 			}
 		});
 		
 		doNothingButton = new JButton("Non fare nulla");
-		this.add(doNothingButton);
+		this.add(doNothingButton, BorderLayout.SOUTH);
 		doNothingButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				input = RobotStates.DO_NOTHING;
-				setVisible(false);
+				hideAction();
 			}
 		});
 		
-		destroyButton = new JButton("Distruggi ostacolo");
-		this.add(destroyButton);
-		destroyButton.addMouseListener(new MouseAdapter() {
+		giveObjectButton = new JButton("Dai oggetto");
+		this.add(giveObjectButton, BorderLayout.EAST);
+		giveObjectButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				input = RobotStates.DESTROY_OBSTACLE;
-				setVisible(false);
+				input = RobotStates.GIVE_OBJECT;
+				hideAction();
 			}
 		});
 		
-		pushButton = new JButton("Spingi ostacolo");
-		this.add(pushButton);
-		pushButton.addMouseListener(new MouseAdapter() {
+		useObjectButton = new JButton("Usa oggetto");
+		this.add(useObjectButton, BorderLayout.WEST);
+		useObjectButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				input = RobotStates.PUSH_OBSTACLE;
-				setVisible(false);
+				input = RobotStates.USE_OBJECT;
+				hideAction();
 			}
 		});
-		
-	
 	}
 }

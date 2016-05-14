@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import robotgameredux.core.ActionObject;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
+import robotgameredux.input.Faction;
 import robotgameredux.input.RobotActionDialog;
 import robotgameredux.input.RobotStates;
 import robotgameredux.weapons.Projectile;
@@ -16,7 +17,7 @@ public class AttackRobotController extends RobotController{
 
 	public AttackRobotController (GameWorld gameWorld) {
 		super(gameWorld);
-		this.gameWorld = gameWorld;
+		//this.gameWorld = gameWorld;
 		this.activeRobot = null;
 		this.robots = new ArrayList<AttackRobot>();
 		this.actionSelector = new RobotActionDialog((JFrame)gameWorld.getParent(), false);
@@ -26,6 +27,7 @@ public class AttackRobotController extends RobotController{
 	public Robot createRobot(Vector2 position) {
 		AttackRobot robot = new AttackRobot(this, position);
 		//robot.setCoords(position);
+		robot.setFaction(Faction.FRIEND);
 		Weapon w = new Weapon(robot);
 		robot.addWeapon(w);
 		robots.add(robot);
@@ -49,7 +51,7 @@ public class AttackRobotController extends RobotController{
 		robotInput = actionSelector.getInput();
 		i = 0;
 		trovato = false;	
-		
+		//Quando implementerò la scelta casuale del robot attivo, questo primo if dove controllo se è stato cliccato un robot e lo cerco deve essere eliminato
 		if (this.currentInput != null && activeRobot == null) {
 			while (!trovato && i < robots.size()) {
 				AttackRobot robot = robots.get(i);
@@ -103,6 +105,7 @@ public class AttackRobotController extends RobotController{
 		currentInput = null;
 	}
 	
+	//Potrei spostare questo metodo in RobotController perchè tanto è sempre lo stesso
 	private void moveRobot() {
 		if (activeRobot.getCoords().dst(currentInput) == 0) {
 			System.out.println("Sei già sulla tile scelta");
@@ -120,6 +123,7 @@ public class AttackRobotController extends RobotController{
 		}
 	}
 	
+	//Anche questo e doNothing() potrebbero essere messi nel controller base
 	private Boolean activateRobot(AttackRobot robot) {
 		actionSelector.showAction(robot.getSprite());
 		activeRobot = robot; 
@@ -151,6 +155,17 @@ public class AttackRobotController extends RobotController{
 		return false;		
 	}
 	
+	public Boolean isFriendly(Vector2 target) {
+		for (Robot r : robots) {
+			if (r.getCoords().x == target.x && r.getCoords().y == target.y && r.getFaction() == Faction.FRIEND) { 
+				this.target = r;
+				return true;
+			}
+		}
+		return false;	
+		
+	}
+	
 	public void deliverAttack(Weapon wpn) {
 		System.out.println("TARGET COORDINATES del" + target.getCoords().toString());
 		this.target.setHealth(wpn.getDamage()); 
@@ -166,14 +181,14 @@ public class AttackRobotController extends RobotController{
 	}
 	
 	//ActionObject currentAction;
-	ArrayList<AttackRobot> robots;
-	AttackRobot activeRobot;	
-	RobotActionDialog actionSelector;
-	Robot target;	
+	private ArrayList<AttackRobot> robots;
+	private AttackRobot activeRobot;	
+	private RobotActionDialog actionSelector;
+	private Robot target;	
 	//Variabili di lavoro
-	RobotStates robotInput;
-	int i = 0;
-	Boolean trovato = false;	
+	private RobotStates robotInput;
+	private int i = 0;
+	private Boolean trovato = false;	
 
 	
 }
