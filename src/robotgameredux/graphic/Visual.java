@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import robotgameredux.actors.Robot;
+import robotgameredux.core.Vector2;
 import robotgameredux.input.RobotStates;
 
 import javax.swing.JComponent;
@@ -17,6 +18,8 @@ public class Visual extends Sprite{
 		//this.setSize(100, 100);
 		this.robot = robot;
 		this.setPreferredSize(new Dimension(64,64));
+		current = null;
+		dest = null;
 	}
 
 	public void setPreferredSize(Dimension preferredSize) {
@@ -32,7 +35,30 @@ public class Visual extends Sprite{
 	//Devo usare le coordinate dello schermo non quelle del world per avere un movimento fluido 	
 	public void update() {
 		this.setColor();
+		/*int newY = 0;
+		int newX = 0;
+		if (robot.getState() == RobotStates.MOVING) {
+			if (dest == null) {
+				dest = robot.getDest();
+				current = robot.getCoords();
+				System.out.println(dest.y + dest.x);
+			}
+			System.out.println("POSIZIONE SPRITE" + this.getX() +" - " +this.getY());
+			System.out.println("DESTINAZIONE" + dest.x*64 +" - " + dest.y*64);
+			if (this.getY()/64 < dest.y)
+				newY = this.getY()+1;
+			if (this.getX()/64 < dest.x)
+				newX = this.getX()+1;
+			this.setBounds(newX, newY, 64, 64);
+			if (this.getY()/64 == dest.y && this.getX()/64 == dest.x) 
+				robot.setState(RobotStates.INACTIVE);
+				dest = null;
+		}
+		else 
+			this.setBounds((int) robot.getCoords().x*64, (int) robot.getCoords().y*64, 64, 64);
+		*/
 		this.setBounds((int) robot.getCoords().x*64, (int) robot.getCoords().y*64, 64, 64);
+
 		//this.repaint();
 	}
 	
@@ -47,12 +73,14 @@ public class Visual extends Sprite{
 		if (robot.getState() == RobotStates.ACTIVE) {this.color = Color.RED;}
 		else if (robot.getState() == RobotStates.INACTIVE ){this.color = Color.GREEN;}
 		else if (robot.getState() == RobotStates.DO_NOTHING ){this.color = Color.GREEN;}
-		if (robot.getHealth() == 10) {this.color = Color.BLUE;}
+		if (robot.getHealth() <= 10) {this.color = Color.BLUE;}
 		
 	}
 	
 	Dimension preferredSize;
 	Robot robot;
 	Color color;
+	Vector2 current;
+	Vector2 dest;
 }
  

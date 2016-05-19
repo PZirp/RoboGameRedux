@@ -2,8 +2,10 @@ package robotgameredux.weapons;
 
 import robotgameredux.actors.Robot;
 import robotgameredux.core.Vector2;
-import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Bullet;
 public class Weapon {
+	
+	//Trasformare in una interfaccia?
 	
 	public Weapon(Robot ownerBot) {
 		this.onwerBot = ownerBot;
@@ -13,17 +15,14 @@ public class Weapon {
 		return this.damage;
 	}
 	
-	
-	public Projectile fire(Vector2 target) {
-			Projectile pro = new Projectile(target, onwerBot.getCoords(), this.damage);
+	public Bullet fire() {
+			Bullet pro = new Bullet(damage);
 			bullets--;
 			return pro;
 	}
 	
 	public Boolean hasBullets() {
-		System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
 		if (bullets > 0) {
-			System.out.println("HO DEI PROIETTILI USALI");
 			return true;}
 		return false;
 	}

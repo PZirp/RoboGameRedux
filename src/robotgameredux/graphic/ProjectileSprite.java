@@ -6,19 +6,19 @@ import java.awt.Graphics2D;
 
 import javax.swing.JComponent;
 
-import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Bullet;
 
 public class ProjectileSprite extends JComponent {
 	
-	public ProjectileSprite(Projectile projectile) {
+	public ProjectileSprite(Bullet projectile) {
 		this.setSize(25, 25);
 		this.projectile = projectile;
 	}
 	
 	public void update() {
-		int x = (int) projectile.getTarget().x - (int) projectile.getCurrent().x;
-		int y = (int) projectile.getTarget().y - (int) projectile.getCurrent().y;
-		this.setBounds(x, x, 16, 16);
+		//int x = (int) projectile.getTarget().x - (int) projectile.getCurrent().x;
+		//int y = (int) projectile.getTarget().y - (int) projectile.getCurrent().y;
+		//this.setBounds(x, x, 16, 16);
 		this.repaint();
 	}
 	
@@ -31,5 +31,5 @@ public class ProjectileSprite extends JComponent {
 	
 	
 	Color color = Color.BLACK;
-	Projectile projectile;
+	Bullet projectile;
 }

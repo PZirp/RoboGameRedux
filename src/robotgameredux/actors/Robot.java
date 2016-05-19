@@ -5,18 +5,20 @@ import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
 import robotgameredux.input.Faction;
 import robotgameredux.input.RobotStates;
-import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Bullet;
 import robotgameredux.weapons.Weapon;
 
 import java.util.ArrayList;
 
 import robotgameredux.core.GameWorld;
+import robotgameredux.core.MovementSystem;
 
-public abstract class Robot extends GameObject {
+public class Robot extends GameObject {
 //Bisogna passare su la sprite appena creata
-	public Robot(RobotController reference, Vector2 coords){
+	public Robot(GameWorld reference, Vector2 coords, MovementSystem ms){
 		super(coords);
-		//this.reference = reference;
+		this.movementSystem = ms;
+		this.reference = reference;
 		//sprite = new Visual(this);
 		this.state = RobotStates.INACTIVE;
 	}
@@ -39,31 +41,32 @@ public abstract class Robot extends GameObject {
 	//prenderanno come RobotController generico nei parametri, senza cast e senza doppio riferimento
 	//AbstractRobot non ha bisogno di riferimenti perchè comunque non è mai concretizzato
 	
-	protected void movementComplete(Vector2 oldPos, RobotController ref) {
-		this.dest = null;
+	/*protected void movementComplete(Vector2 oldPos) {
+		this.destination = null;
 		this.state = RobotStates.INACTIVE;
-		ref.updateMap(oldPos, this.getCoords());
-	}
+		reference.releaseTile(oldPos);
+		reference.occupyTile(this.getCoords());
+	}*/
 		
 	
 	
-	protected void move(RobotController ref) {
+	protected void move() {
 		//Oldpos deve diventare variabile interna, non c'è bisogno di tenerla come variabile di istanza (per adesso è di istanza solo per la stampa). Oppure si?
-		if (energy > 0) { 
-			if(dest.dst(this.getCoords()) < range) {
+		/*if (energy > 0) { 
+			if(destination.dst(this.getCoords()) < range) {
 				Vector2 oldPos = this.getCoords();
-				//Da spostare nel controller?
-				this.setCoords(dest);
+				this.setCoords(destination);
 				//energy--;
-				movementComplete(oldPos, ref);
+				movementComplete(oldPos);
 			} else {
 				System.out.println("Movimento impossibile, supera il range");
 			}
 			//energy = energy - 10;
-			this.setState(RobotStates.INACTIVE);
+			//this.setState(RobotStates.INACTIVE);
 		} else {
-			this.setState(RobotStates.INACTIVE);
-		}
+			//this.setState(RobotStates.INACTIVE);
+		}*/
+		movementSystem.move(this);
 	}
 	
 	public int getEnergy(){
@@ -71,7 +74,7 @@ public abstract class Robot extends GameObject {
 	}
 	
 	public void setDest(Vector2 dest) {
-		this.dest = dest;
+		this.destination = dest;
 	}
 	
 	public void setState(RobotStates state) {
@@ -132,7 +135,20 @@ public abstract class Robot extends GameObject {
 		return this.target;
 	}
 	
-	//private RobotController reference;
+	public GameWorld getReference() {
+		return reference;
+	}
+	
+	public int getRange(){
+		return range;
+	}
+	
+	public Vector2 getDest(){
+		return destination;
+	}
+	
+	private MovementSystem movementSystem;
+	private GameWorld reference;
 	private Faction faction;
 	private RobotStates state;
 	private int health = 100;
@@ -140,7 +156,7 @@ public abstract class Robot extends GameObject {
 	private int energy = 100;
 	private int defence = 10;
 	//private Vector2 oldPos;
-	private Vector2 dest;
+	private Vector2 destination;
 	private Vector2 target;
 	private Sprite sprite;
 }

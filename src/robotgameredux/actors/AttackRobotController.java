@@ -10,7 +10,7 @@ import robotgameredux.core.Vector2;
 import robotgameredux.input.Faction;
 import robotgameredux.input.RobotActionDialog;
 import robotgameredux.input.RobotStates;
-import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Bullet;
 import robotgameredux.weapons.Weapon;
 
 public class AttackRobotController extends RobotController{
@@ -22,23 +22,15 @@ public class AttackRobotController extends RobotController{
 		this.robots = new ArrayList<AttackRobot>();
 		this.actionSelector = new RobotActionDialog((JFrame)gameWorld.getParent(), false);
 		currentInput = null;
+		this.move = new MoveCommand(); 
 	}
 	
-	public Robot createRobot(Vector2 position) {
-		AttackRobot robot = new AttackRobot(this, position);
-		//robot.setCoords(position);
-		robot.setFaction(Faction.FRIEND);
-		Weapon w = new Weapon(robot);
-		robot.addWeapon(w);
-		robots.add(robot);
-		return robot;
-	}
-	
+
 	/*
 	 * Se c'è già un robot attivo, il Dialog non va visualizzato nuovamente.
 	 */
 	
-	public void update() {
+	public void parseInput() {
 				
 		//In futuro passare lo state del world come parametro di questo metodo
 		/*
@@ -72,6 +64,9 @@ public class AttackRobotController extends RobotController{
 					moveRobot();
 				} else if (robotInput == RobotStates.ATTACKING) {
 					System.out.println("CURRENT INPUT ATTACK: " + currentInput.toString());
+					activeRobot.setTarget(currentInput);
+					activeRobot.setState(RobotStates.ATTACKING);
+					activeRobot = null;
 					/*if (gameWorld.isEnemeyAt(currentInput/*, new Base()) == true) {
 						activeRobot.setState(RobotStates.INACTIVE);
 						activeRobot = null;
@@ -105,9 +100,13 @@ public class AttackRobotController extends RobotController{
 		currentInput = null;
 	}
 	
-	//Potrei spostare questo metodo in RobotController perchè tanto è sempre lo stesso
-	private void moveRobot() {
-		if (activeRobot.getCoords().dst(currentInput) == 0) {
+	private void moveRobot() { 
+		move.setInput(currentInput);
+		move.execute(activeRobot);
+		activeRobot = null;
+
+		// da fare nel sistema di movimento non più qui
+		/*if (activeRobot.getCoords().dst(currentInput) == 0) {
 			System.out.println("Sei già sulla tile scelta");
 			activeRobot.setState(RobotStates.INACTIVE);
 			activeRobot = null;
@@ -120,7 +119,7 @@ public class AttackRobotController extends RobotController{
 			System.out.println("Tile scelta occupata!");
 			activeRobot.setState(RobotStates.INACTIVE);
 			activeRobot = null;
-		}
+		}*/
 	}
 	
 	//Anche questo e doNothing() potrebbero essere messi nel controller base
@@ -137,12 +136,16 @@ public class AttackRobotController extends RobotController{
 		actionSelector.resetInput();
 		activeRobot = null;
 	}
-		
-	public void addProjectileToWorld(Projectile projectile) {
-		this.gameWorld.addProjectile(projectile);
+
+	public void addRobot(AttackRobot robot) {
+		robots.add(robot);
 	}
-	//Da modificare facendo ritornare l'enum Faction in base a di chi è il robot
 	
+	/*public void addProjectileToWorld(Projectile projectile) {
+		this.gameWorld.addProjectile(projectile);
+	}*/
+	//Da modificare facendo ritornare l'enum Faction in base a di chi è il robot
+	/*NON MI SERVONO PIù QUI:
 	public Boolean isRobot(Vector2 target) {
 		System.out.println("TARGET COORDINATES isRobot" + target.toString());
 
@@ -164,21 +167,21 @@ public class AttackRobotController extends RobotController{
 		}
 		return false;	
 		
-	}
+	}*/
 	
-	public void deliverAttack(Weapon wpn) {
+	/*public void deliverAttack(Weapon wpn) {
 		System.out.println("TARGET COORDINATES del" + target.getCoords().toString());
 		this.target.setHealth(wpn.getDamage()); 
 		target = null;
-	}
+	}*/
 	
-	public void deliverPush(ActionObject obj) {
+	/*public void deliverPush(ActionObject obj) {
 		gameWorld.pushObstacle(obj);
 	}
 	
 	public void deliverDestroy(ActionObject obj) {
 		gameWorld.destroyObstacle(obj);
-	}
+	}*/
 	
 	//ActionObject currentAction;
 	private ArrayList<AttackRobot> robots;
@@ -188,7 +191,8 @@ public class AttackRobotController extends RobotController{
 	//Variabili di lavoro
 	private RobotStates robotInput;
 	private int i = 0;
-	private Boolean trovato = false;	
+	private Boolean trovato = false;
+	private MoveCommand move;
 
 	
 }

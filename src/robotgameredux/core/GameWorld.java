@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import robotgameredux.actors.*;
-import robotgameredux.weapons.Projectile;
+import robotgameredux.input.Faction;
+import robotgameredux.weapons.Bullet;
 import robotgameredux.weapons.Weapon;
 
 public class GameWorld extends JPanel{
@@ -15,8 +16,8 @@ public class GameWorld extends JPanel{
 
 	private final static int GRID_LENGHT = 1280/64; //20
 	private final static int GRID_HEIGHT = 720/64; //11
-	
-	
+	private BattleSystem battleSystem;
+	private MovementSystem movementSystem;
 	public GameWorld() {
 		this.setSize(1280, 720);
 		this.setLayout(null);
@@ -27,8 +28,13 @@ public class GameWorld extends JPanel{
 		actors = new ArrayList<GameObject>();
 		obstacles = new ArrayList<Obstacle>();
 		tileSet = new Tile[GRID_LENGHT][GRID_HEIGHT];
+		movementSystem = new StandardMovementSystem(this);
 		attackRobotController = new AttackRobotController(this);
-		supportRobotController = new SupportRobotController(this);
+		supportRobotController = new SupportRobotController(this, movementSystem);
+		battleSystem = new BattleSystem();
+		robotFactory = new RobotFactory(this, attackRobotController, supportRobotController, battleSystem, movementSystem);
+		battleSystem.setActorManager(robotFactory);
+		battleSystem.setGameWorld(this);
 		
 		for (int i = 0; i < GRID_LENGHT; i++) {
 			for (int j = 0; j < GRID_HEIGHT; j++) {
@@ -39,8 +45,8 @@ public class GameWorld extends JPanel{
 		this.addMouseListener(new InputHandler2());
 		
 		obstacles.add(new Obstacle(this, new Vector2(5,5)));
-		actors.add(attackRobotController.createRobot(new Vector2(1,0)));
-		actors.add(attackRobotController.createRobot(new Vector2(10, 5)));
+		actors.add(robotFactory.createRobot(Faction.FRIEND, new Vector2(1,0), RobotType.ATTACK));
+		actors.add(robotFactory.createRobot(Faction.FRIEND, new Vector2(10,5), RobotType.ATTACK));
 		actors.add(supportRobotController.createRobot(new Vector2(6,7)));
 		tileSet[1][0].setCalpestabile(false);
 		tileSet[5][5].setCalpestabile(false);
@@ -97,10 +103,12 @@ public class GameWorld extends JPanel{
 	
 	}*/
 	
-	public void addProjectile(Projectile projectile) {
+	/*
+	 * Vedere come fare per far uscire il proiettile sullo schermo, at a later time, quando farò per bene la parte del rendering
+	 * public void addProjectile(Bullet projectile) {
 		actors.add(projectile);
 		//this.add(projectile.getSprite());
-	}
+	}*/
 	
 	public void destroyObstacle(ActionObject obj) {
 		//Obstacle target;
@@ -132,19 +140,19 @@ public class GameWorld extends JPanel{
 		
 	}
 	
-	public void deliverAttack(Projectile projectile) {
+	public void deliverAttack(Bullet projectile) {
 		//this.remove(projectile.getSprite());
 		//Check targeted flag in various controller and deliver the attack to them
 	}
 
-	//da migliorare ovviamente
+	//da migliorare ovviamente // Inutile ora
 	
-	public Boolean isFriendly(Vector2 target) {
+	/*public Boolean isFriendly(Vector2 target) {
 		if (attackRobotController.isFriendly(target) || supportRobotController.isFriendly(target)) {
 			return true;
 		}
 		return false;
-	}
+	}*/
 	
 	/*public Boolean isEnemeyAt(Vector2 target, Weapon wpn) {
 		//Da ripetere per ogni controllore
@@ -197,8 +205,8 @@ public class GameWorld extends JPanel{
 				 * "Utilizza" i vari controller per far processare l'input ai componenti interattivi 
 				 */
 				
-				attackRobotController.update(); //Processa l'input
-				supportRobotController.update(); //Processa l'input
+				attackRobotController.parseInput(); //Processa l'input
+				supportRobotController.parseInput(); //Processa l'input
 				//Aggiorna gli stati dei vari componenti
 				for(int i = 0; i < actors.size(); i++) {
 					actors.get(i).update();
@@ -233,6 +241,7 @@ public class GameWorld extends JPanel{
 	private Tile[][] tileSet;
 	private AttackRobotController attackRobotController;
 	private SupportRobotController supportRobotController;
+	private RobotFactory robotFactory;
 	
 	class InputHandler2 extends MouseAdapter{
 		

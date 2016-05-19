@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 
 import robotgameredux.core.GameWorld;
+import robotgameredux.core.MovementSystem;
 import robotgameredux.core.Vector2;
 import robotgameredux.input.Faction;
 import robotgameredux.input.RobotActionDialog;
@@ -15,18 +16,20 @@ import robotgameredux.tools.UsableTool;
 
 public class SupportRobotController extends RobotController{
 
-	public SupportRobotController(GameWorld gameWorld) {
+	private MovementSystem ms;
+	
+	public SupportRobotController(GameWorld gameWorld, MovementSystem ms) {
 		super(gameWorld);
 		this.activeRobot = null;
 		this.robots = new ArrayList<SupportRobot>();
 		this.actionSelector = new SupportDialog((JFrame)gameWorld.getParent(), false);
 		this.toolSelector = new ToolsDialog((JFrame) gameWorld.getParent(), false);
 		currentInput = null;
+		this.ms = ms;
 	}
 
-	@Override
 	public Robot createRobot(Vector2 position) {
-		SupportRobot robot = new SupportRobot(this, position);
+		SupportRobot robot = new SupportRobot(gameWorld, position, ms);
 		robot.setFaction(Faction.FRIEND);
 		robots.add(robot);
 		return robot;
@@ -44,7 +47,7 @@ public class SupportRobotController extends RobotController{
 	}
 	
 	@Override
-	public void update() {
+	public void parseInput() {
 		robotInput = actionSelector.getInput();
 		i = 0;
 		trovato = false;	
@@ -76,7 +79,7 @@ public class SupportRobotController extends RobotController{
 					//Possibile TileOccupiedException? Catch qui
 					moveRobot();
 				} else if (robotInput == RobotStates.GIVE_OBJECT) {
-					if(gameWorld.isFriendly(currentInput)) {
+					/*if(gameWorld.isFriendly(currentInput)) {
 						ArrayList<UsableTool> tools = activeRobot.getTools();
 						if (!tools.isEmpty()) {
 							toolSelector.showTools(tools);
@@ -85,7 +88,7 @@ public class SupportRobotController extends RobotController{
 							activeRobot.setState(RobotStates.GIVE_OBJECT);
 						}
 						activeRobot = null;
-					}
+					}*/
 				}
 			} //Da rimuovere
 			else {
@@ -126,6 +129,10 @@ public class SupportRobotController extends RobotController{
 			activeRobot.setState(RobotStates.INACTIVE);
 			activeRobot = null;
 		}
+	}
+	
+	public void addRobot(SupportRobot robot) {
+		robots.add(robot);
 	}
 	
 	private ArrayList<SupportRobot> robots;

@@ -3,20 +3,21 @@ package robotgameredux.actors;
 import java.util.ArrayList;
 
 import robotgameredux.core.ActionObject;
+import robotgameredux.core.GameWorld;
+import robotgameredux.core.MovementSystem;
 import robotgameredux.core.Vector2;
 import robotgameredux.graphic.VisualSup;
 import robotgameredux.input.RobotStates;
 import robotgameredux.tools.HealthPack;
 import robotgameredux.tools.UsableTool;
-import robotgameredux.weapons.Projectile;
+import robotgameredux.weapons.Bullet;
 
 public class SupportRobot extends Robot{
 
-	public SupportRobot(SupportRobotController reference, Vector2 coords) {
-		super(reference, coords);
-		this.reference = reference;
+	public SupportRobot(GameWorld reference, Vector2 coords, MovementSystem ms) {
+		super(reference, coords, ms);
 		this.setSprite(new VisualSup(this));
-		reference.addRobotToScreen(this.getSprite());
+		getReference().add(this.getSprite());
 		this.tools = new ArrayList<UsableTool>();
 		tools.add(new HealthPack());
 		tools.add(new HealthPack());
@@ -26,7 +27,7 @@ public class SupportRobot extends Robot{
 	public void update() {
 		if (this.getState() != RobotStates.INACTIVE) {
 			if (this.getState() == RobotStates.MOVING) {
-				super.move(reference);
+				super.move();
 			} else if (this.getState() == RobotStates.TAKE_OBJECT){
 			
 					
@@ -63,8 +64,8 @@ public class SupportRobot extends Robot{
 	 */
 	private void giveObject() {
 		if (this.getEnergy() != 0) {
-				Projectile proj = activeWeapon.fire(this.getTarget());
-				reference.addProjectileToWorld(proj);
+				//Projectile proj = activeWeapon.fire(this.getTarget());
+				//reference.addProjectileToWorld(proj);
 				this.setState(RobotStates.INACTIVE);
 				this.setTarget(null);
 			}
@@ -74,6 +75,9 @@ public class SupportRobot extends Robot{
 		activeTool = tools.get(i);
 	}
 	
+	public void addTool(UsableTool tool) {
+		tools.add(tool);
+	}
 	
 	public ArrayList<UsableTool> getTools() {
 		return tools;

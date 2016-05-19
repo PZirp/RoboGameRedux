@@ -21,12 +21,14 @@ public abstract class RobotController {
 		this.gameWorld = gameWorld;
 	}
 	
-	public abstract Robot createRobot(Vector2 position);
-	
-	public abstract void update();
+	public abstract void parseInput();
 	
 	public void setInput(Vector2 currentInput) {
 		this.currentInput = currentInput;
+	}
+	
+	public GameWorld getReference() {
+		return gameWorld;
 	}
 	
 	
@@ -35,15 +37,6 @@ public abstract class RobotController {
 	 * Se c'è già un robot attivo, il Dialog non va visualizzato nuovamente.
 	 */
 	
-	
-	public void addRobotToScreen(Sprite sprite) {
-		this.gameWorld.add(sprite);
-	}
-		
-	public void updateMap(Vector2 oldPos, Vector2 coords) {
-		gameWorld.releaseTile(oldPos);
-		gameWorld.occupyTile(coords);
-	}
 	
 	//Da modificare facendo ritornare l'enum Faction in base a di chi è il robot
 	//Ci dovrebbe essere un metodo "checkFaction" o qualcosa del genere qui
