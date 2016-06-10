@@ -1,6 +1,7 @@
 package robotgameredux.input;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -16,11 +17,13 @@ public class SupportDialog extends JDialog{
 	private JButton takeObjectButton;
 	private JButton doNothingButton;
 	private JButton useObjectButton;
-	private JButton giveObjectButton;
+	private JButton pushButton;
+	private JButton rechargeButton;
 	
 	public SupportDialog(JFrame owner, boolean modal) {
 		super(owner, true);
-		this.setLayout(new BorderLayout());
+		//this.setLayout(new BorderLayout());
+		this.setLayout(new GridLayout(0, 1));
 		this.setUndecorated(true);
 		this.initButtons();
 		this.pack();
@@ -47,7 +50,7 @@ public class SupportDialog extends JDialog{
 	
 	private void initButtons() {
 		moveButton = new JButton("Muovi");
-		this.add(moveButton, BorderLayout.CENTER);
+		this.add(moveButton);
 		moveButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				input = RobotStates.MOVING;
@@ -56,7 +59,7 @@ public class SupportDialog extends JDialog{
 		});
 		
 		takeObjectButton = new JButton("Prendi oggetto");
-		this.add(takeObjectButton, BorderLayout.NORTH);
+		this.add(takeObjectButton);
 		takeObjectButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				input = RobotStates.TAKE_OBJECT;
@@ -64,8 +67,18 @@ public class SupportDialog extends JDialog{
 			}
 		});
 		
+		pushButton = new JButton("Spingi ostacolo");
+		this.add(pushButton);
+		pushButton.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				input = RobotStates.PUSH_OBSTACLE;
+				setVisible(false);
+			}
+		});
+		
+		
 		doNothingButton = new JButton("Non fare nulla");
-		this.add(doNothingButton, BorderLayout.SOUTH);
+		this.add(doNothingButton);
 		doNothingButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				input = RobotStates.DO_NOTHING;
@@ -73,22 +86,24 @@ public class SupportDialog extends JDialog{
 			}
 		});
 		
-		giveObjectButton = new JButton("Dai oggetto");
-		this.add(giveObjectButton, BorderLayout.EAST);
-		giveObjectButton.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				input = RobotStates.GIVE_OBJECT;
-				hideAction();
-			}
-		});
-		
 		useObjectButton = new JButton("Usa oggetto");
-		this.add(useObjectButton, BorderLayout.WEST);
+		this.add(useObjectButton);
 		useObjectButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				input = RobotStates.USE_OBJECT;
 				hideAction();
 			}
 		});
+		
+		rechargeButton = new JButton("Ricaricati");
+		this.add(rechargeButton);
+		rechargeButton.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				input = RobotStates.RECHARGE;
+				setVisible(false);
+			}
+		});
+		
+		
 	}
 }

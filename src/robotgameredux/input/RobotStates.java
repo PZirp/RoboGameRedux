@@ -1,7 +1,7 @@
 package robotgameredux.input;
 
 public enum RobotStates {
-
+	IDLE,
 	INACTIVE, // Generica
 	ACTIVE, // Generica
 	MOVING,  //	Generica
@@ -12,7 +12,9 @@ public enum RobotStates {
 	PUSH_OBSTACLE, // Attaccante
 	USE_OBJECT, //Generica (Supporto o Generica (dipende da come implemento l'uso degli oggetti di cura/munizioni dati dal supporto) potrei aver bisogno di uno sttao GIVE_OBJECT)
 	GIVE_OBJECT, //Supporto
-	TAKE_OBJECT; // Supporto
+	TAKE_WEAPON,
+	TAKE_OBJECT, // Supporto
+	RECHARGE;
 	
 	
 	//Se proprio vogliamo essere sicuri che un robot combattente non possa finire in un stato del robot di supporto e viceversa,

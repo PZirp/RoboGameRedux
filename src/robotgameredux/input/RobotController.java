@@ -1,11 +1,11 @@
-package robotgameredux.actors;
+package robotgameredux.input;
 
 
+import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
-import robotgameredux.input.Faction;
 
 public abstract class RobotController {
   /* RobotController (creato in GameWorld) crea i robot e ne gestisce gli input.
@@ -14,11 +14,11 @@ public abstract class RobotController {
    * Il controller usa un metodo "getInput" dal JDialog per ricavare l'input desiderato (Il JDialog non ha riferimenti al controller per evitare tight-coupling) 
    */
 	
-	GameWorld gameWorld;
+	GameManager gameManager;
 	Vector2 currentInput;
 	
-	public RobotController (GameWorld gameWorld) {
-		this.gameWorld = gameWorld;
+	public RobotController (GameManager gameManager) {
+		this.gameManager = gameManager;
 	}
 	
 	public abstract void parseInput();
@@ -27,8 +27,8 @@ public abstract class RobotController {
 		this.currentInput = currentInput;
 	}
 	
-	public GameWorld getReference() {
-		return gameWorld;
+	public GameManager getReference() {
+		return gameManager;
 	}
 	
 	

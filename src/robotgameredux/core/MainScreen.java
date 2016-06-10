@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 
 public class MainScreen extends JFrame {
 	
-	GameWorld gw;
+	GameManager gm;
 	JButton button;
 	
 	public static void main(String[] args) {
@@ -19,10 +19,12 @@ public class MainScreen extends JFrame {
 
 	public MainScreen() {
 		this.initScreen();
-		this.gw = new GameWorld();
-		this.add(gw, BorderLayout.CENTER);
+		//this.gw = new GameWorld();
+		//this.add(gw, BorderLayout.CENTER);
+		this.gm = new GameManager();
+		this.add(gm, BorderLayout.CENTER);
 		button = new JButton("Pausa");
-		button.addMouseListener(new PauseButtonListener());
+		//button.addMouseListener(new PauseButtonListener());
 		this.add(button, BorderLayout.SOUTH);
 		
 	
@@ -37,7 +39,7 @@ public class MainScreen extends JFrame {
 		this.setVisible(true);
 	}
 	
-	class PauseButtonListener extends MouseAdapter {
+	/*class PauseButtonListener extends MouseAdapter {
 		
 		public void mousePressed(MouseEvent e) {
 			if (gw.getPaused() == false) {
@@ -50,5 +52,5 @@ public class MainScreen extends JFrame {
 			}
 			
 		}
-	}
+	}*/
 }

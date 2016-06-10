@@ -74,7 +74,9 @@ public class Visual extends Sprite{
 		else if (robot.getState() == RobotStates.INACTIVE ){this.color = Color.GREEN;}
 		else if (robot.getState() == RobotStates.DO_NOTHING ){this.color = Color.GREEN;}
 		if (robot.getHealth() <= 10) {this.color = Color.BLUE;}
-		
+		if (robot.getHealth() > 100) {this.color = Color.ORANGE;}
+		if (robot.getHealth() > 200) {this.color = Color.MAGENTA;}
+		if (robot.getHealth() > 300) {this.color = Color.PINK;}
 	}
 	
 	Dimension preferredSize;

@@ -19,14 +19,14 @@ public class RobotActionDialog extends JDialog {
 	private JButton doNothingButton;
 	private JButton pushButton;
 	private JButton destroyButton;
-	
+	private JButton rechargeButton;
 	public RobotActionDialog(JFrame owner, boolean modal) {
 		super(owner, true);
 		this.setLayout(new GridLayout(0, 1));
 		this.setUndecorated(true);
 		this.initButtons();
 		this.pack();
-		input = null;
+		input = RobotStates.IDLE;
 
 	}
 	
@@ -40,7 +40,7 @@ public class RobotActionDialog extends JDialog {
 	}
 	
 	public void resetInput() {
-		input = null;
+		input = RobotStates.IDLE;;
 	}
 	
 
@@ -81,14 +81,24 @@ public class RobotActionDialog extends JDialog {
 			}
 		});
 		
-		pushButton = new JButton("Spingi ostacolo");
+		rechargeButton = new JButton("Ricaricati");
+		this.add(rechargeButton);
+		rechargeButton.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				input = RobotStates.RECHARGE;
+				setVisible(false);
+			}
+		});
+		
+		
+		/*pushButton = new JButton("Spingi ostacolo");
 		this.add(pushButton);
 		pushButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				input = RobotStates.PUSH_OBSTACLE;
 				setVisible(false);
 			}
-		});
+		});*/
 		
 	
 	}

@@ -1,60 +1,82 @@
 package robotgameredux.core;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import javax.swing.JPanel;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import robotgameredux.actors.*;
-import robotgameredux.input.Faction;
-import robotgameredux.weapons.Bullet;
+import robotgameredux.graphic.ObstacleSprite;
+import robotgameredux.graphic.StationSprite;
+import robotgameredux.tools.HealthPack;
+import robotgameredux.tools.ToolsDialog;
+import robotgameredux.tools.UsableTool;
 import robotgameredux.weapons.Weapon;
 
-public class GameWorld extends JPanel{
+public class GameWorld {
 
 	private static final long serialVersionUID = 7321125104091891404L;
 
 	private final static int GRID_LENGHT = 1280/64; //20
 	private final static int GRID_HEIGHT = 720/64; //11
-	private BattleSystem battleSystem;
-	private MovementSystem movementSystem;
-	public GameWorld() {
-		this.setSize(1280, 720);
-		this.setLayout(null);
+	
+	public GameWorld(GameManager reference) {
+		this.reference = reference;
 		this.initWorld();
 	}
 	
 	private void initWorld() {
-		actors = new ArrayList<GameObject>();
-		obstacles = new ArrayList<Obstacle>();
 		tileSet = new Tile[GRID_LENGHT][GRID_HEIGHT];
-		movementSystem = new StandardMovementSystem(this);
-		attackRobotController = new AttackRobotController(this);
-		supportRobotController = new SupportRobotController(this, movementSystem);
-		battleSystem = new BattleSystem();
-		robotFactory = new RobotFactory(this, attackRobotController, supportRobotController, battleSystem, movementSystem);
-		battleSystem.setActorManager(robotFactory);
-		battleSystem.setGameWorld(this);
+		obstacles = new ArrayList<Obstacle>();
 		
+	
 		for (int i = 0; i < GRID_LENGHT; i++) {
 			for (int j = 0; j < GRID_HEIGHT; j++) {
 				 tileSet[i][j] = new Tile();
 			}
 		}
-		
-		this.addMouseListener(new InputHandler2());
-		
-		obstacles.add(new Obstacle(this, new Vector2(5,5)));
-		actors.add(robotFactory.createRobot(Faction.FRIEND, new Vector2(1,0), RobotType.ATTACK));
-		actors.add(robotFactory.createRobot(Faction.FRIEND, new Vector2(10,5), RobotType.ATTACK));
-		actors.add(supportRobotController.createRobot(new Vector2(6,7)));
+	
 		tileSet[1][0].setCalpestabile(false);
 		tileSet[5][5].setCalpestabile(false);
-		tileSet[10][5].setCalpestabile(false);	
-		runGameLoop();
+
 	}
 	
+	public ArrayList<Obstacle> getObstacles() {
+		return this.obstacles;
+	}
+	
+	public Obstacle createObstacle(Vector2 position) {
+		Obstacle o = new Obstacle(position); 
+		ObstacleSprite sp = new ObstacleSprite(o);
+		o.setSprite(sp);
+		occupyTile(position);
+		obstacles.add(o);		
+		return o;
+	}
+	
+	public boolean isStation(Vector2 position) {
+		if (position.x == station.getCoords().x && position.y == station.getCoords().y) {
+			return true;
+		}
+		return false;
+	}
+	
+	public Integer recharge() {
+		return station.recharge();
+	}
 
+	public Station createStation(Vector2 position) {
+		Station s = new Station(position);
+		StationSprite sp = new StationSprite(s);
+		s.setSprite(sp);		
+		s.addObject(new HealthPack());
+		s.addObject(new HealthPack());
+		s.addObject(new HealthPack());
+		occupyTile(position);
+		station = s;
+		return s;
+	}
+	
+	
 	public boolean isTileFree(Vector2 tile) {
 		
 		if (tile.x >= GRID_LENGHT || tile.y >= GRID_HEIGHT || tile.x < 0 || tile.y < 0) {
@@ -67,6 +89,14 @@ public class GameWorld extends JPanel{
 			return false;
 	}
 	
+	public void releaseTile(Vector2 tile) {
+		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(true);
+	}
+	
+	public void occupyTile(Vector2 tile) {
+		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(false);
+	}
+	
 	public boolean isObstacle(Vector2 obstacle) {
 		for (Obstacle obs : obstacles) {
 			if (obs.getCoords().x == obstacle.x && obs.getCoords().y == obstacle.y) {
@@ -76,187 +106,81 @@ public class GameWorld extends JPanel{
 		return false;
 	}
 	
-	public void removeFromWorld(GameObject go) {
+	public void destroyObstacle(Vector2 target, int robotStrenght) {
+		//Passagli un clone! O solo la forza del robot?
 		Boolean trovato = false;
 		int i = 0;
-		while(!trovato && i < obstacles.size()) {
-				if (obstacles.get(i) == go){
+		while (!trovato && i < obstacles.size()) {
+			if (obstacles.get(i).getCoords().x == target.x && obstacles.get(i).getCoords().y == target. y) {
+				if (robotStrenght > obstacles.get(i).getResistence())
 					System.out.println("FACCIO PULIZIA");
-					releaseTile(go.getCoords());
+					reference.remove(obstacles.get(i).getSprite());
+					releaseTile(obstacles.get(i).getCoords());
 					obstacles.remove(i);
-					//this.repaint(); //fare in maniera migliore
-					trovato = true;
-				}
-				i++;
-		}
-	}
-	
-	
-	/*public Boolean isEnemeyAt(Vector2 target) {
-		//Da ripetere per ogni controllore
-		if (robotController.isRobot(target)) {
-			System.out.println("BAAH");
-			//robotController.deliverAttack(wpn);
-			return true;
-		}
-		return false;
-	
-	}*/
-	
-	/*
-	 * Vedere come fare per far uscire il proiettile sullo schermo, at a later time, quando farò per bene la parte del rendering
-	 * public void addProjectile(Bullet projectile) {
-		actors.add(projectile);
-		//this.add(projectile.getSprite());
-	}*/
-	
-	public void destroyObstacle(ActionObject obj) {
-		//Obstacle target;
-		Boolean trovato = false;
-		int i = 0;
-		while (!trovato && i < obstacles.size()) {
-			if (obstacles.get(i).getCoords().x == obj.getTarget().x && obstacles.get(i).getCoords().y == obj.getTarget(). y) {
-				/*obstacles.get(i).setAction(obj);
-				obstacles.get(i).setState(ObstacleState.BEING_ATTACKED);*/
-				obstacles.get(i).destroy(obj);
 				trovato = true;
 			}
 		}
 		
 	}
 	
-	public void pushObstacle(ActionObject obj) {
-		//Obstacle target;
+	/* Cosa fa: Calcolo la direzione in cui devo muovermi (direction) e la sommo alla posizone attuale. 
+	 * Se la nuova posizitione è libera, sposto l'ostacolo.
+	 * In questo caso basta calcolare la direzione in cui viene spinto, dato che la posizione del robo che spinge non è importante
+	 * e l'ostacolo spinto si muove solo di una casella, posso quindi direttamente sommare il risultato per ottenere la nuova posizione.
+	 * E avessi voluto, per esempio, orientare l'ostacolo verso il robot che spinge, avrei dovuto calcolare la posizione relativa del robot
+	 * rispetto all'ostacolo (sottraendo la posizione del robot alla posizione dell'ostacolo).
+	 */
+	
+	public void pushObstacle(Vector2 target, int robotStrenght, Vector2 coords) {
 		Boolean trovato = false;
 		int i = 0;
 		while (!trovato && i < obstacles.size()) {
-			if (obstacles.get(i).getCoords().x == obj.getTarget().x && obstacles.get(i).getCoords().y == obj.getTarget(). y) {
-				/*obstacles.get(i).setAction(obj);
-				obstacles.get(i).setState(ObstacleState.BEING_PUSHED);*/
-				obstacles.get(i).push(obj);
+			if (obstacles.get(i).getCoords().x == target.x && obstacles.get(i).getCoords().y == target. y) {
+				if (robotStrenght >= obstacles.get(i).getWeight()) {
+					// Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
+					Vector2 direction = Vector2.sub(obstacles.get(i).getCoords(), coords);
+					System.out.println(direction.toString() + "DIREZIONE");
+					Vector2 newPosition = direction.add(obstacles.get(i).getCoords());
+					if (isTileFree(newPosition)) {
+						releaseTile(obstacles.get(i).getCoords());
+						obstacles.get(i).setCoords(newPosition);
+						occupyTile(newPosition);
+					}
+				}				
 				trovato = true;
 			}
-		}
-		
-	}
-	
-	public void deliverAttack(Bullet projectile) {
-		//this.remove(projectile.getSprite());
-		//Check targeted flag in various controller and deliver the attack to them
+		}	
 	}
 
-	//da migliorare ovviamente // Inutile ora
-	
-	/*public Boolean isFriendly(Vector2 target) {
-		if (attackRobotController.isFriendly(target) || supportRobotController.isFriendly(target)) {
-			return true;
-		}
-		return false;
-	}*/
-	
-	/*public Boolean isEnemeyAt(Vector2 target, Weapon wpn) {
-		//Da ripetere per ogni controllore
-		if (robotController.isRobot(target)) {
-
-			System.out.println("BAAH");
-			robotController.deliverAttack(wpn);
-			return true;
-		}
-		return false;
-	
-	}*/
-	
-	public Boolean getPaused() {
-		return this.paused;
-	}
-	
-	public void releaseTile(Vector2 tile) {
-		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(true);
-	}
-	
-	public void occupyTile(Vector2 tile) {
-		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(false);
-	}
-	
-	public void setPaused(Boolean paused) {
-		this.paused = paused;
-	}
-	
-	private void runGameLoop() {
+	public Weapon getWeapon() {
 		
-		Thread loop = new Thread()
-			{ 
-				public void run() {
-					gameLoop();
-			}
-		};
-		loop.start();
-	}
-	
-	private void gameLoop() {
+		ToolsDialog td = new ToolsDialog((JFrame) reference.getParent(), true);
+		td.showWeapons(station.getWeapons());
+		return station.getWeapon(td.getSelected());
 		
-		while(isRunning) {
-			System.out.println(paused);
-			if(!paused){
-				
-				/*
-				 * GameWorld vede i vari attori solo come GameObjects, non gli interessa se sono robot attaccanti, di supporto, stazioni o ostacoli. Utilizza i metodi
-				 * update() e render() di GameObject per causarne l'aggiornamento e il render a prescindere dal tipo tramite polimorfismo.
-				 * "Utilizza" i vari controller per far processare l'input ai componenti interattivi 
-				 */
-				
-				attackRobotController.parseInput(); //Processa l'input
-				supportRobotController.parseInput(); //Processa l'input
-				//Aggiorna gli stati dei vari componenti
-				for(int i = 0; i < actors.size(); i++) {
-					actors.get(i).update();
-				}
-				for(int i = 0; i < obstacles.size(); i++) {
-					obstacles.get(i).update();
-				}
-				//Disegna i vari componenti
-				for(int i = 0; i < actors.size(); i++) {
-					actors.get(i).render();
-				}
-				for(int i = 0; i < obstacles.size(); i++) {
-					obstacles.get(i).render();
-				}
-				this.repaint(); //fare in maniera migliore
-				try {
-					Thread.sleep(500);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		
 	}
 	
+	public UsableTool getObject() {
 	
+		ToolsDialog td = new ToolsDialog((JFrame) reference.getParent(), true);
+		td.showTools(station.getObjects());
+		return station.getObject(td.getSelected());
+		
+		
+	}
 	
-	private Boolean paused = false;
-	private Boolean isRunning = true;
-	private ArrayList<GameObject> actors;
 	private ArrayList<Obstacle> obstacles;
 	private Tile[][] tileSet;
-	private AttackRobotController attackRobotController;
-	private SupportRobotController supportRobotController;
-	private RobotFactory robotFactory;
-	
-	class InputHandler2 extends MouseAdapter{
-		
-		public InputHandler2() {
-		}
-		
-		@Override
-		public void mousePressed(MouseEvent e) {
-			/* Passa l'input ai controller */
-			Vector2 click = new Vector2(e.getX()/64, e.getY()/64);
-			System.out.println(click.toString());
-			attackRobotController.setInput(click);
-			supportRobotController.setInput(click);
-		}
-	}
+	private GameManager reference;
+	private Station station;
 
-	
+
 }
+
+/*
+ * Vedere come fare per far uscire il proiettile sullo schermo, at a later time, quando farò per bene la parte del rendering
+ * public void addProjectile(Bullet projectile) {
+	actors.add(projectile);
+	//this.add(projectile.getSprite());
+}*/
