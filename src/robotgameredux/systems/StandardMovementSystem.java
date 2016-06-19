@@ -1,5 +1,7 @@
 package robotgameredux.systems;
 
+import Exceptions.InsufficientEnergyException;
+import Exceptions.InvalidTargetException;
 import robotgameredux.actors.Robot;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
@@ -11,34 +13,41 @@ public class StandardMovementSystem implements MovementSystem{
 	public StandardMovementSystem(GameWorld gameWorld) {
 		this.gameWorld = gameWorld;
 	}
-	
-	//era move(Robot actor)
+		
+	/*
+	 * TODO
+	 * 1) Ridurre l'energia in base a quante tile ci si sposta
+	 * 2) Il cazzo di pathfinding
+	 * 3) Fare l'interfaccia del movementCommand per non prendere sempre il robot
+	 */
+		
 	@Override
-	public void execute(MovementCommand command) {
+	public void execute(MovementCommand command) throws InvalidTargetException, InsufficientEnergyException {
 
+		Vector2 destination = command.getDestination();		
+		Integer dist = (int) command.getCoords().dst(destination);
 		
-		Vector2 destination = command.getDestination();
-		Robot actor = command.getRobot();
+		if (command.getEnergy() == 0 || command.getEnergy() < dist)
+			throw new InsufficientEnergyException(command);
 		
-		if (destinationCheck(destination, actor.getCoords())) {
-			if (actor.getEnergy() > 0) { 
-				if(destination.dst(actor.getCoords()) < actor.getRange()) {
-					Vector2 oldPos = actor.getCoords();
-					actor.setCoords(destination);
-					//energy--;
+		if (destinationCheck(destination, command.getCoords())) {
+				if(dist < command.getRange()) {
+					Vector2 oldPos = command.getCoords();
+					command.setEnergy((int) command.getCoords().dst(destination));
+					command.setCoords(destination);
 					movementComplete(destination, oldPos);
-					actor.setState(RobotStates.INACTIVE); //Questo poi lo mettiamo nel gamemanager
+					command.setState(RobotStates.INACTIVE); //Questo poi lo mettiamo nel gamemanager, oppure no
 				} else {
 					System.out.println("Movimento impossibile, supera il range");
+					throw new InvalidTargetException(command);
 				}
-				//energy = energy - 10;
-				actor.setState(RobotStates.INACTIVE); //Questo poi lo mettiamo nel gamemanager
-			} else {
-				//this.setState(RobotStates.INACTIVE); //Questo poi lo mettiamo nel gamemanager
-			}
+				command.setState(RobotStates.INACTIVE); //Questo poi lo mettiamo nel gamemanager
+	
 		} else {
-			actor.setState(RobotStates.INACTIVE);
+			System.out.println("Casella occupata");
+			throw new InvalidTargetException(command);
 		}
+		
 	}
 
 	//pathfinding qui, metodo privato

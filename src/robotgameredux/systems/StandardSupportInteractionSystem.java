@@ -3,13 +3,13 @@ package robotgameredux.systems;
 import robotgameredux.actors.Robot;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
-import robotgameredux.input.InteractCommand;
 import robotgameredux.input.RobotStates;
 import robotgameredux.input.SupInteractCommand;
+import robotgameredux.tools.UsableTool;
 
-public class SupportWorldInteractionSystem implements SupportInteractionSystem {
+public class StandardSupportInteractionSystem implements SupportInteractionSystem {
 
-	public SupportWorldInteractionSystem(GameWorld gameWorld) {
+	public StandardSupportInteractionSystem(GameWorld gameWorld) {
 		this.gameWorld = gameWorld;
 	}
 
@@ -35,10 +35,10 @@ public class SupportWorldInteractionSystem implements SupportInteractionSystem {
 			break;
 		case TAKE_OBJECT:
 			if(gameWorld.isStation(target) && command.getCoords().dst(target) <= 1.5) {
-				gameWorld.getObject();
-				//robot.add
+				UsableTool t = gameWorld.getTool();
+				if (t != null) 
+					command.addTool(t);
 			}
-
 			command.setState(RobotStates.INACTIVE);
 			break;
 		}

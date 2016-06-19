@@ -18,7 +18,6 @@ import robotgameredux.systems.StandardSupportSystem;
 import robotgameredux.systems.SupportInteractionSystem;
 import robotgameredux.systems.AttackInteractionSystem;
 import robotgameredux.systems.StandardAttackInteractionSystem;
-import robotgameredux.systems.InteractSystem;
 import robotgameredux.tools.HealthPack;
 import robotgameredux.weapons.Weapon;
 
@@ -58,7 +57,7 @@ public class RobotFactory {
 	private AttackRobot createAttack(Faction faction, Vector2 position) {
 		AttackRobot newRobot = new AttackRobot(position, battleSystem, ms, is);
 		newRobot.setFaction(faction);
-		newRobot.addWeapon(new Weapon(newRobot));
+		newRobot.addWeapon(new Weapon());
 		Sprite spr = new Visual(newRobot);
 		newRobot.addSprite(spr);
 		this.attackRobotController.addRobot(newRobot);
@@ -97,6 +96,8 @@ public class RobotFactory {
 		
 		return null;
 	}
+	
+	
 	
 	public void remove(Robot robot) {
 		attackRobots.remove(robot);

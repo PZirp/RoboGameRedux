@@ -55,7 +55,7 @@ public class SupInteractCommand implements Command {
 		return robot.getTools();
 	}
 	
-	public void addWeapon(UsableTool t) {
+	public void addTool(UsableTool t) {
 		robot.addTool(t);
 	}
 	

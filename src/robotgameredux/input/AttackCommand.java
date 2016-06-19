@@ -1,6 +1,8 @@
 package robotgameredux.input;
 
+import Exceptions.InvalidTargetException;
 import robotgameredux.core.Vector2;
+import robotgameredux.weapons.Weapon;
 
 public class AttackCommand implements Command {
 
@@ -11,7 +13,7 @@ public class AttackCommand implements Command {
 	}
 	
 	@Override
-	public void execute() {
+	public void execute() throws InvalidTargetException {
 		robot.setCommand(null);
 		robot.getBattleSystem().execute(this);
 	}
@@ -27,6 +29,17 @@ public class AttackCommand implements Command {
 		return robot;
 	}
 
+	public Weapon getActiveWeapon(int index) {
+		return robot.getActiveWeapon(index);
+	}
+	
+	public Faction getFaction() {
+		return robot.getFaction();
+	}
+	
+	public void setState(RobotStates state) {
+		robot.setState(state);
+	}
 
 	private Integer activeWeaponIndex;
 	private Vector2 target;

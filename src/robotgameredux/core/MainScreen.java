@@ -26,7 +26,8 @@ public class MainScreen extends JFrame {
 		button = new JButton("Pausa");
 		//button.addMouseListener(new PauseButtonListener());
 		this.add(button, BorderLayout.SOUTH);
-		
+		this.setVisible(true);
+
 	
 	}
 	
@@ -36,7 +37,6 @@ public class MainScreen extends JFrame {
 		this.setUndecorated(false);
 		this.setLayout(new BorderLayout());
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setVisible(true);
 	}
 	
 	/*class PauseButtonListener extends MouseAdapter {

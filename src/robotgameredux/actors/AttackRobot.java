@@ -2,6 +2,8 @@ package robotgameredux.actors;
 
 import java.util.ArrayList;
 
+import Exceptions.InsufficientEnergyException;
+import Exceptions.InvalidTargetException;
 import robotgameredux.core.Vector2;
 import robotgameredux.input.Attacker;
 import robotgameredux.input.RobotStates;
@@ -20,63 +22,17 @@ public class AttackRobot extends Robot implements Attacker{
 		this.interactionSystem = is;
 		
 	}
-	
 
-	//Il metodo update va rivisto, perchè deve fare in modo che in base allo stato in cui si trova faccia qualcosa in vari 
-	public void update() {
-		
+	public void update() throws InvalidTargetException, InsufficientEnergyException {
 		if (this.getCurrentCommand() != null) {
 			this.getCurrentCommand().execute();
-		}
-		
-		if (this.getState() != RobotStates.INACTIVE) {
-			/*if (this.getState() == RobotStates.MOVING) {
-				super.move();
-			} else*/ /*if (this.getState() == RobotStates.ATTACKING){
-				if (this.getTarget() != null) {
-				//	attack();
-				}
-			} else if (this.getState() == RobotStates.DESTROY_OBSTACLE) {
-				if (this.getCoords().dst(this.getTarget()) <= 1.5) {
-					ActionObject ob = new ActionObject(this.getCoords(), this.strenght, this.getTarget());
-					getReference().destroyObstacle(ob);
-					this.setState(RobotStates.INACTIVE);
-					this.setTarget(null);
-				} else {
-					this.setState(RobotStates.INACTIVE);
-				}
-			} else if (this.getState() == RobotStates.PUSH_OBSTACLE) {
-				if (this.getCoords().dst(this.getTarget()) <= 1.5) {
-					ActionObject ob = new ActionObject(this.getCoords(), this.strenght, this.getTarget());
-					getReference().pushObstacle(ob);
-					this.setState(RobotStates.INACTIVE);
-					this.setTarget(null);
-				} else {
-					this.setState(RobotStates.INACTIVE);
-				}
-			}*/
 		}
 	}
 
 	public void addWeapon(Weapon weapon) {
+		//Fare in modo che se si sta aggiungendo un'arma che il robot già ha, si aumentano i proiettili ma non si aggiunge un doppione
 		this.weapons.add(weapon);
 	}
-	
-	
-	/*private void attack() { 
-Active weapon deve venire dal controller tramite input ovviamente
-		setActiveWeapon();
-		if (battleSystem.attemptAttack(this, getTarget())) {
-			this.setState(RobotStates.INACTIVE);
-		}
-	}*/
-	
-
-	/*public void setActiveWeapon() {
-		//Test, da buttare ovviamente
-		this.activeWeapon = this.weapons.get(0);
-		System.out.println("Yo");
-	}*/	
 	
 	@Override
 	public Weapon getActiveWeapon(Integer i) {

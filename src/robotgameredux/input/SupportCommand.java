@@ -37,5 +37,10 @@ public class SupportCommand implements Command {
 	private Integer activeObjectIndex;
 	private Vector2 target;
 	private Support robot;
+	@Override
+	public void setState(RobotStates state) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

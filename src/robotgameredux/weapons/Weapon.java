@@ -9,8 +9,8 @@ public class Weapon {
 	
 	//Trasformare in una interfaccia?
 	
-	public Weapon(Robot ownerBot) {
-		this.onwerBot = ownerBot;
+	public Weapon() {
+		//this.onwerBot = ownerBot;
 	}
 	
 	public int getDamage() {

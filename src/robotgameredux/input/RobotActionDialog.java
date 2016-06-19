@@ -9,29 +9,41 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import robotgameredux.graphic.Sprite;
-import robotgameredux.graphic.Visual;
 
 public class RobotActionDialog extends JDialog {
 
+	//Classe interna all'AttackRobotController ora, si può eliminare 
+
+	
+	/**
+	 * 
+	 *//*
+	private static final long serialVersionUID = -5620050801218829995L;
 	private RobotStates input;
 	private JButton moveButton;
 	private JButton attackButton;
 	private JButton doNothingButton;
-	private JButton pushButton;
 	private JButton destroyButton;
 	private JButton rechargeButton;
-	public RobotActionDialog(JFrame owner, boolean modal) {
+	private JButton takeWeapon;
+	private AttackRobotController controller;
+	
+	public RobotActionDialog(JFrame owner, boolean modal, AttackRobotController controller) {
 		super(owner, true);
 		this.setLayout(new GridLayout(0, 1));
 		this.setUndecorated(true);
+		this.controller = controller;
 		this.initButtons();
 		this.pack();
 		input = RobotStates.IDLE;
-
 	}
 	
 	public void showAction(Sprite sprite) {
-		this.setLocationRelativeTo(sprite);		
+		this.setLocationRelativeTo(sprite);	
+		
+		if (controller.getEmptyWeapon()) {
+			this.remove(takeWeapon);
+		}
 		this.setVisible(true);		
 	}
 	
@@ -63,11 +75,15 @@ public class RobotActionDialog extends JDialog {
 			}
 		});
 		
-		doNothingButton = new JButton("Non fare nulla");
-		this.add(doNothingButton);
-		doNothingButton.addMouseListener(new MouseAdapter() {
+		if (this.controller == null) {
+			System.out.println("E' VUOTO");
+		}
+		
+		takeWeapon = new JButton("Prendi arma");
+		this.add(takeWeapon);
+		takeWeapon.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				input = RobotStates.DO_NOTHING;
+				input = RobotStates.TAKE_WEAPON;
 				setVisible(false);
 			}
 		});
@@ -90,16 +106,14 @@ public class RobotActionDialog extends JDialog {
 			}
 		});
 		
-		
-		/*pushButton = new JButton("Spingi ostacolo");
-		this.add(pushButton);
-		pushButton.addMouseListener(new MouseAdapter() {
+		doNothingButton = new JButton("Non fare nulla");
+		this.add(doNothingButton);
+		doNothingButton.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				input = RobotStates.PUSH_OBSTACLE;
+				input = RobotStates.DO_NOTHING;
 				setVisible(false);
 			}
-		});*/
-		
-	
-	}
+		});
+			
+	}*/
 }

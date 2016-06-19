@@ -6,23 +6,26 @@ import robotgameredux.graphic.Visual;
 import robotgameredux.input.Command;
 import robotgameredux.input.Faction;
 import robotgameredux.input.RobotStates;
-import robotgameredux.systems.InteractSystem;
 import robotgameredux.systems.MovementSystem;
 import robotgameredux.weapons.Bullet;
 import robotgameredux.weapons.Weapon;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
+import Exceptions.InsufficientEnergyException;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
 
 public class Robot extends GameObject  {
-//Bisogna passare su la sprite appena creata
+
 	public Robot(Vector2 coords, MovementSystem ms){
 		super(coords);
 		this.movementSystem = ms;
 		this.state = RobotStates.INACTIVE;
 		health = 100;
+		this.propertyChange = new PropertyChangeSupport(this);
 	}
 	
 	public void render() {
@@ -37,8 +40,12 @@ public class Robot extends GameObject  {
 		sprite.update();
 	}
 	
-	public int getEnergy(){
+	public int getEnergy() {
 		return this.energy;
+	}
+	
+	public void setEnergy(int n) {
+		energy = energy - n;
 	}
 	
 	public void addEnergy(int energy) {
@@ -47,13 +54,11 @@ public class Robot extends GameObject  {
 		this.energy = this.energy + energy;
 	}
 	
-	public void addInteractionSystem(InteractSystem is) {
-		this.interactSystem = is;
-	}
 	
 
 	public void setState(RobotStates state) {
 		this.state = state;
+		propertyChange.firePropertyChange(this.state.toString(), null, this);
 	}
 	
 	public RobotStates getState() {
@@ -112,10 +117,7 @@ public class Robot extends GameObject  {
 	public Vector2 getTarget() {
 		return this.target;
 	}
-	
-	/*public GameManager getReference() {
-		return reference;
-	}*/
+
 	
 	public int getRange(){
 		return range;
@@ -142,13 +144,16 @@ public class Robot extends GameObject  {
 		return movementSystem;
 	}
 	
-	public InteractSystem getInteractSystem() {
-		return interactSystem;
-	}
-	
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.propertyChange.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.propertyChange.removePropertyChangeListener(listener);
+    }
+
 	private Command currentCommand;
 	private MovementSystem movementSystem;
-	private InteractSystem interactSystem;
 	//private GameManager reference;
 	private Faction faction;
 	private RobotStates state;
@@ -159,6 +164,7 @@ public class Robot extends GameObject  {
 	private int strenght = 10;
 	private Vector2 target;
 	private Sprite sprite;
+	private PropertyChangeSupport propertyChange;
 
 }
 

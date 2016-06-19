@@ -4,8 +4,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import Exceptions.InsufficientEnergyException;
+import Exceptions.InvalidTargetException;
 import robotgameredux.actors.GameObject;
 import robotgameredux.actors.Obstacle;
 import robotgameredux.actors.Robot;
@@ -13,18 +16,18 @@ import robotgameredux.actors.RobotType;
 import robotgameredux.actors.Station;
 import robotgameredux.input.AttackRobotController;
 import robotgameredux.input.Faction;
+import robotgameredux.input.RobotStates;
 import robotgameredux.input.SupportRobotController;
 import robotgameredux.systems.AttackInteractionSystem;
 import robotgameredux.systems.StandardAttackInteractionSystem;
 import robotgameredux.systems.BattleSystem;
-import robotgameredux.systems.InteractSystem;
 import robotgameredux.systems.MovementSystem;
 import robotgameredux.systems.StandardBattleSystem;
 import robotgameredux.systems.StandardMovementSystem;
 import robotgameredux.systems.StandardSupportSystem;
 import robotgameredux.systems.SupportInteractionSystem;
 import robotgameredux.systems.SupportSystem;
-import robotgameredux.systems.SupportWorldInteractionSystem;
+import robotgameredux.systems.StandardSupportInteractionSystem;
 
 public class GameManager extends JPanel {
 
@@ -59,7 +62,7 @@ public class GameManager extends JPanel {
 		supportSystem = new StandardSupportSystem();
 		//interactSystem = new STD_WorldInteractionSystem(gameWorld);
 		attackInteractSystem = new StandardAttackInteractionSystem(gameWorld);
-		iss = new SupportWorldInteractionSystem(gameWorld);
+		iss = new StandardSupportInteractionSystem(gameWorld);
 		battleSystem = new StandardBattleSystem();
 		robotFactory = new RobotFactory(this, attackRobotController, supportRobotController, battleSystem, movementSystem, supportSystem, attackInteractSystem, iss);
 		battleSystem.setActorManager(robotFactory);
@@ -70,24 +73,36 @@ public class GameManager extends JPanel {
 		r = robotFactory.createRobot(Faction.FRIEND, new Vector2(1,0), RobotType.ATTACK);
 		actors.add(r);
 		this.add(r.getSprite());
+		r.addPropertyChangeListener(attackRobotController);
 		r = robotFactory.createRobot(Faction.FRIEND, new Vector2(6,7), RobotType.SUPPORT);
 		actors.add(r);
 		this.add(r.getSprite());
+		r.addPropertyChangeListener(supportRobotController);
 		r = robotFactory.createRobot(Faction.FRIEND, new Vector2(10,5), RobotType.ATTACK);
 		actors.add(r);
 		this.add(r.getSprite());
+		r.addPropertyChangeListener(attackRobotController);
+		r = robotFactory.createRobot(Faction.ENEMY, new Vector2(3,8), RobotType.ATTACK);
+		actors.add(r);
+		this.add(r.getSprite());
+		r.addPropertyChangeListener(attackRobotController);
 		Obstacle o = gameWorld.createObstacle(new Vector2(5, 5));
 		this.add(o.getSprite());
 		Station s = gameWorld.createStation(new Vector2(7,7));
 		this.add(s.getSprite());
 		station = s;
-		
+		s.addPropertyChangeListener(attackRobotController);
+		s.addPropertyChangeListener(supportRobotController);
 		//actors.add(robotFactory.createRobot(Faction.FRIEND, new Vector2(1,0), RobotType.ATTACK));
 		//actors.add(robotFactory.createRobot(Faction.FRIEND, new Vector2(10,5), RobotType.ATTACK));
 		//actors.add(robotFactory.createRobot(Faction.FRIEND, new Vector2(6,7), RobotType.SUPPORT));
 		obstacles = gameWorld.getObstacles();
 		runGameLoop();
 	}
+	
+/*	public void emptyWeapons() {
+		attackRobotController.setEmptyWeapons(true);
+	}*/
 	
 	public void setPaused(Boolean paused) {
 		this.paused = paused;
@@ -119,7 +134,7 @@ public class GameManager extends JPanel {
 				 * update() e render() di GameObject per causarne l'aggiornamento e il render a prescindere dal tipo tramite polimorfismo.
 				 * "Utilizza" i vari controller per far processare l'input ai componenti interattivi 
 				 */
-				
+				try {
 				attackRobotController.parseInput(); //Processa l'input
 				supportRobotController.parseInput(); //Processa l'input
 				//Aggiorna gli stati dei vari componenti
@@ -136,6 +151,18 @@ public class GameManager extends JPanel {
 					obstacles.get(i).render();
 				station.render();
 				this.repaint(); //fare in maniera migliore
+				//actors.get(0).setState(RobotStates.ACTIVE);
+				} 
+				catch (InvalidTargetException e) {
+					System.out.println("GUARDA QUI FRATELLO");
+					System.out.println(e.getMessage());
+					e.getCommand().setState(RobotStates.ACTIVE);
+				}
+				catch (InsufficientEnergyException e) {
+					System.out.println(e.getMessage());
+					JOptionPane.showMessageDialog(this, "Il robot non ha abbastanza energia per compiere quest'azione!");
+					e.getCommand().setState(RobotStates.ACTIVE);
+				}
 				try {
 					Thread.sleep(500);
 				}

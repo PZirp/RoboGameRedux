@@ -4,7 +4,6 @@ import robotgameredux.actors.Robot;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
 import robotgameredux.input.AtkInteractCommand;
-import robotgameredux.input.InteractCommand;
 import robotgameredux.input.RobotStates;
 import robotgameredux.weapons.Weapon;
 
@@ -37,8 +36,11 @@ public class StandardAttackInteractionSystem implements AttackInteractionSystem 
 			break;
 		case TAKE_WEAPON:
 			if(gameWorld.isStation(target) && command.getCoords().dst(target) <= 1.5) {
+				//Weapon w = gameWorld.getWeapon();
+				//command.addWeapon(w);
 				Weapon w = gameWorld.getWeapon();
-				command.addWeapon(w);
+				if (w != null)
+					command.addWeapon(w);
 			}
 
 			command.setState(RobotStates.INACTIVE);

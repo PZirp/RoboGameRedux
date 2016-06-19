@@ -12,4 +12,5 @@ public interface Attacker {
 	public BattleSystem getBattleSystem();
 	public void setCommand(Command c);
 	public void setState(RobotStates state);
+	public Faction getFaction(); 
 }

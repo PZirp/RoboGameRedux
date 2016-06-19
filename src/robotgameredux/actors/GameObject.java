@@ -1,5 +1,7 @@
 package robotgameredux.actors;
 
+import Exceptions.InsufficientEnergyException;
+import Exceptions.InvalidTargetException;
 import robotgameredux.core.Vector2;
 
 public abstract class GameObject {
@@ -18,7 +20,7 @@ public abstract class GameObject {
 	}
 	
 
-	public void update() {};
+	public void update() throws InvalidTargetException, InsufficientEnergyException  {};
 	public void render() {};
 	private Vector2 coords;	
 	

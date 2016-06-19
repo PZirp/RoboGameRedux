@@ -1,5 +1,6 @@
 package robotgameredux.systems;
 
+import Exceptions.InvalidTargetException;
 import robotgameredux.actors.AttackRobot;
 import robotgameredux.actors.Robot;
 import robotgameredux.core.GameWorld;
@@ -28,28 +29,43 @@ public class StandardBattleSystem implements BattleSystem{
 	//Da decidere se farsi passare direttamente l'arma attiva oppure tutto il robot
 	
 	
-	public void execute(AttackCommand command) {
+	public void execute(AttackCommand command) throws InvalidTargetException{
 		
 		Integer index = command.getActiveWeaponIndex();
 		Vector2 target = command.getTarget();
-		Attacker actor = command.getRobot();
-		
+		//Attacker actor = command.getRobot();
+		//Rifare il comando facendo in modo che incapsuli il robot
 		
 	//public Boolean attemptAttack(Attacker robot, Vector2 target) {
 		Robot targeted = actorsManager.isRobot(target);
-		
-		
-		
+		if (targeted == null) {
+			throw new InvalidTargetException(command);
+		}
 		//System.out.println("TARGETTTTTTTTTTTTTTTTTTTTTT" + target);
 		//System.out.println("TARGETED ROBOTTTTTTTTTTTTTTTTTTTTT" + targeted);
-		Weapon weapon = actor.getActiveWeapon(index);
+		
+		
+		/*if (index == -1) {
+			actor.setState(RobotStates.INACTIVE);
+			return;
+		}*/
+		
+		Weapon weapon = command.getActiveWeapon(index);
 		
 		if (weapon.hasBullets() && targeted != null) {
-			Bullet bullet = weapon.fire();
-			bullet.hit(targeted);
+			//if (!actorsManager.isRobot(target))
+			//	InvalidTargetException() ?
+			// Ci sta, perchè così il robot non diventa inattivo, GameManager cattura l'eccezione, e fa rifare il ciclo della scelta dell'azione e dell'arma
+			if (targeted.getFaction() != command.getFaction()) {
+				Bullet bullet = weapon.fire();
+				bullet.hit(targeted);
+			} else {
+				throw new InvalidTargetException(command);
+			}
+				
 			//return true;
 		}
-		actor.setState(RobotStates.INACTIVE);
+		command.setState(RobotStates.INACTIVE);
 		//return false;
 	}
 	

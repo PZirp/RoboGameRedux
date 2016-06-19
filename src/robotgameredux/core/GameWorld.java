@@ -22,6 +22,7 @@ public class GameWorld {
 	public GameWorld(GameManager reference) {
 		this.reference = reference;
 		this.initWorld();
+		this.dialog = new ToolsDialog((JFrame) reference.getParent(), true);
 	}
 	
 	private void initWorld() {
@@ -63,6 +64,8 @@ public class GameWorld {
 	public Integer recharge() {
 		return station.recharge();
 	}
+	
+
 
 	public Station createStation(Vector2 position) {
 		Station s = new Station(position);
@@ -71,6 +74,7 @@ public class GameWorld {
 		s.addObject(new HealthPack());
 		s.addObject(new HealthPack());
 		s.addObject(new HealthPack());
+		
 		occupyTile(position);
 		station = s;
 		return s;
@@ -154,27 +158,43 @@ public class GameWorld {
 
 	public Weapon getWeapon() {
 		
-		ToolsDialog td = new ToolsDialog((JFrame) reference.getParent(), true);
-		td.showWeapons(station.getWeapons());
-		return station.getWeapon(td.getSelected());
+		if (station.getWeapons() != null) {
+			showWeapons();
+			Weapon weapon = station.getWeapon(dialog.getSelected());
+			station.removeWeapon(dialog.getSelected());
+			return weapon;
+		}
+	//	reference.emptyWeapons();
+		return null;
+		
+		//return station.getWeapon(dialog.getSelected());
 		
 		
 	}
 	
-	public UsableTool getObject() {
+	public UsableTool getTool() {
+		if (station.getTools() != null) {
+			showTools();
+			UsableTool tool = station.getTool(dialog.getSelected());
+			station.removeTool(dialog.getSelected());
+			return tool;
+		}
+		return null;
+	}
 	
-		ToolsDialog td = new ToolsDialog((JFrame) reference.getParent(), true);
-		td.showTools(station.getObjects());
-		return station.getObject(td.getSelected());
-		
-		
+	public void showTools() {
+		this.dialog.showTools(station.getTools());
+	}
+	
+	public void showWeapons() {
+		this.dialog.showWeapons(station.getWeapons());
 	}
 	
 	private ArrayList<Obstacle> obstacles;
 	private Tile[][] tileSet;
 	private GameManager reference;
 	private Station station;
-
+	private ToolsDialog dialog;
 
 }
 

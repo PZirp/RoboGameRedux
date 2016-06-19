@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 
 public class WeaponDialog extends JDialog{
 
+	
+	
 	/**
 	 * 
 	 */
@@ -38,6 +40,16 @@ public class WeaponDialog extends JDialog{
 			});	
 		}
 
+		JButton annullaBtn = new JButton("Annulla");
+		annullaBtn.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				selected = -1;
+				setVisible(false);
+				getContentPane().removeAll(); //Rimuove i pulsanti dal dialog
+			}
+		});
+		this.add(annullaBtn);
+		
 		System.out.println("Eccomi qui");
 		this.setLocationRelativeTo(null);
 		this.pack();

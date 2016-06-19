@@ -2,6 +2,8 @@ package robotgameredux.actors;
 
 import java.util.ArrayList;
 
+import Exceptions.InsufficientEnergyException;
+import Exceptions.InvalidTargetException;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
@@ -32,7 +34,7 @@ public class SupportRobot extends Robot implements Support{
 		this.interactionSystem = is;
 	}
 	
-	public void update() {
+	public void update() throws InvalidTargetException, InsufficientEnergyException {
 		if (this.getCurrentCommand() != null) {
 			this.getCurrentCommand().execute();
 		}

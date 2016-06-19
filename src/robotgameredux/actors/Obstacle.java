@@ -1,5 +1,6 @@
 package robotgameredux.actors;
 
+import Exceptions.InvalidTargetException;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
 import robotgameredux.graphic.ObstacleSprite;

@@ -20,6 +20,9 @@ public class SupportDialog extends JDialog{
 	private JButton pushButton;
 	private JButton rechargeButton;
 	
+	//Classe interna all'SupportRobotController ora, si può eliminare 
+
+	
 	public SupportDialog(JFrame owner, boolean modal) {
 		super(owner, true);
 		//this.setLayout(new BorderLayout());

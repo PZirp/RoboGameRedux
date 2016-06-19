@@ -55,7 +55,7 @@ public class ToolsDialog extends JDialog{
 
 	public void showWeapons(ArrayList<Weapon> weapons) {
 		for (int i = 0; i < weapons.size(); i++) {
-			System.out.println(weapons.get(i).getName() + "NOME DI UN TOOL");
+			System.out.println(weapons.get(i).getName() + "NOME DI UN'ARMA");
 			toolButton but = new toolButton(weapons.get(i).getName(), i);
 			this.add(but);
 			but.addMouseListener(new MouseAdapter() {
