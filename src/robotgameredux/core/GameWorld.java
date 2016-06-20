@@ -36,8 +36,8 @@ public class GameWorld {
 			}
 		}
 	
-		tileSet[1][0].setCalpestabile(false);
-		tileSet[5][5].setCalpestabile(false);
+		//tileSet[1][0].setCalpestabile(false);
+		//tileSet[5][5].setCalpestabile(false);
 
 	}
 	
