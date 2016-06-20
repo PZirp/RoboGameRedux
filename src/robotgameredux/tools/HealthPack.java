@@ -18,6 +18,10 @@ public class HealthPack implements UsableTool {
 		return name;
 	}
 	
+	public String toString() {
+		return getClass().getName() + "[Name = " + name + " Health = " + health + "]";
+	}
+	
 	private final String name = "Health pack";
 	private final int health;
 	

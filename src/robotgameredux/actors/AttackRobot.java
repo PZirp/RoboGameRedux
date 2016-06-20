@@ -31,16 +31,16 @@ public class AttackRobot extends Robot implements Attacker{
 
 	public void addWeapon(Weapon weapon) {
 		//Fare in modo che se si sta aggiungendo un'arma che il robot già ha, si aumentano i proiettili ma non si aggiunge un doppione
-		this.weapons.add(weapon);
+		this.weapons.add(weapon); //Fare add(weapon.clone) per incapsulare
 	}
 	
 	@Override
 	public Weapon getActiveWeapon(Integer i) {
-		return weapons.get(i);
+		return weapons.get(i); 
 	}
 	
 	public ArrayList<Weapon> getWeapons() {
-		return weapons;
+		return weapons; //Return clone
 	}
 
 	@Override
@@ -50,6 +50,10 @@ public class AttackRobot extends Robot implements Attacker{
 	
 	public AttackInteractionSystem getInteractionSystem() {
 		return interactionSystem;
+	}
+	
+	public String toString() {
+		return super.toString() + " [Weapon = " + weapons.toString() + "]";
 	}
 	
 	private AttackInteractionSystem interactionSystem;

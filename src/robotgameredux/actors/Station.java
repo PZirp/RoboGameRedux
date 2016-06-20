@@ -110,7 +110,10 @@ public class Station extends GameObject{
         this.propertyChange.removePropertyChangeListener(listener);
     }
 
-	
+	public String toString() {
+		return super.toString() + " [EnergyReserve = " + energyReserve + " Tools = " + tools.toString() + " Weapons = " + weapons.toString() + "]";
+	}
+    
 	private int energyReserve;
 	private ArrayList<UsableTool> tools;
 	private ArrayList<Weapon> weapons;

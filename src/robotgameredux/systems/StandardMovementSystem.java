@@ -33,7 +33,7 @@ public class StandardMovementSystem implements MovementSystem{
 		if (destinationCheck(destination, command.getCoords())) {
 				if(dist < command.getRange()) {
 					Vector2 oldPos = command.getCoords();
-					command.setEnergy((int) command.getCoords().dst(destination));
+					command.setEnergy(command.getCoords().dst(destination));
 					command.setCoords(destination);
 					movementComplete(destination, oldPos);
 					command.setState(RobotStates.INACTIVE); //Questo poi lo mettiamo nel gamemanager, oppure no
@@ -60,8 +60,6 @@ public class StandardMovementSystem implements MovementSystem{
 		} else if (gameWorld.isTileFree(destination)) {
 			return true;
 		} else {
-			System.out.println("Tile scelta occupata!");
-			//actor.setState(RobotStates.INACTIVE);
 			return false;
 		}
 	}

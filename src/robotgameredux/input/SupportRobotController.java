@@ -42,7 +42,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 		if (this.currentInput != null && activeRobot == null) {
 			while (!trovato && i < robots.size()) {
 				SupportRobot robot = robots.get(i);
-				if (robot.getCoords().x == currentInput.x && robot.getCoords().y == currentInput.y){
+				if (robot.getCoords().getX() == currentInput.getX() && robot.getCoords().getY() == currentInput.getY()){
 					trovato = activateRobot(robot);
 				}
 				i++;

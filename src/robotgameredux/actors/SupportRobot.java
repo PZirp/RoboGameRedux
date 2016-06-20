@@ -38,26 +38,7 @@ public class SupportRobot extends Robot implements Support{
 		if (this.getCurrentCommand() != null) {
 			this.getCurrentCommand().execute();
 		}
-		
-		if (this.getState() != RobotStates.INACTIVE) {
-			/*if (this.getState() == RobotStates.MOVING) {
-				super.move();
-			} */ if (this.getState() == RobotStates.TAKE_OBJECT){
-				//TODO					
-			} /*else if (this.getState() == RobotStates.USE_OBJECT) {
-				//Mostra un dialog con tutti gli oggetti utilizzabili su sé stesso, e mette quello scelto come attivo
-				/*
-				 * No, il dialog lo mostra il controller, che setta il tool attivo, al ciclo di update seguente qui verrà
-				 * chiamato il metodo use dell'oggetto	*/
-			} else if (this.getState() == RobotStates.GIVE_OBJECT) {
-				if (this.getCoords().dst(this.getTarget()) <= 1.5) {
-					this.setState(RobotStates.INACTIVE);
-					this.setTarget(null);
-				} else {
-					this.setState(RobotStates.INACTIVE);
-				}
-			}
-		}
+	}
 
 	/*
 	 * Decisione da prendere.
@@ -68,19 +49,13 @@ public class SupportRobot extends Robot implements Support{
 	 * esporre troppi metodi get/set che rovinano l'incapsulamento... Ma in effetti anche se passo l'oggetto quei metodi devo esporli. 
 	 * !!!I metodi get e set non rovinano l'incapsulamento!!!
 	 */
-	private void giveObject() {
-		if (this.getEnergy() != 0) {
-				this.setState(RobotStates.INACTIVE);
-				this.setTarget(null);
-			}
-	}
-	
+		
 	public void addTool(UsableTool tool) {
-		tools.add(tool);
+		tools.add(tool); //fare add(tool.clone())
 	}
 	
 	public ArrayList<UsableTool> getTools() {
-		return tools;
+		return tools; //ritornare un clone
 	}
 
 	@Override
@@ -96,10 +71,11 @@ public class SupportRobot extends Robot implements Support{
 		return interactionSystem;
 	}
 	
+	public String toString() {
+		return super.toString() + " [Tools = " + tools.toString() + "]"; 
+	}
 	
 	private ArrayList<UsableTool> tools;
-	private SupportRobotController reference;
-	private RobotStates state;
 	private SupportSystem supportSystem;
 	private SupportInteractionSystem interactionSystem;
 

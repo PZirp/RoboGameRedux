@@ -42,6 +42,10 @@ public class Obstacle extends GameObject{
 	
 	// No setWeight o setResistence perchè sono valori pre-impostati non modificabili
 	
+	public String toString() {
+		return super.toString() + " [Resistence = " + resistence + " Weight = " + weight + "]";
+	}
+	
 	private ObstacleSprite sprite;
 	private final int resistence = 7;
 	private final int weight = 5;

@@ -1,53 +1,32 @@
 package robotgameredux.core;
 
-
-/*
- *  This file is part of Libgdx by Mario Zechner (badlogicgames@gmail.com)
- *
- *  Libgdx is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Libgdx is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with libgdx.  If not, see <http://www.gnu.org/licenses/>.
- */
-//package com.badlogic.gdx.math;
-
-/**
- * Taken from libgdx
- * Modified to remove final declaration
- * 
- * Encapsulates a 2D vector. Allows chaining methods by returning a 
- * reference to itself
- * @author badlogicgames@gmail.com
- *
- */
-
-
 /*
  *  Aggiungere metodo equal e clone per l'amor di dio
  */
 
 
-public class Vector2 {
+public class Vector2 implements Cloneable{
 	
 	/** static temporary vector **/
 	private final static Vector2 tmp = new Vector2();
 	        
 	        /** the x-component of this vector **/
-	        public float x;
+	        private int x;
 	        /** the y-component of this vector **/
-	        public float y;
+	        private int y;
 	        
 	        /**
 	         * Constructs a new vector at (0,0)
 	         */
+	        
+	        public int getX() { 
+	        	return x;
+	        }
+	        
+	        public int getY() {
+	        	return y;
+	        }
+	        
 	        public Vector2( )
 	        {
 	                
@@ -58,7 +37,7 @@ public class Vector2 {
 	         * @param x The x-component
 	         * @param y The y-component
 	         */
-	        public Vector2( float x, float y )
+	        public Vector2( int x, int y )
 	        {
 	                this.x = x;
 	                this.y = y;
@@ -115,7 +94,7 @@ public class Vector2 {
 	         * @param y The y-component
 	         * @return This vector for chaining
 	         */
-	        public Vector2 set( float x, float y )
+	        public Vector2 set( int x, int y )
 	        {
 	                this.x = x;
 	                this.y = y;
@@ -200,11 +179,11 @@ public class Vector2 {
 	         * @param v The other vector
 	         * @return the distance between this and the other vector
 	         */
-	        public float dst(Vector2 v) 
+	        public int dst(Vector2 v) 
 	        {       
-	                float x_d = v.x - x;
-	                float y_d = v.y - y;
-	                return (float)Math.sqrt( x_d * x_d + y_d * y_d );
+	                int x_d = v.x - x;
+	                int y_d = v.y - y;
+	                return (int) Math.sqrt( x_d * x_d + y_d * y_d );
 	        }
 	        
 	        /**
@@ -212,27 +191,27 @@ public class Vector2 {
 	         * @param y The y-component of the other vector
 	         * @return the distance between this and the other vector
 	         */
-	        public float dst( float x, float y )
+	        public int dst( int x, int y )
 	        {
-	                float x_d = x - this.x;
-	                float y_d = y - this.y;
-	                return (float)Math.sqrt( x_d * x_d + y_d * y_d );
+	                int x_d = x - this.x;
+	                int y_d = y - this.y;
+	                return (int)Math.sqrt( x_d * x_d + y_d * y_d );
 	        }
 	        
 	        /**
 	         * @param v The other vector
 	         * @return the squared distance between this and the other vector
 	         */
-	        public float dst2(Vector2 v)
+	        public int dst2(Vector2 v)
 	        {
-	                float x_d = v.x - x;
-	                float y_d = v.y - y;
+	                int x_d = v.x - x;
+	                int y_d = v.y - y;
 	                return x_d * x_d + y_d * y_d;
 	        }       
 	        
 	        public String toString( )
 	        {
-	                return "[" + x + ":" + y + "]";
+	                return  getClass().getName() + "[X = " + x + " Y = " + y + "]";
 	        }
 
 	        /**
@@ -241,7 +220,7 @@ public class Vector2 {
 	         * @param y The y-component of the other vector
 	         * @return This vector for chaining
 	         */
-	        public Vector2 sub(float x, float y) 
+	        public Vector2 sub(int x, int y) 
 	        {
 	                this.x -= x;
 	                this.y -= y;
@@ -269,4 +248,20 @@ public class Vector2 {
 	                return tmp.set(this);
 	        }
 
+	        public Vector2 clone() {
+	        	try {
+	        		Vector2 clone = (Vector2) super.clone();
+	        		return clone;
+	        	} catch (CloneNotSupportedException e) {
+	        		return null;
+	        	}
+	        }
+	        
+	        public boolean equals(Object otherObject) {
+	        	if (otherObject == null) return false;
+	        	if (getClass() != otherObject.getClass()) return false;
+	        	Vector2 other = (Vector2) otherObject;
+	        	return x == other.x && y == other.y;
+	        }
+	        
 }

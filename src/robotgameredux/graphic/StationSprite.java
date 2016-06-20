@@ -38,7 +38,7 @@ public class StationSprite extends JComponent {
 	//Devo usare le coordinate dello schermo non quelle del world per avere un movimento fluido 	
 	public void update() {
 		this.setColor();
-		this.setBounds((int) station.getCoords().x*64, (int) station.getCoords().y*64, 64, 64);
+		this.setBounds(station.getCoords().getX()*64, station.getCoords().getY()*64, 64, 64);
 		//this.repaint();
 	}
 	

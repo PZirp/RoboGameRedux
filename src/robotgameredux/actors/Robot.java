@@ -33,8 +33,8 @@ public class Robot extends GameObject  {
 		if(energy == 0) {
 			System.out.print("Energia insufficiente ");
 		}
-		System.out.println("Posizione: X = " + this.getCoords().x + " Y = " + this.getCoords().y);
-		System.out.println("Salute del robot: " + health);
+		System.out.println("Posizione: X = " + this.getCoords().getX() + " Y = " + this.getCoords().getY());
+		System.out.println("Salute del robot: " + health + getClass().getName());
 		System.out.println("Energia del robot: " + this.energy);
 
 		sprite.update();
@@ -110,13 +110,13 @@ public class Robot extends GameObject  {
 		this.faction = faction;
 	}
 	
-	public void setTarget(Vector2 target) {
+	/*public void setTarget(Vector2 target) {
 		this.target = target;
 	}
 	
 	public Vector2 getTarget() {
 		return this.target;
-	}
+	}*/
 
 	
 	public int getRange(){
@@ -151,10 +151,13 @@ public class Robot extends GameObject  {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChange.removePropertyChangeListener(listener);
     }
+    
+    public String toString() {
+    	return super.toString() + " [Health = " + health + " Range = " + range + " Energy = " + energy + " Defense = " + defense + " Strenght = " + strenght + " Faction = " + faction.toString() + " State = " + state.toString();
+    }
 
 	private Command currentCommand;
 	private MovementSystem movementSystem;
-	//private GameManager reference;
 	private Faction faction;
 	private RobotStates state;
 	private int health;
@@ -162,7 +165,6 @@ public class Robot extends GameObject  {
 	private int energy = 100;
 	private int defense = 5;
 	private int strenght = 10;
-	private Vector2 target;
 	private Sprite sprite;
 	private PropertyChangeSupport propertyChange;
 

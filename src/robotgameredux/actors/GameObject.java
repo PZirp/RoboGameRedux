@@ -19,6 +19,10 @@ public abstract class GameObject {
 		this.coords = coords;
 	}
 	
+	public String toString() {
+		return getClass().getName() + coords.toString();
+	}
+	
 
 	public void update() throws InvalidTargetException, InsufficientEnergyException  {};
 	public void render() {};

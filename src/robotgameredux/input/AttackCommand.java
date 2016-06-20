@@ -18,7 +18,14 @@ public class AttackCommand implements Command {
 		robot.getBattleSystem().execute(this);
 	}
 
-
+	public int getEnergy(){
+		return robot.getEnergy();
+	}
+	
+	public void setEnergy(int n) {
+		robot.setEnergy(n);
+	}	
+	
 	public Integer getActiveWeaponIndex() {
 		return activeWeaponIndex;
 	}
@@ -46,3 +53,4 @@ public class AttackCommand implements Command {
 	private Attacker robot;
 	
 }
+ 

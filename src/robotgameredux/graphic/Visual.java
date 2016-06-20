@@ -57,7 +57,7 @@ public class Visual extends Sprite{
 		else 
 			this.setBounds((int) robot.getCoords().x*64, (int) robot.getCoords().y*64, 64, 64);
 		*/
-		this.setBounds((int) robot.getCoords().x*64, (int) robot.getCoords().y*64, 64, 64);
+		this.setBounds(robot.getCoords().getX()*64, robot.getCoords().getY()*64, 64, 64);
 
 		//this.repaint();
 	}

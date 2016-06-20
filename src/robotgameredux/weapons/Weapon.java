@@ -38,8 +38,13 @@ public class Weapon {
 		robot.addWeapon(this);		
 	}
 	
+	
+	public String toString() {
+		return getClass().getName() + "[Name = " + name + " Bullets = " + bullets + "]";
+	}
+	
 	private String name = "Default";
-	private Robot onwerBot;
+	//private Robot onwerBot;
 	private int bullets = 10;
 	private int damage = 10;
 

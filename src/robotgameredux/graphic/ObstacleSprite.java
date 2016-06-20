@@ -37,7 +37,7 @@ public class ObstacleSprite extends JComponent {
 	//Devo usare le coordinate dello schermo non quelle del world per avere un movimento fluido 	
 	public void update() {
 		this.setColor();
-		this.setBounds((int) obstacle.getCoords().x*64, (int) obstacle.getCoords().y*64, 64, 64);
+		this.setBounds(obstacle.getCoords().getX()*64, (int) obstacle.getCoords().getY()*64, 64, 64);
 		//this.repaint();
 	}
 	

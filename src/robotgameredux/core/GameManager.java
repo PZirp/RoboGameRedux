@@ -74,18 +74,22 @@ public class GameManager extends JPanel {
 		actors.add(r);
 		this.add(r.getSprite());
 		r.addPropertyChangeListener(attackRobotController);
+		System.out.println(r.toString());
 		r = robotFactory.createRobot(Faction.FRIEND, new Vector2(6,7), RobotType.SUPPORT);
 		actors.add(r);
 		this.add(r.getSprite());
 		r.addPropertyChangeListener(supportRobotController);
+		System.out.println(r.toString());
 		r = robotFactory.createRobot(Faction.FRIEND, new Vector2(10,5), RobotType.ATTACK);
 		actors.add(r);
 		this.add(r.getSprite());
 		r.addPropertyChangeListener(attackRobotController);
+		System.out.println(r.toString());
 		r = robotFactory.createRobot(Faction.ENEMY, new Vector2(3,8), RobotType.ATTACK);
 		actors.add(r);
 		this.add(r.getSprite());
 		r.addPropertyChangeListener(attackRobotController);
+		System.out.println(r.toString());
 		Obstacle o = gameWorld.createObstacle(new Vector2(5, 5));
 		this.add(o.getSprite());
 		Station s = gameWorld.createStation(new Vector2(7,7));
@@ -190,8 +194,10 @@ public class GameManager extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			/* Passa l'input ai controller */
+			System.out.println(e.getX()/64);
+			System.out.println(e.getY()/64);
 			Vector2 click = new Vector2(e.getX()/64, e.getY()/64);
-			System.out.println(click.toString());
+			System.out.println(click.toString() + "NUOVOOOOOOOOOOOO CLICK");
 			attackRobotController.setInput(click);
 			supportRobotController.setInput(click);
 		}

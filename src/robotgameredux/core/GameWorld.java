@@ -36,8 +36,8 @@ public class GameWorld {
 			}
 		}
 	
-		tileSet[1][0].setCalpestabile(false);
-		tileSet[5][5].setCalpestabile(false);
+		/*tileSet[1][0].setCalpestabile(false);
+		tileSet[5][5].setCalpestabile(false);*/
 
 	}
 	
@@ -55,7 +55,7 @@ public class GameWorld {
 	}
 	
 	public boolean isStation(Vector2 position) {
-		if (position.x == station.getCoords().x && position.y == station.getCoords().y) {
+		if (position.getX() == station.getCoords().getX() && position.getY() == station.getCoords().getY()) {
 			return true;
 		}
 		return false;
@@ -83,27 +83,27 @@ public class GameWorld {
 	
 	public boolean isTileFree(Vector2 tile) {
 		
-		if (tile.x >= GRID_LENGHT || tile.y >= GRID_HEIGHT || tile.x < 0 || tile.y < 0) {
+		if (tile.getX() >= GRID_LENGHT || tile.getY() >= GRID_HEIGHT || tile.getX() < 0 || tile.getY() < 0) {
 			return false;
 		}
 		
-		if (tileSet[(int) tile.x][(int) tile.y].isCalpestabile() == true)
+		if (tileSet[tile.getX()][tile.getY()].isCalpestabile() == true)
 			return true;
 		else 
 			return false;
 	}
 	
 	public void releaseTile(Vector2 tile) {
-		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(true);
+		tileSet[tile.getX()][tile.getY()].setCalpestabile(true);
 	}
 	
 	public void occupyTile(Vector2 tile) {
-		tileSet[(int) tile.x][(int) tile.y].setCalpestabile(false);
+		tileSet[tile.getX()][tile.getY()].setCalpestabile(false);
 	}
 	
 	public boolean isObstacle(Vector2 obstacle) {
 		for (Obstacle obs : obstacles) {
-			if (obs.getCoords().x == obstacle.x && obs.getCoords().y == obstacle.y) {
+			if (obs.getCoords().getX() == obstacle.getX() && obs.getCoords().getY() == obstacle.getY()) {
 				return true;
 			}
 		}
@@ -115,7 +115,7 @@ public class GameWorld {
 		Boolean trovato = false;
 		int i = 0;
 		while (!trovato && i < obstacles.size()) {
-			if (obstacles.get(i).getCoords().x == target.x && obstacles.get(i).getCoords().y == target. y) {
+			if (obstacles.get(i).getCoords().getX() == target.getX() && obstacles.get(i).getCoords().getY() == target.getY()) {
 				if (robotStrenght > obstacles.get(i).getResistence())
 					System.out.println("FACCIO PULIZIA");
 					reference.remove(obstacles.get(i).getSprite());
@@ -139,7 +139,7 @@ public class GameWorld {
 		Boolean trovato = false;
 		int i = 0;
 		while (!trovato && i < obstacles.size()) {
-			if (obstacles.get(i).getCoords().x == target.x && obstacles.get(i).getCoords().y == target. y) {
+			if (obstacles.get(i).getCoords().getX() == target.getX() && obstacles.get(i).getCoords().getY() == target.getY()) {
 				if (robotStrenght >= obstacles.get(i).getWeight()) {
 					// Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
 					Vector2 direction = Vector2.sub(obstacles.get(i).getCoords(), coords);

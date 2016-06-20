@@ -36,7 +36,7 @@ public class VisualSup extends Sprite{
 	//Devo usare le coordinate dello schermo non quelle del world per avere un movimento fluido 	
 	public void update() {
 		this.setColor();
-		this.setBounds((int) robot.getCoords().x*64, (int) robot.getCoords().y*64, 64, 64);
+		this.setBounds(robot.getCoords().getX()*64, robot.getCoords().getY()*64, 64, 64);
 		//this.repaint();
 	}
 	

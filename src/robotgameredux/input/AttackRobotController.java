@@ -53,7 +53,9 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		if (this.currentInput != null && activeRobot == null) {
 			while (!trovato && i < robots.size()) {
 				AttackRobot robot = robots.get(i);
-				if (robot.getCoords().x == currentInput.x && robot.getCoords().y == currentInput.y){
+				System.out.println(currentInput.toString() + "HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+				if (robot.getCoords().getX() == currentInput.getX() && robot.getCoords().getY() == currentInput.getY()){
+					System.out.println(currentInput.toString() + " TROVATO HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
 					trovato = activateRobot(robot);
 				}
 				i++;
