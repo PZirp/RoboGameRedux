@@ -3,18 +3,19 @@ package robotgameredux.actors;
 import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
-import robotgameredux.input.Command;
-import robotgameredux.input.Faction;
 import robotgameredux.input.RobotStates;
-import robotgameredux.systems.MovementSystem;
+import robotgameredux.systemInterfaces.MovementSystem;
 import robotgameredux.weapons.Bullet;
 import robotgameredux.weapons.Weapon;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 
+import Exceptions.CriticalStatusException;
 import Exceptions.InsufficientEnergyException;
+import robotgameredux.Commands.Command;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
 
@@ -23,7 +24,7 @@ public class Robot extends GameObject  {
 	public Robot(Vector2 coords, MovementSystem ms){
 		super(coords);
 		this.movementSystem = ms;
-		this.state = RobotStates.INACTIVE;
+		this.state = RobotStates.IDLE;
 		health = 100;
 		this.propertyChange = new PropertyChangeSupport(this);
 	}
@@ -44,21 +45,32 @@ public class Robot extends GameObject  {
 		return this.energy;
 	}
 	
-	public void setEnergy(int n) {
-		energy = energy - n;
+	public void removeEnergy(int energy) {
+		this.energy = this.energy - energy;
+		if (energy <= 0) {
+			//this.state = RobotStates.INACTIVE;
+			//propertyChange.firePropertyChange("DEACTIVATED", this, null);
+		}
 	}
+		
 	
 	public void addEnergy(int energy) {
 		System.out.println("Eccomi qui!!!!!");
-
+		
+		if (this.energy == 0) {
+			propertyChange.firePropertyChange("REACTIVATED", this, null);
+		}
+		
 		this.energy = this.energy + energy;
+		
+		if (this.energy > 100) 
+			this.energy = 100;
+		
 	}
 	
-	
-
 	public void setState(RobotStates state) {
 		this.state = state;
-		propertyChange.firePropertyChange(this.state.toString(), null, this);
+		propertyChange.firePropertyChange(this.state.toString(), this, null);
 	}
 	
 	public RobotStates getState() {
@@ -85,7 +97,7 @@ public class Robot extends GameObject  {
 	
 	//Update health serve per gli oggetti di guarigione
 	
-	public void updateHealth(int health) {
+	public void heal(int health) {
 		int newHealth = this.health + health;
 		if (newHealth > 1000) 
 			this.health = 100;
@@ -93,12 +105,19 @@ public class Robot extends GameObject  {
 			this.health = newHealth;
 	}
 	
-	public void damage(int damage) {
-		int effectiveDamage = damage - this.defense;
+	
+	
+	public void damage(Bullet bullet) throws CriticalStatusException {
+		
+		int effectiveDamage = bullet.getDamage() - (this.defense - bullet.getShieldPenetration());
 		this.health = this.health - effectiveDamage;
 		//if energy <25% throw critical status exception
+		if (health <= 25 && health > 0) {
+			throw new CriticalStatusException();
+		}
 		if (this.health <= 0) {
-			//set dead
+			//Mandare un propertychangedevent che dice che è morto per farlo rimuovere
+			propertyChange.firePropertyChange("DESTROYED", this, null);
 		}
 	}
 	
@@ -156,6 +175,31 @@ public class Robot extends GameObject  {
     	return super.toString() + " [Health = " + health + " Range = " + range + " Energy = " + energy + " Defense = " + defense + " Strenght = " + strenght + " Faction = " + faction.toString() + " State = " + state.toString();
     }
 
+    public boolean equals(Object otherObject) {
+    	if (!super.equals(otherObject)) return false;
+    	Robot other = (Robot) otherObject;
+    	//Aggiungere gli equals dei command e dei sistemi
+    	return faction.equals(other.faction) && state.equals(other.state) && health == other.health && range == other.range && energy == other.energy && defense == other.defense && strenght == other.strenght && propertyChange.equals(other.propertyChange) && movementSystem == other.movementSystem;
+    }
+    
+    public Robot clone() {
+			Robot cloned = (Robot) super.clone();
+			cloned.health = health;
+			cloned.range = range;
+			cloned.energy = energy;
+			cloned.defense = defense;
+			cloned.strenght = strenght;
+			cloned.faction = faction;
+			cloned.state = state;
+			cloned.propertyChange = propertyChange;
+			cloned.movementSystem = movementSystem;
+			return cloned;
+	}
+    
+    public PropertyChangeSupport getPropertyChange() {
+    	return propertyChange;
+    }
+    
 	private Command currentCommand;
 	private MovementSystem movementSystem;
 	private Faction faction;
@@ -165,7 +209,7 @@ public class Robot extends GameObject  {
 	private int energy = 100;
 	private int defense = 5;
 	private int strenght = 10;
-	private Sprite sprite;
+	transient private Sprite sprite;
 	private PropertyChangeSupport propertyChange;
 
 }

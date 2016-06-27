@@ -1,16 +1,22 @@
 package robotgameredux.tools;
 
+import java.io.Serializable;
+
 import robotgameredux.actors.Robot;
 
-public class HealthPack implements UsableTool {
+public class HealthPack implements UsableTool, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8631385135609367633L;
 	public HealthPack() {
 		this.health = 50;
 	};
 	
 	@Override
 	public void use(Robot robot) {
-		robot.updateHealth(this.health);
+		robot.heal(this.health);
 
 	}
 	

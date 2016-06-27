@@ -1,12 +1,16 @@
 package robotgameredux.core;
 
-/*
- *  Aggiungere metodo equal e clone per l'amor di dio
- */
+import java.io.Serializable;
 
 
-public class Vector2 implements Cloneable{
+
+public class Vector2 implements Cloneable, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6109031109498527081L;
+
 	/** static temporary vector **/
 	private final static Vector2 tmp = new Vector2();
 	        

@@ -2,8 +2,8 @@ package Exceptions;
 
 import java.io.IOException;
 
+import robotgameredux.Commands.Command;
 import robotgameredux.actors.Robot;
-import robotgameredux.input.Command;
 
 public class InvalidTargetException extends IOException {
 

@@ -9,13 +9,11 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-public class WeaponDialog extends JDialog{
+/*public class WeaponDialog extends JDialog{
 
 	
 	
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -8242534944108292198L;
 	private Integer selected;
 
@@ -69,9 +67,7 @@ public class WeaponDialog extends JDialog{
 class wepButton extends JButton {
 
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 3034536393470085565L;
 
 	wepButton(String name, int i) {
@@ -84,4 +80,4 @@ class wepButton extends JButton {
 	}
 	
 	private int index;
-}
+}*/

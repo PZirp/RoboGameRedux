@@ -1,5 +1,6 @@
 package robotgameredux.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -7,44 +8,92 @@ import javax.swing.JPanel;
 import robotgameredux.actors.*;
 import robotgameredux.graphic.ObstacleSprite;
 import robotgameredux.graphic.StationSprite;
+import robotgameredux.graphic.TileSprite;
+import robotgameredux.graphic.WallSprite;
 import robotgameredux.tools.HealthPack;
 import robotgameredux.tools.ToolsDialog;
 import robotgameredux.tools.UsableTool;
 import robotgameredux.weapons.Weapon;
 
-public class GameWorld {
+public class GameWorld implements Serializable {
 
-	private static final long serialVersionUID = 7321125104091891404L;
 
-	private final static int GRID_LENGHT = 1280/64; //20
-	private final static int GRID_HEIGHT = 720/64; //11
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2734801533533490919L;
+	
+	public final static int GRID_LENGHT = 1280/64; //20
+	public final static int GRID_HEIGHT = 720/64; //11
 	
 	public GameWorld(GameManager reference) {
 		this.reference = reference;
+		tileSet = new Tile[GRID_LENGHT][GRID_HEIGHT];
+		obstacles = new ArrayList<Obstacle>();
 		this.initWorld();
-		this.dialog = new ToolsDialog((JFrame) reference.getParent(), true);
+		this.dialog = new ToolsDialog(null, true);
+		
 	}
 	
 	private void initWorld() {
-		tileSet = new Tile[GRID_LENGHT][GRID_HEIGHT];
-		obstacles = new ArrayList<Obstacle>();
 		
-	
-		for (int i = 0; i < GRID_LENGHT; i++) {
-			for (int j = 0; j < GRID_HEIGHT; j++) {
-				 tileSet[i][j] = new Tile();
+		int a = 0;
+		for (int j = 0; j < GRID_HEIGHT; j++) {
+				 tileSet[a][j] = new Tile();
+				 WallSprite s = new WallSprite(tileSet[a][j], a, j);
+				 reference.add(s, 0);
+				 tileSet[a][j].setSprite(s);
+				 tileSet[a][j].setCalpestabile(false);
+		}		
+		for (int j = 0; j < GRID_LENGHT; j++) {
+			 tileSet[j][a] = new Tile();
+			 WallSprite s = new WallSprite(tileSet[j][a], j, a);
+			 reference.add(s, 0);
+			 tileSet[j][a].setSprite(s);
+			 tileSet[j][a].setCalpestabile(false);
+		}		
+		for (int i = 1; i < GRID_LENGHT; i++) {
+			for (int j = 1; j < GRID_HEIGHT; j++) {
+				 tileSet[i][j] = new Tile();				 
+				 if (i == GRID_LENGHT-1) {
+					 WallSprite s = new WallSprite(tileSet[i][j], i, j);
+					 reference.add(s, 0);
+					 tileSet[i][j].setSprite(s);
+					 tileSet[i][j].setCalpestabile(false);
+				 } else if (j == GRID_HEIGHT-1) {
+					 WallSprite s = new WallSprite(tileSet[i][j], i, j);
+					 reference.add(s, 0);
+					 tileSet[i][j].setSprite(s);
+					 tileSet[i][j].setCalpestabile(false);
+				 } else {
+				 TileSprite s = new TileSprite(tileSet[i][j], i, j);
+				 reference.add(s, 0);
+				 tileSet[i][j].setSprite(s);
+				 }
 			}
 		}
+		
+	}
 	
-		/*tileSet[1][0].setCalpestabile(false);
-		tileSet[5][5].setCalpestabile(false);*/
+	public void render() {
 
+		for (int i = 0; i < GRID_LENGHT; i++) {
+			for (int j = 0; j < GRID_HEIGHT; j++) {
+				tileSet[i][j].render();
+			}
+		}
+		
+	}
+	
+	public Tile[][] getTileSet(){
+		return tileSet;
 	}
 	
 	public ArrayList<Obstacle> getObstacles() {
 		return this.obstacles;
 	}
 	
+
 	public Obstacle createObstacle(Vector2 position) {
 		Obstacle o = new Obstacle(position); 
 		ObstacleSprite sp = new ObstacleSprite(o);
@@ -55,7 +104,7 @@ public class GameWorld {
 	}
 	
 	public boolean isStation(Vector2 position) {
-		if (position.getX() == station.getCoords().getX() && position.getY() == station.getCoords().getY()) {
+		if (position.equals(station.getCoords())) {
 			return true;
 		}
 		return false;
@@ -65,8 +114,6 @@ public class GameWorld {
 		return station.recharge();
 	}
 	
-
-
 	public Station createStation(Vector2 position) {
 		Station s = new Station(position);
 		StationSprite sp = new StationSprite(s);
@@ -80,10 +127,9 @@ public class GameWorld {
 		return s;
 	}
 	
-	
 	public boolean isTileFree(Vector2 tile) {
 		
-		if (tile.getX() >= GRID_LENGHT || tile.getY() >= GRID_HEIGHT || tile.getX() < 0 || tile.getY() < 0) {
+		if (tile.getX() >= GRID_LENGHT-1 || tile.getY() >= GRID_HEIGHT-1 || tile.getX() < 1 || tile.getY() < 1) {
 			return false;
 		}
 		
@@ -101,30 +147,25 @@ public class GameWorld {
 		tileSet[tile.getX()][tile.getY()].setCalpestabile(false);
 	}
 	
-	public boolean isObstacle(Vector2 obstacle) {
+	public Obstacle isObstacle(Vector2 target) {
 		for (Obstacle obs : obstacles) {
-			if (obs.getCoords().getX() == obstacle.getX() && obs.getCoords().getY() == obstacle.getY()) {
-				return true;
+			if (target.equals(obs.getCoords())) {
+				return obs;
 			}
 		}
-		return false;
+		return null;
 	}
 	
-	public void destroyObstacle(Vector2 target, int robotStrenght) {
-		//Passagli un clone! O solo la forza del robot?
-		Boolean trovato = false;
-		int i = 0;
-		while (!trovato && i < obstacles.size()) {
-			if (obstacles.get(i).getCoords().getX() == target.getX() && obstacles.get(i).getCoords().getY() == target.getY()) {
-				if (robotStrenght > obstacles.get(i).getResistence())
-					System.out.println("FACCIO PULIZIA");
-					reference.remove(obstacles.get(i).getSprite());
-					releaseTile(obstacles.get(i).getCoords());
-					obstacles.remove(i);
-				trovato = true;
-			}
+	public Boolean destroyObstacle(Vector2 target, int robotStrenght) {
+		Obstacle o = isObstacle(target);
+		if (o != null && robotStrenght > o.getResistence()) {
+			System.out.println("FACCIO PULIZIA");
+			reference.remove(o.getSprite());
+			releaseTile(o.getCoords());
+			obstacles.remove(o);
+			return true;
 		}
-		
+		return false;
 	}
 	
 	/* Cosa fa: Calcolo la direzione in cui devo muovermi (direction) e la sommo alla posizone attuale. 
@@ -135,25 +176,22 @@ public class GameWorld {
 	 * rispetto all'ostacolo (sottraendo la posizione del robot alla posizione dell'ostacolo).
 	 */
 	
-	public void pushObstacle(Vector2 target, int robotStrenght, Vector2 coords) {
-		Boolean trovato = false;
-		int i = 0;
-		while (!trovato && i < obstacles.size()) {
-			if (obstacles.get(i).getCoords().getX() == target.getX() && obstacles.get(i).getCoords().getY() == target.getY()) {
-				if (robotStrenght >= obstacles.get(i).getWeight()) {
-					// Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
-					Vector2 direction = Vector2.sub(obstacles.get(i).getCoords(), coords);
-					System.out.println(direction.toString() + "DIREZIONE");
-					Vector2 newPosition = direction.add(obstacles.get(i).getCoords());
-					if (isTileFree(newPosition)) {
-						releaseTile(obstacles.get(i).getCoords());
-						obstacles.get(i).setCoords(newPosition);
-						occupyTile(newPosition);
-					}
-				}				
-				trovato = true;
+	public Boolean pushObstacle(Vector2 target, int robotStrenght, Vector2 coords) {
+		Obstacle o = isObstacle(target);
+		if (o != null && robotStrenght > o.getWeight()) {
+			// Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
+			Vector2 direction = Vector2.sub(o.getCoords(), coords);
+			System.out.println(direction.toString() + "DIREZIONE");
+			Vector2 newPosition = direction.add(o.getCoords());
+			if (isTileFree(newPosition)) {
+				releaseTile(o.getCoords());
+				o.setCoords(newPosition);
+				occupyTile(newPosition);
+				return true;
 			}
-		}	
+			return false;
+		}
+		return false;
 	}
 
 	public Weapon getWeapon() {
@@ -189,6 +227,60 @@ public class GameWorld {
 	public void showWeapons() {
 		this.dialog.showWeapons(station.getWeapons());
 	}
+	
+	public ArrayList<Vector2> pathfind(Vector2 origin, int range) {
+		ArrayList<Vector2> path = new ArrayList<Vector2>();
+
+		for (int i = 0; i < range; i++) {
+			if (origin.getY() + i < GRID_HEIGHT-1) {
+				path.add(new Vector2(origin.getX(), origin.getY() + i));
+			}
+			if (origin.getY() - i >= 1) {
+				path.add(new Vector2(origin.getX(), origin.getY() - i));
+			}
+			if (origin.getX() + i < GRID_LENGHT-1) {
+				path.add(new Vector2(origin.getX() + i, origin.getY()));
+			}
+			if (origin.getX() - i >= 1) {
+				path.add(new Vector2(origin.getX() - i, origin.getY()));
+			}
+		}
+		
+		return path;
+	}
+	
+	public void highlightPath(Vector2 origin, int range, Boolean b) {
+		ArrayList<Vector2> path = pathfind(origin, range);
+		for (Vector2 v : path) {
+			tileSet[v.getX()][v.getY()].setActive(b);
+		}
+		
+		/*tileSet[origin.getX()][origin.getY()].setActive(b);
+		for (int i = 0; i < range; i++) {
+			if (origin.getY()+i < GRID_HEIGHT) {
+				tileSet[origin.getX()][origin.getY()+i].setActive(b);
+			}
+			if (origin.getY()-i >= 0) {
+				tileSet[origin.getX()][origin.getY()-i].setActive(b);
+			}
+			if (origin.getX()+i < GRID_LENGHT) {
+				tileSet[origin.getX()+i][origin.getY()].setActive(b);
+			}
+			if (origin.getX()-i >= 0) {
+				tileSet[origin.getX()-i][origin.getY()].setActive(b);
+			}
+		}*/
+		//reference.repaint();
+	}
+
+	public void highlightPath() {
+		for (int i = 1; i < GRID_LENGHT-1; i++) {
+			for (int j = 1; j < GRID_HEIGHT-1; j++) {
+				tileSet[i][j].setActive(false);;
+			}
+		}
+	}
+	
 	
 	private ArrayList<Obstacle> obstacles;
 	private Tile[][] tileSet;

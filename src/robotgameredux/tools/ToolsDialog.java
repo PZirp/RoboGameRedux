@@ -16,7 +16,7 @@ public class ToolsDialog extends JDialog{
 	public ToolsDialog(JFrame owner, boolean modal) {
 		super(owner, true);
 		this.setLayout(new GridLayout(3, 3));
-		this.setUndecorated(false);
+		this.setUndecorated(true);
 		this.selected = null;
 	}
 	
@@ -37,7 +37,16 @@ public class ToolsDialog extends JDialog{
 				}
 			});	
 		}
-		System.out.println("Eccomi qui");
+		
+		JButton annullaBtn = new JButton("Annulla");
+		annullaBtn.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				selected = -1;
+				setVisible(false);
+				getContentPane().removeAll(); //Rimuove i pulsanti dal dialog
+			}
+		});
+		this.add(annullaBtn);
 		this.setLocationRelativeTo(null);
 		this.pack();
 		this.setVisible(true);
@@ -56,7 +65,7 @@ public class ToolsDialog extends JDialog{
 	public void showWeapons(ArrayList<Weapon> weapons) {
 		for (int i = 0; i < weapons.size(); i++) {
 			System.out.println(weapons.get(i).getName() + "NOME DI UN'ARMA");
-			toolButton but = new toolButton(weapons.get(i).getName(), i);
+			toolButton but = new toolButton(weapons.get(i).getName() + "("+weapons.get(i).getBulletCount()+")", i);
 			this.add(but);
 			but.addMouseListener(new MouseAdapter() {
 				public void mousePressed(MouseEvent e) {
@@ -66,10 +75,21 @@ public class ToolsDialog extends JDialog{
 				}
 			});	
 		}
+		
+		JButton annullaBtn = new JButton("Annulla");
+		annullaBtn.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				selected = -1;
+				setVisible(false);
+				getContentPane().removeAll(); //Rimuove i pulsanti dal dialog
+			}
+		});
+		this.add(annullaBtn);
+		
 		System.out.println("Eccomi qui");
 		this.setLocationRelativeTo(null);
 		this.pack();
-		this.setVisible(true);		
+		this.setVisible(true);			
 	}
 
 }

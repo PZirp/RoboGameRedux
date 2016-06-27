@@ -1,11 +1,10 @@
 package robotgameredux.actors;
 
+import robotgameredux.Commands.Command;
 import robotgameredux.core.Vector2;
-import robotgameredux.input.Command;
 import robotgameredux.input.RobotStates;
-import robotgameredux.systems.GameSystem;
-import robotgameredux.systems.StandardSupportSystem;
-import robotgameredux.systems.SupportSystem;
+import robotgameredux.systemInterfaces.SupportSystem;
+import robotgameredux.systemsImplementations.StandardSupportSystem;
 import robotgameredux.tools.UsableTool;
 
 public interface Support {
@@ -15,5 +14,5 @@ public interface Support {
 	public SupportSystem getSupportSystem();
 	public void setCommand(Command c);
 	public void setState(RobotStates state);
-
+	public Faction getFaction();
 }

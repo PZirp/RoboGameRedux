@@ -14,6 +14,7 @@ public enum RobotStates {
 	GIVE_OBJECT, //Supporto
 	TAKE_WEAPON,
 	TAKE_OBJECT, // Supporto
+	DESTROYED,
 	RECHARGE;
 	
 	

@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
 import robotgameredux.core.Vector2;
-import robotgameredux.input.Attacker;
 import robotgameredux.input.RobotStates;
-import robotgameredux.systems.StandardBattleSystem;
-import robotgameredux.systems.AttackInteractionSystem;
-import robotgameredux.systems.BattleSystem;
-import robotgameredux.systems.MovementSystem;
+import robotgameredux.systemInterfaces.AttackInteractionSystem;
+import robotgameredux.systemInterfaces.BattleSystem;
+import robotgameredux.systemInterfaces.MovementSystem;
+import robotgameredux.systemsImplementations.StandardBattleSystem;
 import robotgameredux.weapons.Weapon;
 
 public class AttackRobot extends Robot implements Attacker{
@@ -24,13 +23,35 @@ public class AttackRobot extends Robot implements Attacker{
 	}
 
 	public void update() throws InvalidTargetException, InsufficientEnergyException {
+		
+	
+		
+		Boolean res = false;
 		if (this.getCurrentCommand() != null) {
-			this.getCurrentCommand().execute();
+			res = this.getCurrentCommand().execute();
+		}
+		
+		if (res == true) {
+			//era IDLE
+			setState(RobotStates.TURN_OVER);
+		}
+		if (getEnergy() <= 0 && getState() != RobotStates.INACTIVE) {
+			setState(RobotStates.INACTIVE);
+			getPropertyChange().firePropertyChange("DEACTIVATED", this, null);
+			return;
 		}
 	}
 
 	public void addWeapon(Weapon weapon) {
-		//Fare in modo che se si sta aggiungendo un'arma che il robot già ha, si aumentano i proiettili ma non si aggiunge un doppione
+		/*Se il robot già possiede un'arma dello stesso tipo, invece di aggiungere un doppione, si aggiungono i proiettili a quella che si ha già*/
+		
+		for (Weapon w : weapons) {
+			if (w.isSameWeapon(weapon)) {
+				w.addBullets(weapon.getBulletCount());
+				return;
+			}
+		}
+		
 		this.weapons.add(weapon); //Fare add(weapon.clone) per incapsulare
 	}
 	
@@ -56,9 +77,26 @@ public class AttackRobot extends Robot implements Attacker{
 		return super.toString() + " [Weapon = " + weapons.toString() + "]";
 	}
 	
+	public boolean equals(Object otherObject) {
+		if (!super.equals(otherObject)) return false;
+		AttackRobot other = (AttackRobot) otherObject;
+		//Anche qui, aggiungere gli equals per i sistemi
+		return weapons.equals(other.weapons) && battleSystem == other.battleSystem && interactionSystem == other.interactionSystem;
+	}
+	
+	public AttackRobot clone() {
+		AttackRobot clone = (AttackRobot) super.clone();
+		clone.weapons = new ArrayList<Weapon>(weapons);
+		clone.interactionSystem = interactionSystem;
+		clone.battleSystem = battleSystem;
+		return clone;
+	}
+	
 	private AttackInteractionSystem interactionSystem;
 	private BattleSystem battleSystem;
 	private ArrayList<Weapon> weapons;
+
+
 
 
 

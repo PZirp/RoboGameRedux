@@ -1,5 +1,7 @@
 package robotgameredux.actors;
 
+import java.util.ArrayList;
+
 import Exceptions.InvalidTargetException;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
@@ -7,6 +9,7 @@ import robotgameredux.graphic.ObstacleSprite;
 import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
 import robotgameredux.input.RobotStates;
+import robotgameredux.tools.UsableTool;
 
 /*
  * Penso che il controllore degli ostacoli e delle stazioni sarà il GameWorld stesso
@@ -46,8 +49,25 @@ public class Obstacle extends GameObject{
 		return super.toString() + " [Resistence = " + resistence + " Weight = " + weight + "]";
 	}
 	
-	private ObstacleSprite sprite;
-	private final int resistence = 7;
-	private final int weight = 5;
+	public boolean equals(Object otherObject) {
+		if (!super.equals(otherObject)) return false;
+		Obstacle other = (Obstacle) otherObject;
+		//Anche qui, aggiungere gli equals la sprite
+		return resistence == other.resistence && weight == other.weight;
+	}
+	
+	public Obstacle clone() {
+		Obstacle clone = (Obstacle) super.clone();
+		clone.resistence = resistence;
+		clone.weight = weight;
+		clone.sprite = sprite;
+		//Ricordati di fare clone per i sistemi
+		return clone;
+	}
+	
+	
+	transient private ObstacleSprite sprite;
+	private int resistence = 7;
+	private int weight = 5;
 
 }

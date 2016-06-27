@@ -49,7 +49,7 @@ public class ObstacleSprite extends JComponent {
 	}
 	
 	public void setColor() {
-		this.color = new Color(150, 75, 0);
+		this.color = new Color(165, 42, 42);
 	}
 	
 	Dimension preferredSize;

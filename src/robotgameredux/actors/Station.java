@@ -114,10 +114,30 @@ public class Station extends GameObject{
 		return super.toString() + " [EnergyReserve = " + energyReserve + " Tools = " + tools.toString() + " Weapons = " + weapons.toString() + "]";
 	}
     
+	
+	public boolean equals(Object otherObject) {
+		if (!super.equals(otherObject)) return false;
+		Station other = (Station) otherObject;
+		//Anche qui, aggiungere gli equals la sprite
+		return energyReserve == other.energyReserve && tools.equals(other.tools) && weapons.equals(other.weapons) && propertyChange.equals(other.propertyChange);
+	}
+	
+	
+	public Station clone() {
+		Station clone = (Station) super.clone();
+		clone.energyReserve = energyReserve;
+		clone.tools = new ArrayList<UsableTool>(tools);
+		clone.weapons = new ArrayList<Weapon>(weapons);
+		clone.propertyChange = propertyChange;
+		//Ricordati di fare clone per i sistemi
+		return clone;
+	}
+	
+	
 	private int energyReserve;
 	private ArrayList<UsableTool> tools;
 	private ArrayList<Weapon> weapons;
-	private StationSprite sprite;
+	transient private StationSprite sprite;
 	private PropertyChangeSupport propertyChange;
 
 }

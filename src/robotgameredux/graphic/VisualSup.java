@@ -49,8 +49,11 @@ public class VisualSup extends Sprite{
 	
 	public void setColor() {
 		if (robot.getState() == RobotStates.ACTIVE) {this.color = Color.BLUE;}
-		else if (robot.getState() == RobotStates.INACTIVE ){this.color = Color.MAGENTA;}
+		else if (robot.getState() == RobotStates.IDLE){this.color = Color.MAGENTA;}
+		else if (robot.getState() == RobotStates.INACTIVE){this.color = Color.GRAY;}
 		else if (robot.getState() == RobotStates.DO_NOTHING ){this.color = Color.MAGENTA;}
+		else if (robot.getState() == RobotStates.TURN_OVER ){this.color = Color.CYAN;}
+
 		if (robot.getHealth() == 10) {this.color = Color.PINK;}
 		
 	}

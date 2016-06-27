@@ -5,28 +5,36 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
+import robotgameredux.Commands.AtkInteractCommand;
+import robotgameredux.Commands.AttackCommand;
+import robotgameredux.Commands.Command;
+import robotgameredux.Commands.MovementCommand;
 import robotgameredux.actors.AttackRobot;
+import robotgameredux.actors.Robot;
+import robotgameredux.actors.SupportRobot;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Vector2;
 import robotgameredux.graphic.Sprite;
+import robotgameredux.tools.ToolsDialog;
 import robotgameredux.weapons.Weapon;
-import robotgameredux.weapons.WeaponDialog;
 
-public class AttackRobotController extends RobotController implements PropertyChangeListener {
+public class AttackRobotController extends RobotController implements PropertyChangeListener, Serializable {
 
 	public AttackRobotController (GameManager gameManager) {
 		super(gameManager);
 		this.activeRobot = null;
 		this.robots = new ArrayList<AttackRobot>();
-		this.actionSelector = new RobotActionDialog3((JFrame)gameManager.getParent(), false);
-		this.weaponSelector = new WeaponDialog((JFrame) gameManager.getParent(), false);
+		this.actionSelector = new RobotActionDialog3(null, false);
+		this.weaponSelector = new ToolsDialog(null, false);
 		currentInput = null;
 		emptyWeapons = false;
 	}
@@ -35,38 +43,43 @@ public class AttackRobotController extends RobotController implements PropertyCh
 	 * Se c'è già un robot attivo, il Dialog non va visualizzato nuovamente.
 	 */
 	
+	/*public Boolean checkRobot() {
+		Robot r = getReference().hasActiveRobot();
+		if (r != null) {
+			if (r == activeRobot) { return true; }
+			for (AttackRobot a : robots) {
+				if (a.equals(r) && robotInput == null) { return true; }
+			}
+		}		
+		//currentInput = null;
+		return false;
+	}*/
+	
 	public void parseInput() {
-				
-		//In futuro passare lo state del world come parametro di questo metodo
-		/*
-		* Clicco un bottone sul dialog e setto lo stato del robot di conseguenza. Prendo l'indice del robot e lo tengo come attivo.
-		* Al click successivo parte l'else qui sotto. Switcho in base allo stato del robot e faccio qualcosa.
-		* Potenzialmente potrei settare uno stato anche nel GameWorld per fare sapere a tutti gli altri controllori che c'è
-		* un robot che deve selezionare la meta o un bersaglio in modo tale da non far apparire altri dialogs se clicca su dei robot
-		*/
+	
 
-		//robotInput = actionSelector.getInput();
 		i = 0;
 		trovato = false;
-		//System.out.println(robotInput.toString() + "AAAAAAAAAAAAAAAAAAAAAAA");
-		//Quando implementerò la scelta casuale del robot attivo, questo primo if dove controllo se è stato cliccato un robot e lo cerco deve essere eliminato
 		if (this.currentInput != null && activeRobot == null) {
 			while (!trovato && i < robots.size()) {
 				AttackRobot robot = robots.get(i);
-				System.out.println(currentInput.toString() + "HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-				if (robot.getCoords().getX() == currentInput.getX() && robot.getCoords().getY() == currentInput.getY()){
-					System.out.println(currentInput.toString() + " TROVATO HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-					trovato = activateRobot(robot);
+				if (robot.getCoords().equals(currentInput) && robot.getState() == RobotStates.IDLE){
+					Robot r = getReference().hasActiveRobot();
+					if (r == null) {
+						trovato = activateRobot(robot);
+					}
+					if (r != null && r.equals(robot)) {
+						trovato = activateRobot(robot);
+					}
 				}
 				i++;
 			}
 		}		
 		else if (activeRobot != null) { 
-			System.out.println(activeRobot.getState() + "QUIIIIIII");
-			if (robotInput == null) {
+			/*if (robotInput == null) {
 				actionSelector.showAction(activeRobot.getSprite());
 				currentInput = null; 
-			}
+			}*/
 			switch(robotInput) {
 			case IDLE: 
 				break;
@@ -74,6 +87,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				doNothing();
 				break;
 			case MOVING: 
+				getReference().highlight(activeRobot);
 				if(currentInput != null)
 					moveRobot();
 				break;
@@ -81,16 +95,12 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				ArrayList<Weapon> weapons = activeRobot.getWeapons();
 				if(weaponSelector.getSelected() == null) {
 					weaponSelector.showWeapons(weapons);
-				}				
-				//Questo è solo perchè per adesso per attivare il robot devo cliccarci sopra, quando il robot si attiva in base alla scelta casuale devo cambiarlo
-				//O forse no
-				if (weaponSelector.getSelected() == -1) {
-					activeRobot.setState(RobotStates.INACTIVE);
+				} else if (weaponSelector.getSelected() == -1) {
+					activeRobot.setState(RobotStates.IDLE);
 					weaponSelector.resetSelected();
 					activeRobot = null;
 					robotInput = null;
-				}				
-				else if (weaponSelector.getSelected() != null && currentInput != null) {
+				} else if (weaponSelector.getSelected() != null && currentInput != null) {
 					this.target = currentInput;
 				}
 				if (target != null) {
@@ -109,10 +119,8 @@ public class AttackRobotController extends RobotController implements PropertyCh
 					Command c = new AtkInteractCommand(activeRobot, currentInput);
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.DESTROY_OBSTACLE);
-					/*activeRobot.setTarget(currentInput);
-					activeRobot.setState(RobotStates.DESTROY_OBSTACLE);*/
 					activeRobot = null;
-					//robotInput = null;
+					robotInput = null;
 				}
 				break;
 			case RECHARGE: 
@@ -121,7 +129,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.RECHARGE);
 					activeRobot = null;
-					//robotInput = null;
+					robotInput = null;
 				}
 				break;
 			case TAKE_WEAPON: 
@@ -130,20 +138,19 @@ public class AttackRobotController extends RobotController implements PropertyCh
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.TAKE_WEAPON);
 					activeRobot = null;
-					//robotInput = null;
+					robotInput = null;
 				}
 				break;
 			}
-			currentInput = null;
-	}
+		//	currentInput = null;
+		}
+		currentInput = null;
 	}
 	
 	private void moveRobot() { 
+		//activeRobot.setState(RobotStates.MOVING);
 		MovementCommand mc = new  MovementCommand(activeRobot, currentInput);
 		activeRobot.setCommand(mc);
-		//move.setInput(currentInput);
-		//move.execute(activeRobot);
-		activeRobot.setState(RobotStates.MOVING);
 		activeRobot = null;
 		robotInput = null;
 
@@ -159,7 +166,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 	}
 		
 	private void doNothing() {
-		activeRobot.setState(RobotStates.DO_NOTHING);
+		activeRobot.setState(RobotStates.TURN_OVER);
 		//actionSelector.resetInput();
 		activeRobot = null;
 		//robotInput = null;
@@ -177,6 +184,11 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		return this.emptyWeapons;
 	}
 	
+	public Boolean hasAtiveRobot() {
+		if (activeRobot != null) return true;
+		return false;
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
 		
@@ -184,17 +196,18 @@ public class AttackRobotController extends RobotController implements PropertyCh
 			this.emptyWeapons = true;
 			System.out.println("PROPERTY CHANGE BROOOOO!");
 		}
-		if(arg0.getPropertyName() == "ACTIVE") {
+		
+		//Non mi serve dato che il robot si attiva al click, e non in base ad una scelta casuale
+		/*if(arg0.getPropertyName() == "ACTIVE") {
 			this.activeRobot = (AttackRobot) arg0.getNewValue();
-		}
+		}*/
 	}
 	
-	//ActionObject currentAction;
 	private ArrayList<AttackRobot> robots;
 	private AttackRobot activeRobot;	
-	private RobotActionDialog3 actionSelector;
+	transient private RobotActionDialog3 actionSelector;
 	private Vector2 target;		
-	private WeaponDialog weaponSelector;
+	transient private ToolsDialog weaponSelector;
 	private Boolean emptyWeapons;
 	//Variabili di lavoro
 	private RobotStates robotInput;
@@ -295,3 +308,46 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		}
 	}	
 }
+
+
+//In futuro passare lo state del world come parametro di questo metodo
+/*
+* Clicco un bottone sul dialog e setto lo stato del robot di conseguenza. Prendo l'indice del robot e lo tengo come attivo.
+* Al click successivo parte l'else qui sotto. Switcho in base allo stato del robot e faccio qualcosa.
+* Potenzialmente potrei settare uno stato anche nel GameWorld per fare sapere a tutti gli altri controllori che c'è
+* un robot che deve selezionare la meta o un bersaglio in modo tale da non far apparire altri dialogs se clicca su dei robot
+*/
+
+
+/*Robot r = getReference().hasActiveRobot();
+if (r != null) {
+Boolean t = true;
+for (AttackRobot a : this.robots) {
+if (!a.equals(r)) 
+	t = false;
+}
+if(t == true) {
+return;
+}
+if (r != activeRobot) {
+return;
+}
+}*/
+
+/*if (!checkRobot())
+if (activeRobot != null)
+return;*/
+
+
+
+/*i = 0;
+trovato = false;
+if (this.currentInput != null && activeRobot == null && !checkRobot()) {
+while (!trovato && i < robots.size()) {
+AttackRobot robot = robots.get(i);
+if (robot.getCoords().equals(currentInput) && robot.getState() == RobotStates.IDLE){
+	trovato = activateRobot(robot);
+}
+i++;
+}
+}*/

@@ -10,6 +10,10 @@ import robotgameredux.weapons.Bullet;
 
 public class ProjectileSprite extends JComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6152133880402528143L;
 	public ProjectileSprite(Bullet projectile) {
 		this.setSize(25, 25);
 		this.projectile = projectile;
