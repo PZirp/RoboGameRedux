@@ -27,7 +27,7 @@ public class ToolsDialog extends JDialog{
 		
 		for (int i = 0; i < tools.size(); i++) {
 			System.out.println(tools.get(i).getName() + "NOME DI UN TOOL");
-			toolButton but = new toolButton(tools.get(i).getName(), i);
+			toolButton but = new toolButton(tools.get(i).getName() +" (Costo: " + tools.get(i).getCost() + ")" , i);
 			this.add(but);
 			but.addMouseListener(new MouseAdapter() {
 				public void mousePressed(MouseEvent e) {
@@ -60,20 +60,21 @@ public class ToolsDialog extends JDialog{
 		this.selected = null;
 	}
 	
-	private Integer selected;
 
 	public void showWeapons(ArrayList<Weapon> weapons) {
 		for (int i = 0; i < weapons.size(); i++) {
 			System.out.println(weapons.get(i).getName() + "NOME DI UN'ARMA");
-			toolButton but = new toolButton(weapons.get(i).getName() + "("+weapons.get(i).getBulletCount()+")", i);
-			this.add(but);
-			but.addMouseListener(new MouseAdapter() {
-				public void mousePressed(MouseEvent e) {
-					selected = but.getSelectionIndex();
-					setVisible(false);
-					getContentPane().removeAll(); //Rimuove i pulsanti dal dialog
-				}
-			});	
+			if (weapons.get(i).hasBullets()) {
+				toolButton but = new toolButton(weapons.get(i).getName() + "("+weapons.get(i).getBulletCount()+")", i);
+				this.add(but);
+				but.addMouseListener(new MouseAdapter() {
+					public void mousePressed(MouseEvent e) {
+						selected = but.getSelectionIndex();
+						setVisible(false);
+						getContentPane().removeAll(); //Rimuove i pulsanti dal dialog
+					}
+				});	
+			}
 		}
 		
 		JButton annullaBtn = new JButton("Annulla");
@@ -92,6 +93,9 @@ public class ToolsDialog extends JDialog{
 		this.setVisible(true);			
 	}
 
+	private Integer selected;
+
+	
 }
 
 class toolButton extends JButton {

@@ -68,9 +68,13 @@ public class SupportRobot extends Robot implements Support{
 		return tools; //ritornare un clone
 	}
 
-	@Override
+	
 	public UsableTool getActiveTool(Integer i) {
 		return tools.get(i);
+	}
+	
+	public void removeUsedTool(UsableTool tool) {
+		this.tools.remove(tool);
 	}
 
 	public SupportSystem getSupportSystem() {

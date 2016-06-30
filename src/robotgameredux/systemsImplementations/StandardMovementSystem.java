@@ -34,9 +34,10 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 			possiblePaths = gameWorld.pathfind(command.getCoords(), command.getRange());
 			if (!beginMovement(command)) {
 				command.resetRobot();
-				gameWorld.highlightPath(); // Migliorare
+				gameWorld.disablePath(possiblePaths); // Migliorare
 				throw new InvalidTargetException(command);
 			}
+			gameWorld.disablePath(possiblePaths);
 		} else {
 			if (continueMovement(command)) return true;	
 		}
@@ -44,7 +45,6 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 	}
 	
 	public Boolean beginMovement(MovementCommand command) {
-
 		Vector2 destination = command.getDestination();
 		Integer dist = (int) command.getCoords().dst(destination);
 		Vector2 oldPos = command.getCoords();

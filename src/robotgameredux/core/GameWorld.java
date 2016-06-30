@@ -1,5 +1,7 @@
 package robotgameredux.core;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -7,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import robotgameredux.actors.*;
 import robotgameredux.graphic.ObstacleSprite;
+import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.StationSprite;
 import robotgameredux.graphic.TileSprite;
 import robotgameredux.graphic.WallSprite;
@@ -31,69 +34,40 @@ public class GameWorld implements Serializable {
 		tileSet = new Tile[GRID_LENGHT][GRID_HEIGHT];
 		obstacles = new ArrayList<Obstacle>();
 		this.initWorld();
-		this.dialog = new ToolsDialog(null, true);
-		
+		this.dialog = new ToolsDialog(null, true);		
 	}
 	
-	private void initWorld() {
-		
-		int a = 0;
-		for (int j = 0; j < GRID_HEIGHT; j++) {
-				 tileSet[a][j] = new Tile();
-				 WallSprite s = new WallSprite(tileSet[a][j], a, j);
-				 reference.add(s, 0);
-				 tileSet[a][j].setSprite(s);
-				 tileSet[a][j].setCalpestabile(false);
-		}		
-		for (int j = 0; j < GRID_LENGHT; j++) {
-			 tileSet[j][a] = new Tile();
-			 WallSprite s = new WallSprite(tileSet[j][a], j, a);
-			 reference.add(s, 0);
-			 tileSet[j][a].setSprite(s);
-			 tileSet[j][a].setCalpestabile(false);
-		}		
-		for (int i = 1; i < GRID_LENGHT; i++) {
-			for (int j = 1; j < GRID_HEIGHT; j++) {
-				 tileSet[i][j] = new Tile();				 
-				 if (i == GRID_LENGHT-1) {
-					 WallSprite s = new WallSprite(tileSet[i][j], i, j);
-					 reference.add(s, 0);
-					 tileSet[i][j].setSprite(s);
-					 tileSet[i][j].setCalpestabile(false);
-				 } else if (j == GRID_HEIGHT-1) {
-					 WallSprite s = new WallSprite(tileSet[i][j], i, j);
-					 reference.add(s, 0);
-					 tileSet[i][j].setSprite(s);
-					 tileSet[i][j].setCalpestabile(false);
-				 } else {
-				 TileSprite s = new TileSprite(tileSet[i][j], i, j);
-				 reference.add(s, 0);
-				 tileSet[i][j].setSprite(s);
-				 }
-			}
-		}
-		
-	}
-	
-	public void render() {
 
+	public void render() {
 		for (int i = 0; i < GRID_LENGHT; i++) {
 			for (int j = 0; j < GRID_HEIGHT; j++) {
 				tileSet[i][j].render();
 			}
-		}
-		
+		}		
 	}
 	
-	public Tile[][] getTileSet(){
-		return tileSet;
+	/*
+	 * Metodi di setup e costruzione della mappa
+	 */
+	
+	private void initWorld() {
+		for (int i = 0; i < GRID_LENGHT; i++) {
+			for (int j = 0; j < GRID_HEIGHT; j++) {
+				tileSet[i][j] = new Tile();				 
+				if (i == GRID_LENGHT-1 || i == 0 || j == GRID_HEIGHT-1 || j == 0) {
+					WallSprite s = new WallSprite(tileSet[i][j], i, j);
+					reference.getPane().add(s, 0);
+					tileSet[i][j].setSprite(s);
+					tileSet[i][j].setCalpestabile(false);
+				} else {
+					TileSprite s = new TileSprite(tileSet[i][j], i, j);
+					reference.getPane().add(s, 0);
+					tileSet[i][j].setSprite(s);
+				}
+			}
+		}		
 	}
 	
-	public ArrayList<Obstacle> getObstacles() {
-		return this.obstacles;
-	}
-	
-
 	public Obstacle createObstacle(Vector2 position) {
 		Obstacle o = new Obstacle(position); 
 		ObstacleSprite sp = new ObstacleSprite(o);
@@ -101,17 +75,6 @@ public class GameWorld implements Serializable {
 		occupyTile(position);
 		obstacles.add(o);		
 		return o;
-	}
-	
-	public boolean isStation(Vector2 position) {
-		if (position.equals(station.getCoords())) {
-			return true;
-		}
-		return false;
-	}
-	
-	public Integer recharge() {
-		return station.recharge();
 	}
 	
 	public Station createStation(Vector2 position) {
@@ -126,6 +89,22 @@ public class GameWorld implements Serializable {
 		station = s;
 		return s;
 	}
+	
+	
+	/*public Tile[][] getTileSet(){
+		return tileSet;
+	}*/
+	
+	/*public ArrayList<Obstacle> getObstacles() {
+		return this.obstacles;
+	}*/
+	
+
+
+	
+	/*
+	 * Metodi per le tiles
+	 */
 	
 	public boolean isTileFree(Vector2 tile) {
 		
@@ -147,6 +126,10 @@ public class GameWorld implements Serializable {
 		tileSet[tile.getX()][tile.getY()].setCalpestabile(false);
 	}
 	
+	/*
+	 * Metodi relativi agli ostacoli
+	 */
+	
 	public Obstacle isObstacle(Vector2 target) {
 		for (Obstacle obs : obstacles) {
 			if (target.equals(obs.getCoords())) {
@@ -160,7 +143,7 @@ public class GameWorld implements Serializable {
 		Obstacle o = isObstacle(target);
 		if (o != null && robotStrenght > o.getResistence()) {
 			System.out.println("FACCIO PULIZIA");
-			reference.remove(o.getSprite());
+			reference.getPane().remove(o.getSprite());
 			releaseTile(o.getCoords());
 			obstacles.remove(o);
 			return true;
@@ -194,6 +177,18 @@ public class GameWorld implements Serializable {
 		return false;
 	}
 
+	/*
+	 * Metodi relativi alla stazione di rifornimento
+	 */
+	
+	
+	public boolean isStation(Vector2 position) {
+		if (position.equals(station.getCoords())) {
+			return true;
+		}
+		return false;
+	}
+	
 	public Weapon getWeapon() {
 		
 		if (station.getWeapons() != null) {
@@ -202,12 +197,7 @@ public class GameWorld implements Serializable {
 			station.removeWeapon(dialog.getSelected());
 			return weapon;
 		}
-	//	reference.emptyWeapons();
 		return null;
-		
-		//return station.getWeapon(dialog.getSelected());
-		
-		
 	}
 	
 	public UsableTool getTool() {
@@ -227,6 +217,14 @@ public class GameWorld implements Serializable {
 	public void showWeapons() {
 		this.dialog.showWeapons(station.getWeapons());
 	}
+	
+	public Integer recharge() {
+		return station.recharge();
+	}
+	
+	/*
+	 * Metodi di pathfinding
+	 */
 	
 	public ArrayList<Vector2> pathfind(Vector2 origin, int range) {
 		ArrayList<Vector2> path = new ArrayList<Vector2>();
@@ -249,10 +247,10 @@ public class GameWorld implements Serializable {
 		return path;
 	}
 	
-	public void highlightPath(Vector2 origin, int range, Boolean b) {
+	public void highlightPath(Vector2 origin, int range) {
 		ArrayList<Vector2> path = pathfind(origin, range);
 		for (Vector2 v : path) {
-			tileSet[v.getX()][v.getY()].setActive(b);
+			tileSet[v.getX()][v.getY()].setActive(true);
 		}
 		
 		/*tileSet[origin.getX()][origin.getY()].setActive(b);
@@ -273,12 +271,60 @@ public class GameWorld implements Serializable {
 		//reference.repaint();
 	}
 
-	public void highlightPath() {
-		for (int i = 1; i < GRID_LENGHT-1; i++) {
+	public void disablePath(ArrayList<Vector2> path) {
+		for (Vector2 t : path) {
+			tileSet[t.getX()][t.getY()].setActive(false);
+		}
+		/*for (int i = 1; i < GRID_LENGHT-1; i++) {
 			for (int j = 1; j < GRID_HEIGHT-1; j++) {
 				tileSet[i][j].setActive(false);;
 			}
+		}*/
+	}
+	
+	/*
+	 * Metodi relativi alla serializzazione
+	 */
+	
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		inputStream.defaultReadObject();
+		postSerialization();
+	}
+		
+	public void postSerialization() {
+		for (int i = 0; i < GRID_LENGHT; i++) {
+			for (int j = 0; j < GRID_HEIGHT; j++) {
+				tileSet[i][j] = new Tile();				 
+				if (i == GRID_LENGHT-1 || i == 0 || j == GRID_HEIGHT-1 || j == 0) {
+					WallSprite s = new WallSprite(tileSet[i][j], i, j);
+					tileSet[i][j].setSprite(s);
+					tileSet[i][j].setCalpestabile(false);
+				} else {
+					TileSprite s = new TileSprite(tileSet[i][j], i, j);
+					tileSet[i][j].setSprite(s);
+				}
+			}
 		}
+	
+		for (Obstacle s : obstacles) {
+			ObstacleSprite os = new ObstacleSprite(s);
+			s.setSprite(os);
+		}
+		
+		StationSprite ss = new StationSprite(station);
+		station.setSprite(ss);
+	}
+	
+	public void addAgain() {
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 11; j++) {
+				reference.getPane().add(tileSet[i][j].getSprite(), 0);
+			}
+		}
+		for (Obstacle o : obstacles) {
+			reference.getPane().add(o.getSprite(), 0);
+		}		
+		reference.getPane().add(station.getSprite(),0); 
 	}
 	
 	
@@ -295,4 +341,41 @@ public class GameWorld implements Serializable {
  * public void addProjectile(Bullet projectile) {
 	actors.add(projectile);
 	//this.add(projectile.getSprite());
+}*/
+
+
+/*int a = 0;
+for (int j = 0; j < GRID_HEIGHT; j++) {
+		 tileSet[a][j] = new Tile();
+		 WallSprite s = new WallSprite(tileSet[a][j], a, j);
+		 reference.getPane().add(s, 0);
+		 tileSet[a][j].setSprite(s);
+		 tileSet[a][j].setCalpestabile(false);
+}		
+for (int j = 0; j < GRID_LENGHT; j++) {
+	 tileSet[j][a] = new Tile();
+	 WallSprite s = new WallSprite(tileSet[j][a], j, a);
+	 reference.getPane().add(s, 0);
+	 tileSet[j][a].setSprite(s);
+	 tileSet[j][a].setCalpestabile(false);
+}		
+for (int i = 1; i < GRID_LENGHT; i++) {
+	for (int j = 1; j < GRID_HEIGHT; j++) {
+		 tileSet[i][j] = new Tile();				 
+		 if (i == GRID_LENGHT-1) {
+			 WallSprite s = new WallSprite(tileSet[i][j], i, j);
+			 reference.getPane().add(s, 0);
+			 tileSet[i][j].setSprite(s);
+			 tileSet[i][j].setCalpestabile(false);
+		 } else if (j == GRID_HEIGHT-1) {
+			 WallSprite s = new WallSprite(tileSet[i][j], i, j);
+			 reference.getPane().add(s, 0);
+			 tileSet[i][j].setSprite(s);
+			 tileSet[i][j].setCalpestabile(false);
+		 } else {
+		 TileSprite s = new TileSprite(tileSet[i][j], i, j);
+		 reference.getPane().add(s, 0);
+		 tileSet[i][j].setSprite(s);
+		 }
+	}
 }*/

@@ -16,7 +16,7 @@ public abstract class RobotController implements Serializable {
    * Il controller usa un metodo "getInput" dal JDialog per ricavare l'input desiderato (Il JDialog non ha riferimenti al controller per evitare tight-coupling) 
    */
 	
-	transient GameManager gameManager;
+	GameManager gameManager;
 	Vector2 currentInput;
 	
 	public RobotController (GameManager gameManager) {

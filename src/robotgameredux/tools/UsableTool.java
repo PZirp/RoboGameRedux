@@ -6,4 +6,5 @@ public interface UsableTool {
 
 	public void use(Robot robot);
 	public String getName();
+	public int getCost();
 }

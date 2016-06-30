@@ -27,33 +27,30 @@ public class StandardBattleSystem implements BattleSystem, Serializable{
 		this.gameWorld = gw;
 	}
 	
-	//Da decidere se farsi passare direttamente l'arma attiva oppure tutto il robot
-	
 	public Boolean execute(AttackCommand command) throws InvalidTargetException{
 		
 		Integer index = command.getActiveWeaponIndex();
 		Vector2 target = command.getTarget();
-		
+		Weapon weapon = command.getActiveWeapon(index);
 		Robot targeted = actorsManager.isRobot(target);
-		if (targeted == null) {
+		if (targeted == null && weapon.hasBullets()) {
+			throw new InvalidTargetException(command);
+		}
+				
+		// Ci sta, perchè così il robot non diventa inattivo, GameManager cattura l'eccezione, e fa rifare il ciclo della scelta dell'azione e dell'arma
+		if (targeted.getFaction() != command.getFaction()) {
+			Bullet bullet = weapon.fire();
+			command.setState(RobotStates.IDLE);
+			//bullet.hit(targeted);
+			//Rimettere bullet hit come prima e fare la differenza tra arma difensiva ed offensiva, aggiungere costo dell'attacco (in base all'arma)
+			//Rendere Weapon solo un'interfaccia, creare altre armi
+			targeted.damage(bullet);
+			return true;
+		} else {
 			throw new InvalidTargetException(command);
 		}
 		
-		Weapon weapon = command.getActiveWeapon(index);
-		
-		if (weapon.hasBullets() && targeted != null) {
-			// Ci sta, perchè così il robot non diventa inattivo, GameManager cattura l'eccezione, e fa rifare il ciclo della scelta dell'azione e dell'arma
-			if (targeted.getFaction() != command.getFaction()) {
-				Bullet bullet = weapon.fire();
-				command.setState(RobotStates.IDLE);
-				//bullet.hit(targeted);
-				targeted.damage(bullet);
-				return true;
-			} else {
-				throw new InvalidTargetException(command);
-			}
-		}
-		return false;
+		//return false;
 	}
 	
 	private GameWorld gameWorld;

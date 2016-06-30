@@ -42,13 +42,13 @@ public class TeleportMovementSystem implements MovementSystem, Serializable {
 				return true;
 			} else {
 				System.out.println("Movimento impossibile, supera il range");
-				gameWorld.highlightPath(oldPos, command.getRange(), false);
+				gameWorld.disablePath(path);
 				throw new InvalidTargetException(command);
 			}
 
 		} else {
 			System.out.println("Casella occupata");
-			gameWorld.highlightPath(oldPos, command.getRange(), false);
+			gameWorld.disablePath(path);
 			throw new InvalidTargetException(command);
 		}
 
@@ -103,7 +103,7 @@ public class TeleportMovementSystem implements MovementSystem, Serializable {
 
 	private void movementComplete(Vector2 destination, Vector2 oldPos, int range) {
 		gameWorld.releaseTile(oldPos);
-		gameWorld.highlightPath(oldPos, range, false);
+		gameWorld.disablePath(path);
 		gameWorld.occupyTile(destination);
 	}
 

@@ -5,6 +5,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -29,6 +31,11 @@ import robotgameredux.tools.UsableTool;
 public class SupportRobotController extends RobotController implements PropertyChangeListener, Serializable {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 160442651970251872L;
+
 	public SupportRobotController(GameManager gameManager) {
 		super(gameManager);
 		this.activeRobot = null;
@@ -190,11 +197,23 @@ public class SupportRobotController extends RobotController implements PropertyC
 		}
 	}
 	
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		inputStream.defaultReadObject();
+		this.actionSelector = new SupportDialog3(null, false);
+		this.toolSelector = new ToolsDialog(null, false);
+	}
+	
+	/*public void postSerialization() {
+		this.actionSelector = new SupportDialog3(null, false);
+		this.toolSelector = new ToolsDialog(null, false);
+	}*/
+	
 	private ArrayList<SupportRobot> robots;
 	private SupportRobot activeRobot;
 	private Vector2 target;
 	private Boolean emptyTools;
 	//Variabili di lavoro
+
 	private RobotStates robotInput;
 	private int i = 0;
 	private Boolean trovato = false;
@@ -202,6 +221,10 @@ public class SupportRobotController extends RobotController implements PropertyC
 	transient private ToolsDialog toolSelector;
 
 	private class SupportDialog3 extends JDialog{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1588371913027267615L;
 		//private RobotStates input;
 		private JButton moveButton;
 		private JButton takeObjectButton;

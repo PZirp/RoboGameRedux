@@ -26,6 +26,14 @@ public class SupportCommand implements Command, Serializable {
 		
 	}
 	
+	public int getEnergy() {
+		return robot.getEnergy();
+	}
+	
+	public void removeEnergy(int e) {
+		robot.removeEnergy(e);
+	}
+	
 	public Integer getActiveObjectIndex() {
 		return activeObjectIndex;
 	}
@@ -45,7 +53,10 @@ public class SupportCommand implements Command, Serializable {
 	public void setState(RobotStates state) {
 		robot.setState(state);
 	}
-
+	
+	public void removeUsedTool(UsableTool tool) {
+		robot.removeUsedTool(tool);
+	}
 
 	private Integer activeObjectIndex;
 	private Vector2 target;

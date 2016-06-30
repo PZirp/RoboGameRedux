@@ -15,4 +15,8 @@ public interface Support {
 	public void setCommand(Command c);
 	public void setState(RobotStates state);
 	public Faction getFaction();
+	public void removeUsedTool(UsableTool tool);
+	public int getEnergy();
+	public void removeEnergy(int e);
+
 }

@@ -19,13 +19,16 @@ public class Visual extends Sprite{
 	
 	private static final long serialVersionUID = 441178591544695129L;
 	transient private BufferedImage spriteDefault;
-
+	transient private BufferedImage spriteTurnOver;
+	transient private BufferedImage spriteInactive;
 	public Visual(Robot robot) {
 		//this.setSize(100, 100);
 		this.robot = robot;
 		this.setPreferredSize(new Dimension(64,64));
 		try {
 			spriteDefault = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\prova.png"));
+			spriteTurnOver = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\turn_over.png"));
+			spriteInactive = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\disabled.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -53,7 +56,13 @@ public class Visual extends Sprite{
 		/*Graphics2D g2 = (Graphics2D) g;
 		g2.setColor(color);
 		g2.fillRect(0, 0, 64, 64);*/
+		if(robot.getState() == RobotStates.TURN_OVER) {
+			g.drawImage(spriteTurnOver, 0, 0, null);
+		} else if (robot.getState() == RobotStates.INACTIVE) {
+			g.drawImage(spriteInactive, 0, 0, null);
+		} else {
 		g.drawImage(spriteDefault, 0, 0, null);
+		}
 	}
 	
 	public void setColor() {

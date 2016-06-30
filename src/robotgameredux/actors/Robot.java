@@ -129,15 +129,6 @@ public class Robot extends GameObject  {
 		this.faction = faction;
 	}
 	
-	/*public void setTarget(Vector2 target) {
-		this.target = target;
-	}
-	
-	public Vector2 getTarget() {
-		return this.target;
-	}*/
-
-	
 	public int getRange(){
 		return range;
 	}

@@ -22,6 +22,10 @@ public class Player implements PropertyChangeListener, Serializable {
 	private PropertyChangeSupport propertyChange;
 	
 	
+	
+	
+	
+	
 	public Player() {
 		this.active = false;
 		this.moved = true;

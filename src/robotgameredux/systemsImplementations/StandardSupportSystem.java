@@ -12,6 +12,7 @@ import robotgameredux.core.RobotFactory;
 import robotgameredux.core.Vector2;
 import robotgameredux.input.RobotStates;
 import robotgameredux.systemInterfaces.SupportSystem;
+import robotgameredux.tools.UsableTool;
 
 public class StandardSupportSystem implements SupportSystem, Serializable{
 
@@ -29,20 +30,22 @@ public class StandardSupportSystem implements SupportSystem, Serializable{
 		Integer index = command.getActiveObjectIndex();
 		Vector2 target = command.getTarget();
 		Robot targeted = actorsManager.isRobot(target);
-		if (targeted == null) {
+		UsableTool tool = command.getActiveTool(index);
+		
+		if (targeted == null || command.getEnergy() < tool.getCost()) {
 			throw new InvalidTargetException(command);
-		}
-
-		if (command.getFaction() == Faction.FRIEND) {
-			if (targeted.getFaction() == command.getFaction()) {
-				command.getActiveTool(index).use(targeted);
-				return true;
-			} else {
-				throw new InvalidTargetException(command);
-			} 
-		}
-		return false; 
+		}	
+		
+		if (targeted.getFaction() == command.getFaction()) {
+			tool.use(targeted);
+			command.removeUsedTool(tool);
+			command.removeEnergy(tool.getCost());
+			return true;
+		} else {
+			throw new InvalidTargetException(command);
+		} 
 	}
 
 	private RobotFactory actorsManager; 
+	
 }

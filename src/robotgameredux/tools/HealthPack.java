@@ -28,9 +28,13 @@ public class HealthPack implements UsableTool, Serializable {
 		return getClass().getName() + "[Name = " + name + " Health = " + health + "]";
 	}
 	
+	public int getCost() {
+		return cost;
+	}
+	
 	private final String name = "Health pack";
 	private final int health;
-	
+	private final int cost = 5;
 	
 
 }

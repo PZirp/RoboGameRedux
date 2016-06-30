@@ -5,6 +5,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -28,6 +30,12 @@ import robotgameredux.tools.ToolsDialog;
 import robotgameredux.weapons.Weapon;
 
 public class AttackRobotController extends RobotController implements PropertyChangeListener, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6442391257205423409L;
+
 
 	public AttackRobotController (GameManager gameManager) {
 		super(gameManager);
@@ -53,6 +61,11 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		}		
 		//currentInput = null;
 		return false;
+	}*/
+	
+	/*public void postSerialization() {
+		this.actionSelector = new RobotActionDialog3(null, false);
+		this.weaponSelector = new ToolsDialog(null, false);
 	}*/
 	
 	public void parseInput() {
@@ -201,6 +214,13 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		/*if(arg0.getPropertyName() == "ACTIVE") {
 			this.activeRobot = (AttackRobot) arg0.getNewValue();
 		}*/
+	}
+	
+	
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		inputStream.defaultReadObject();
+		this.actionSelector = new RobotActionDialog3(null, false);
+		this.weaponSelector = new ToolsDialog(null, false);
 	}
 	
 	private ArrayList<AttackRobot> robots;

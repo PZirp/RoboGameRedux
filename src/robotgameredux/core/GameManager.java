@@ -6,6 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -25,32 +27,35 @@ import robotgameredux.actors.Robot;
 import robotgameredux.actors.RobotType;
 import robotgameredux.actors.Station;
 import robotgameredux.actors.SupportRobot;
+import robotgameredux.graphic.InfoDialog;
+import robotgameredux.graphic.Sprite;
+import robotgameredux.graphic.Visual;
 import robotgameredux.input.AttackRobotController;
 import robotgameredux.input.RobotStates;
 import robotgameredux.input.SupportRobotController;
 import robotgameredux.players.AI;
 import robotgameredux.players.Player;
+import robotgameredux.systemsImplementations.StandardAttackInteractionSystem;
+import robotgameredux.systemsImplementations.StandardBattleSystem;
+import robotgameredux.systemsImplementations.StandardMovementSystem;
+import robotgameredux.weapons.Weapon;
 
-public class GameManager extends JLayeredPane implements PropertyChangeListener, Serializable {
+public class GameManager implements PropertyChangeListener, Serializable {
+	
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -9095022656022659550L;
-	
+	private static final long serialVersionUID = 1384150637987144235L;
+
 	public GameManager() {
-		this.setSize(1280, 720);
-		this.setLayout(null);
+		pane = new JLayeredPane();
+		pane.setSize(1280, 720);
+		pane.setLayout(null);
 		initGame();
 	}
-	
-	private GameWorld gameWorld;
-	private RobotFactory robotFactory;
-	private Station station;
-	public int a;
-	
-	public void initGame() {
-		a = 23;
+		
+	private void initGame() {
 		player = new Player();
 		player.addPropertyChangeListener(this);
 		
@@ -62,14 +67,15 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		AIattackRobotController = new AttackRobotController(this);
 
 		robotFactory = new RobotFactory (this, gameWorld, attackRobotController, supportRobotController, AIattackRobotController);
-		this.addMouseListener(new InputHandler2());
+		pane.addMouseListener(new InputHandler2());
+		pane.addMouseMotionListener(new InputHandler2());
 		
 		AttackRobot r;
 		r = robotFactory.createStandardAttack(Faction.FRIEND, new Vector2(1,1));
 		gameWorld.occupyTile(new Vector2(1,0));
 		player.addRobot(r);
 		actors.add(r);
-		this.add(r.getSprite(), 1);
+		pane.add(r.getSprite(), 1);
 		r.addPropertyChangeListener(attackRobotController);
 		r.addPropertyChangeListener(this);
 		r.addPropertyChangeListener(robotFactory);
@@ -81,7 +87,7 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		gameWorld.occupyTile(new Vector2(10,5));
 		player.addRobot(r);
 		actors.add(r);
-		this.add(r.getSprite(), 1);
+		pane.add(r.getSprite(), 1);
 		gameWorld.occupyTile(r.getCoords());
 		r.addPropertyChangeListener(attackRobotController);
 		r.addPropertyChangeListener(this);
@@ -94,7 +100,7 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		r = robotFactory.createStandardAttack(Faction.ENEMY, new Vector2(3,8));
 		gameWorld.occupyTile(new Vector2(3,8));
 		actors.add(r);
-		this.add(r.getSprite(), 1);
+		pane.add(r.getSprite(), 1);
 		gameWorld.occupyTile(r.getCoords());
 		r.addPropertyChangeListener(attackRobotController);
 		r.addPropertyChangeListener(this);
@@ -108,7 +114,7 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		gameWorld.occupyTile(new Vector2(6,7));
 		player.addRobot(sr);
 		actors.add(sr);
-		this.add(sr.getSprite(), 1);
+		pane.add(sr.getSprite(), 1);
 		gameWorld.occupyTile(sr.getCoords());
 		sr.addPropertyChangeListener(supportRobotController);
 		sr.addPropertyChangeListener(this);
@@ -120,7 +126,7 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		gameWorld.occupyTile(new Vector2(6,7));
 		player.addRobot(sr);
 		actors.add(sr);
-		this.add(sr.getSprite(), 1);
+		pane.add(sr.getSprite(), 1);
 		gameWorld.occupyTile(sr.getCoords());
 		sr.addPropertyChangeListener(supportRobotController);
 		sr.addPropertyChangeListener(this);
@@ -130,12 +136,12 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		
 		
 		Obstacle o = gameWorld.createObstacle(new Vector2(5, 5));
-		this.add(o.getSprite(), 1);
+		pane.add(o.getSprite(), 1);
 		gameWorld.occupyTile(r.getCoords());
 		obstacles.add(o);
 	
 		Station s = gameWorld.createStation(new Vector2(7,7));
-		this.add(s.getSprite(), 1);
+		pane.add(s.getSprite(), 1);
 		station = s;
 		s.addPropertyChangeListener(attackRobotController);
 		s.addPropertyChangeListener(supportRobotController);
@@ -148,12 +154,11 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		
 	private void removeRobot(Robot robot) {
 		gameWorld.releaseTile(robot.getCoords());
-		this.remove(robot.getSprite());
+		pane.remove(robot.getSprite());
 		actors.remove(robot);
 	}
 	
 	private void runGameLoop() {
-		
 		Thread loop = new Thread()
 			{ 
 				public void run() {
@@ -217,25 +222,26 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 					actors.get(i).render();
 				station.render();
 				gameWorld.render();
+				
 				Thread.sleep(300);
 
 				//this.repaint(); //fare in maniera migliore
 				} 
 				catch (InvalidTargetException e) {
-					JOptionPane.showMessageDialog(this, "Mossa non valida");
+					JOptionPane.showMessageDialog(pane, "Mossa non valida");
 					System.out.println(e.getMessage());
 					e.getCommand().setState(RobotStates.IDLE);
 					activeRobot = null;
 				}
 				catch (InsufficientEnergyException e) {
 					System.out.println(e.getMessage());
-					JOptionPane.showMessageDialog(this, "Il robot non ha abbastanza energia per compiere quest'azione!");
+					JOptionPane.showMessageDialog(pane, "Il robot non ha abbastanza energia per compiere quest'azione!");
 					e.getCommand().setState(RobotStates.IDLE);
 					activeRobot = null;
 				}
 				catch (CriticalStatusException e) {
 					System.out.println(e.getMessage());
-					JOptionPane.showMessageDialog(this, "Un tuo robot è in stato critico!");
+					JOptionPane.showMessageDialog(pane, "Un tuo robot è in stato critico!");
 					activeRobot.setState(RobotStates.TURN_OVER);
 					activeRobot = null;
 				}
@@ -244,27 +250,80 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 				}
 		}
 	}
-
 	
 	public void highlight(Robot r) {
-		gameWorld.highlightPath(r.getCoords(), r.getRange(), true);
+		gameWorld.highlightPath(r.getCoords(), r.getRange());
 	}
 	
 	public Robot hasActiveRobot() {
 		if (activeRobot != null) return activeRobot;
 		return null;
 	}
+		
+	public void endTurn() {
+		player.setActive(false);
+		ai.setActive(false);
+	}
+
+	public JLayeredPane getPane() {
+		return pane;
+	}
 	
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		inputStream.defaultReadObject();
+		postSerialization();
+	}
+	
+	public void postSerialization() {
+		this.pane = new JLayeredPane();
+		gameWorld.addAgain();
+		for (Robot r : actors) {
+			pane.add(r.getSprite(), 1);
+		}
+		pane.repaint();
+		for (Robot r : actors) {
+			System.out.println(r.toString());
+		}
+		pane.addMouseListener(new InputHandler2());
+		JOptionPane.showMessageDialog(null, "Eccomi");
+		runGameLoop();
+	}
+	
+	public void checkEndTurnButton() {
+		if (ai.isActve() && ai.hasMoved()) {
+			endTurnButton.setEnabled(true);
+		}
+		if (player.isActve() && player.hasMoved()) {
+			endTurnButton.setEnabled(true);
+		}
+	}
+	
+	public void createEndTurnButton() {
+		endTurnButton = new JButton("Termina turno");
+		endTurnButton.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+					if (endTurnButton.isEnabled()) {
+						endTurn();
+						endTurnButton.setEnabled(false);
+					}
+				}
+		});
+		pane.getParent().add(endTurnButton, BorderLayout.SOUTH);
+		endTurnButton.setEnabled(false);
+	}
+	
+	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
 		if (arg0.getPropertyName() == "DESTROYED") {
 			Robot r = (Robot) arg0.getOldValue();
-			this.remove(r.getSprite());
+			pane.remove(r.getSprite());
 			removeRobot(r);
 		}
-		if (arg0.getPropertyName() == "MOVING") {
+		//Non serve più
+		/*if (arg0.getPropertyName() == "MOVING") {
 			Robot r = (Robot) arg0.getOldValue();
 			gameWorld.highlightPath(r.getCoords(), r.getRange(), false);
-		}
+		}*/
 		if (arg0.getPropertyName() == "ACTIVE") {
 			//JOptionPane.showMessageDialog(null, "Attivato");
 			activeRobot = (Robot) arg0.getOldValue();
@@ -278,26 +337,12 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 		
 	}
 	
-	public void endTurn() {
-		player.setActive(false);
-		ai.setActive(false);
-	}
-
-	public void createEndTurnButton() {
-		endTurnButton = new JButton("Termina turno");
-		endTurnButton.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-					if (endTurnButton.isEnabled()) {
-						endTurn();
-						endTurnButton.setEnabled(false);
-					}
-				}
-		});
-		this.getParent().add(endTurnButton, BorderLayout.SOUTH);
-		endTurnButton.setEnabled(false);
-	}
 	
-	private JButton endTurnButton;
+	private GameWorld gameWorld;
+	private RobotFactory robotFactory;
+	private Station station;
+	transient private JLayeredPane pane;
+	transient private JButton endTurnButton;
 	private AI ai;
 	private Player player;
 	private Robot activeRobot;
@@ -311,7 +356,13 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 	
 	class InputHandler2 extends MouseAdapter{
 		
-		public InputHandler2() {		}
+		InfoDialog info;
+		
+		public InputHandler2() {
+			info = new InfoDialog(null, false);
+		}
+		
+		
 		
 		@Override
 		public void mousePressed(MouseEvent e) {
@@ -328,6 +379,21 @@ public class GameManager extends JLayeredPane implements PropertyChangeListener,
 			
 			
 		}
+		
+		public void mouseMoved(MouseEvent e) {
+			Robot r = null;
+			Vector2 pos = new Vector2(e.getX()/64, e.getY()/64);
+			r = robotFactory.isRobot(pos);
+			if (r != null) {
+				//JOptionPane.showMessageDialog(null, r.getEnergy());
+				info.setHPlabel(r.getHealth());
+				info.setEnergyLabel(r.getEnergy());
+				info.setVisible(true);
+				info.setLocation(e.getPoint());
+			}
+		}
 	}
+
+	
 
 }

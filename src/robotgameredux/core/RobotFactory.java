@@ -2,8 +2,12 @@ package robotgameredux.core;
 
 import java.util.ArrayList;
 
+import javax.swing.JDialog;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import robotgameredux.actors.AttackRobot;
@@ -74,6 +78,7 @@ public class RobotFactory implements PropertyChangeListener, Serializable {
 		else this.AIattackRobotController.addRobot(newRobot);
 		this.robots.add(newRobot);
 		return newRobot;
+	
 	}
 	
 	public SupportRobot createSupport(Faction faction, Vector2 position) {
@@ -106,8 +111,7 @@ public class RobotFactory implements PropertyChangeListener, Serializable {
 		return null;
 	}
 	
-	
-	
+
 	public void remove(Robot robot) {
 		robots.remove(robot);
 		//supportRobots.remove(robot);
@@ -127,6 +131,28 @@ public class RobotFactory implements PropertyChangeListener, Serializable {
 		}
 		
 	}
+	
+
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+		inputStream.defaultReadObject();
+		for (Robot r : robots) {
+			if (r instanceof AttackRobot) {
+				Sprite spr = new Visual(r);
+				r.addSprite(spr);
+				
+			}
+			if (r instanceof SupportRobot) {
+				Sprite spr = new VisualSup(r);
+				r.addSprite(spr);
+			}
+		}	
+	}
+		
+/*	public void postSerialization() {
+		for (Robot r : robots) {
+			if (r.getClass() )
+		}
+	}*/
 	
 	private GameWorld gameWorld;
 	private GameManager reference;

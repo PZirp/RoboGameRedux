@@ -73,7 +73,7 @@ public class Weapon implements Serializable {
 	
 	private String name = "Default";
 	//private Robot onwerBot;
-	private int bullets = 3;
+	private int bullets = 1;
 	private int damage = 50;
 	private int shieldPenetration = 0;
 	
