@@ -1,24 +1,13 @@
 package robotgameredux.actors;
 
-import java.util.ArrayList;
 
-import Exceptions.InvalidTargetException;
-import robotgameredux.core.GameWorld;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.graphic.ObstacleSprite;
-import robotgameredux.graphic.Sprite;
-import robotgameredux.graphic.Visual;
-import robotgameredux.input.RobotStates;
-import robotgameredux.tools.UsableTool;
-
-/*
- * Penso che il controllore degli ostacoli e delle stazioni sarà il GameWorld stesso
- */
 
 
 public class Obstacle extends GameObject{
 	
-	public Obstacle (Vector2 coords) {
+	public Obstacle (Coordinates coords) {
 		super(coords);
 	}
 	
@@ -65,6 +54,7 @@ public class Obstacle extends GameObject{
 		return clone;
 	}
 	
+	public void update() {};
 	
 	transient private ObstacleSprite sprite;
 	private int resistence = 7;

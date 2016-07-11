@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 
 public abstract class GameObject implements Cloneable, Serializable {
 
@@ -13,21 +13,45 @@ public abstract class GameObject implements Cloneable, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 2357436338766396248L;
-	public GameObject(Vector2 coords) {
+	public GameObject(Coordinates coords) {
 		this.coords = coords;
 	}
-
-	public Vector2 getCoords() {
+	
+	/**
+	 * Ritorna le coordinate correnti del GameObject
+	 * @return Le coordinate correnti
+	 */
+	
+	public Coordinates getCoords() {
 		return coords;
 	}
 	
-	public void setCoords(Vector2 coords) {
+	/**
+	 * Setta le coordinate dell'oggetto in base all'argomento
+	 * @param le nuove coordinate dell'oggetto
+	 */
+	
+	public void setCoords(Coordinates coords) {
 		this.coords = coords;
 	}
+	
+	/**
+	 * Ritorna una rappresentazione in forma di stringa dell'oggetto
+	 * @return la stringa che rappresenta l'oggetto
+	 * @see java.lang.Object#toString()
+	 */
+	
 	
 	public String toString() {
 		return getClass().getName() + coords.toString();
 	}
+	
+	/**
+	 * Effettua un controllo di equivalenza dell'oggetto con il parametro passato
+	 * @param l'oggetto da confrontare
+	 * @return true se gli oggetti sono uguali, false altrimenti
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	
 	public boolean equals(Object otherObject) {
 		if (otherObject == null) return false;
@@ -35,6 +59,12 @@ public abstract class GameObject implements Cloneable, Serializable {
 		GameObject other = (GameObject) otherObject;
 		return coords.equals(other.coords);
 	}
+	
+	/**
+	 * Ritorna un deep-clone di questo oggetto
+	 * @return il clone 
+	 * @see java.lang.Object#clone()
+	 */
 	
 	public GameObject clone() {
 		try {
@@ -46,8 +76,11 @@ public abstract class GameObject implements Cloneable, Serializable {
 		}
 	}
 		
-	public void update() throws InvalidTargetException, InsufficientEnergyException  {};
-	public void render() {};
-	private Vector2 coords;	
+	public abstract void update() throws InvalidTargetException, InsufficientEnergyException;
+	public abstract void render();
+	
+	/** Le coordinate dell'oggetto **/
+	
+	private Coordinates coords;	
 	
 }

@@ -1,27 +1,30 @@
 package robotgameredux.actors;
 
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
 import robotgameredux.input.RobotStates;
 import robotgameredux.systemInterfaces.MovementSystem;
-import robotgameredux.weapons.Bullet;
-import robotgameredux.weapons.Weapon;
+import robotgameredux.weapons.PistolBullet;
+import robotgameredux.weapons.Pistol;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import Exceptions.CriticalStatusException;
 import Exceptions.InsufficientEnergyException;
-import robotgameredux.Commands.Command;
+import Exceptions.InvalidTargetException;
+import robotgameredux.CommandsInterfaces.Command;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
 
 public class Robot extends GameObject  {
 
-	public Robot(Vector2 coords, MovementSystem ms){
+	public Robot(Coordinates coords, MovementSystem ms){
 		super(coords);
 		this.movementSystem = ms;
 		this.state = RobotStates.IDLE;
@@ -41,6 +44,26 @@ public class Robot extends GameObject  {
 		sprite.update();
 	}
 	
+	public void update()throws InvalidTargetException, InsufficientEnergyException {
+		Boolean res = false;
+		if (currentCommand != null) {
+			res = currentCommand.execute();
+			//JOptionPane.showMessageDialog(null, "AggiornO");
+		}		
+		if (res == true) {
+			setState(RobotStates.TURN_OVER);
+		}
+		if (energy <= 0 && state != RobotStates.INACTIVE) {
+			setState(RobotStates.INACTIVE);
+			getPropertyChange().firePropertyChange("DEACTIVATED", this, null);
+			return;
+		}
+	}
+	
+	/*
+	 * Metodi relativi all'energia
+	 */
+	
 	public int getEnergy() {
 		return this.energy;
 	}
@@ -51,21 +74,17 @@ public class Robot extends GameObject  {
 			//this.state = RobotStates.INACTIVE;
 			//propertyChange.firePropertyChange("DEACTIVATED", this, null);
 		}
-	}
-		
+	}	
 	
 	public void addEnergy(int energy) {
-		System.out.println("Eccomi qui!!!!!");
-		
 		if (this.energy == 0) {
+			this.setState(RobotStates.TURN_OVER);
 			propertyChange.firePropertyChange("REACTIVATED", this, null);
 		}
-		
 		this.energy = this.energy + energy;
-		
-		if (this.energy > 100) 
+		if (this.energy > 100) { 
 			this.energy = 100;
-		
+		}
 	}
 	
 	public void setState(RobotStates state) {
@@ -78,47 +97,56 @@ public class Robot extends GameObject  {
 	}
 	
 	public void setSprite(Sprite sprite) {
-		/*fare meglio, non mi piace passare sia la sprite che il riferimento
-		*sarebbe forse meglio spostare la sprite nel robot specifico?
-		*Non posso semplicemente creare la sprite in questa classe generica perchè non userebbe la sprite giusta
-		*Quindi devo crearla nella sottoclasse in base al tipo e poi aggiungerla allo schermo
-		*/
 		this.sprite = sprite;
-		//reference.addRobotToScreen(sprite); //Passa la sprite al controllore che comunica con il GameWorld (JPanel) e la aggiunge sullo schermo
 	}
 	
 	public Sprite getSprite(){
 		return sprite;
 	}
 	
+	/*
+	 * Metodi relativi alla salute
+	 */
+	
 	public int getHealth() {
 		return this.health;
 	}
 	
-	//Update health serve per gli oggetti di guarigione
+	//heal serve per gli oggetti di guarigione
 	
 	public void heal(int health) {
 		int newHealth = this.health + health;
-		if (newHealth > 1000) 
+		if (newHealth > 100) 
 			this.health = 100;
 		else 
 			this.health = newHealth;
 	}
-	
-	
-	
-	public void damage(Bullet bullet) throws CriticalStatusException {
 		
-		int effectiveDamage = bullet.getDamage() - (this.defense - bullet.getShieldPenetration());
-		this.health = this.health - effectiveDamage;
-		//if energy <25% throw critical status exception
+	public void damage(int damage) throws CriticalStatusException {
+		
+		this.health = health - damage;
+		
 		if (health <= 25 && health > 0) {
 			throw new CriticalStatusException();
 		}
+		
 		if (this.health <= 0) {
 			//Mandare un propertychangedevent che dice che è morto per farlo rimuovere
 			propertyChange.firePropertyChange("DESTROYED", this, null);
 		}
+	}
+	
+	public int getDefense() {
+		return this.defense;
+	}
+	
+	public void setDefense(int defense) {
+		int newDefense = this.defense + defense;
+		if(newDefense > 20) {
+			this.defense = 20;
+		} else {
+			this.defense = newDefense;
+		}		
 	}
 	
 	public Faction getFaction() {
@@ -136,8 +164,7 @@ public class Robot extends GameObject  {
 	public int getStrenght() {
 		return strenght;
 	}
-	
-	
+		
 	public void addSprite(Sprite sprite) {
 		this.sprite = sprite;
 	}

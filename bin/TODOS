@@ -2,12 +2,13 @@
  
  Grosse:
  
- 1) Turni
+ //Fare in modo che i tasti distruggi/spingi ostacolo spariscano quando non ce ne sono più sul campo, e il pulsante ricarica sparisca quando non c'è più energia nella stazione OK
+ Fare test attacco e supporto, quindi fare anche l'interfaccia IRobotFactory
+ //Rinominare Vector2 in Coordinate e ripulire i metodi non usati OK
+ Rendere la classe IA sottoclasse di Player? NO, perchè devo accedere alle variabili
+ Fare clone dei sistemi (per clone dei robot)
+ 
  2) IA
- 3) Serializzazione
- 4) GUI migliore
+ 4) GUI migliore?
  
- Più piccole:
- 
- 1) Fare un unico dialog static per la visualizzazione degli inventari
- 
+ Controllo generale del codice

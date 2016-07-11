@@ -11,7 +11,7 @@ import robotgameredux.actors.Obstacle;
 import robotgameredux.actors.Robot;
 import robotgameredux.input.RobotStates;
 
-public class ObstacleSprite extends JComponent {
+public class ObstacleSprite extends Sprite {
 	
 	/**
 	 * 

@@ -5,10 +5,11 @@ import java.util.ArrayList;
 
 import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.MovementCommand;
+import robotgameredux.Commands.RobotMovementCommand;
+import robotgameredux.CommandsInterfaces.MovementCommandInterface;
 import robotgameredux.actors.Robot;
 import robotgameredux.core.GameWorld;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.input.RobotStates;
 import robotgameredux.systemInterfaces.MovementSystem;
 
@@ -23,11 +24,11 @@ public class TeleportMovementSystem implements MovementSystem, Serializable {
 	}
 
 	@Override
-	public Boolean execute(MovementCommand command) throws InvalidTargetException, InsufficientEnergyException {
+	public Boolean execute(MovementCommandInterface command) throws InvalidTargetException, InsufficientEnergyException {
 
-		Vector2 destination = command.getDestination();
+		Coordinates destination = command.getDestination();
 		Integer dist = (int) command.getCoords().dst(destination);
-		Vector2 oldPos = command.getCoords();
+		Coordinates oldPos = command.getCoords();
 
 		if (command.getEnergy() == 0 || command.getEnergy() < dist)
 			throw new InsufficientEnergyException(command);
@@ -54,28 +55,28 @@ public class TeleportMovementSystem implements MovementSystem, Serializable {
 
 	}
 
-	private void pathfind(Vector2 origin, int range) {
-		path = new ArrayList<Vector2>();
+	private void pathfind(Coordinates origin, int range) {
+		path = new ArrayList<Coordinates>();
 
 		for (int i = 0; i < range; i++) {
 			if (origin.getY() + i < gameWorld.GRID_HEIGHT) {
-				path.add(new Vector2(origin.getX(), origin.getY() + i));
+				path.add(new Coordinates(origin.getX(), origin.getY() + i));
 			}
 			if (origin.getY() - i >= 0) {
-				path.add(new Vector2(origin.getX(), origin.getY() - i));
+				path.add(new Coordinates(origin.getX(), origin.getY() - i));
 			}
 			if (origin.getX() + i < gameWorld.GRID_LENGHT) {
-				path.add(new Vector2(origin.getX() + i, origin.getY()));
+				path.add(new Coordinates(origin.getX() + i, origin.getY()));
 			}
 			if (origin.getX() - i >= 0) {
-				path.add(new Vector2(origin.getX() - i, origin.getY()));
+				path.add(new Coordinates(origin.getX() - i, origin.getY()));
 			}
 		}
 	}
 
 	// pathfinding qui, metodo privato
 
-	private Boolean destinationCheck(Vector2 destination, Vector2 current) {
+	private Boolean destinationCheck(Coordinates destination, Coordinates current) {
 
 		Boolean b = validDestination(destination);
 
@@ -93,20 +94,21 @@ public class TeleportMovementSystem implements MovementSystem, Serializable {
 		return false;
 	}
 
-	private Boolean validDestination(Vector2 destination) {
-		for (Vector2 c : path) {
+	private Boolean validDestination(Coordinates destination) {
+		for (Coordinates c : path) {
 			if (c.equals(destination))
 				return true;
 		}
 		return false;
 	}
 
-	private void movementComplete(Vector2 destination, Vector2 oldPos, int range) {
+	private void movementComplete(Coordinates destination, Coordinates oldPos, int range) {
 		gameWorld.releaseTile(oldPos);
 		gameWorld.disablePath(path);
 		gameWorld.occupyTile(destination);
 	}
 
 	private GameWorld gameWorld;
-	private ArrayList<Vector2> path;
+	private ArrayList<Coordinates> path;
+
 }

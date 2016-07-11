@@ -2,7 +2,7 @@ package Exceptions;
 
 import java.io.IOException;
 
-import robotgameredux.Commands.Command;
+import robotgameredux.CommandsInterfaces.Command;
 
 public class InsufficientEnergyException extends IOException {
 

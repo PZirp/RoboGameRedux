@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import robotgameredux.weapons.Pistol;
 import robotgameredux.weapons.Weapon;
 
 public class ToolsDialog extends JDialog{
@@ -61,11 +62,11 @@ public class ToolsDialog extends JDialog{
 	}
 	
 
-	public void showWeapons(ArrayList<Weapon> weapons) {
-		for (int i = 0; i < weapons.size(); i++) {
-			System.out.println(weapons.get(i).getName() + "NOME DI UN'ARMA");
-			if (weapons.get(i).hasBullets()) {
-				toolButton but = new toolButton(weapons.get(i).getName() + "("+weapons.get(i).getBulletCount()+")", i);
+	public void showWeapons(ArrayList<Weapon> arrayList) {
+		for (int i = 0; i < arrayList.size(); i++) {
+			System.out.println(arrayList.get(i).getName() + "NOME DI UN'ARMA");
+			if (arrayList.get(i).hasBullets()) {
+				toolButton but = new toolButton(arrayList.get(i).getName() + "("+arrayList.get(i).getBulletCount()+")", i);
 				this.add(but);
 				but.addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {

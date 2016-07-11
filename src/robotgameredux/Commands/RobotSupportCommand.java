@@ -2,25 +2,31 @@ package robotgameredux.Commands;
 
 import java.io.Serializable;
 
+import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
+import robotgameredux.CommandsInterfaces.SupportCommandInterface;
 import robotgameredux.actors.Faction;
 import robotgameredux.actors.Robot;
-import robotgameredux.actors.Support;
 import robotgameredux.actors.SupportRobot;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.input.RobotStates;
 import robotgameredux.tools.UsableTool;
 
-public class SupportCommand implements Command, Serializable {
+public class RobotSupportCommand implements SupportCommandInterface<SupportRobot>, Serializable {
 
-	public SupportCommand(Integer activeObjectIndex, Vector2 target, Support robot) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8562057930386490438L;
+	
+	public RobotSupportCommand(Integer activeObjectIndex, Coordinates target, SupportRobot robot) {
 		this.activeObjectIndex = activeObjectIndex;
 		this.target = target;
 		this.robot = robot;
 	}
 	
 	@Override
-	public Boolean execute() throws InvalidTargetException{
+	public Boolean execute() throws InvalidTargetException, InsufficientEnergyException {
 		robot.setCommand(null);
 		return robot.getSupportSystem().execute(this);
 		
@@ -34,19 +40,19 @@ public class SupportCommand implements Command, Serializable {
 		robot.removeEnergy(e);
 	}
 	
-	public Integer getActiveObjectIndex() {
+	/*public Integer getActiveObjectIndex() {
 		return activeObjectIndex;
-	}
+	}*/
 
-	public UsableTool getActiveTool(int i) {
-		return robot.getActiveTool(i);
+	public UsableTool getActiveTool() {
+		return robot.getActiveTool(activeObjectIndex);
 	}
 	
 	public Faction getFaction() {
 		return robot.getFaction();
 	}
 	
-	public Vector2 getTarget() {
+	public Coordinates getTarget() {
 		return target;
 	}
 	
@@ -59,8 +65,8 @@ public class SupportCommand implements Command, Serializable {
 	}
 
 	private Integer activeObjectIndex;
-	private Vector2 target;
-	private Support robot;
+	private Coordinates target;
+	private SupportRobot robot;
 
 
 	

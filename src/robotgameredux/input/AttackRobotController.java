@@ -15,18 +15,19 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import robotgameredux.Commands.AtkInteractCommand;
-import robotgameredux.Commands.AttackCommand;
-import robotgameredux.Commands.Command;
-import robotgameredux.Commands.MovementCommand;
+import robotgameredux.Commands.RobotAttackInteractCommand;
+import robotgameredux.Commands.RobotAttackCommand;
+import robotgameredux.Commands.RobotMovementCommand;
+import robotgameredux.CommandsInterfaces.Command;
 import robotgameredux.actors.AttackRobot;
 import robotgameredux.actors.Robot;
 import robotgameredux.actors.SupportRobot;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.graphic.Sprite;
 import robotgameredux.tools.ToolsDialog;
+import robotgameredux.weapons.Pistol;
 import robotgameredux.weapons.Weapon;
 
 public class AttackRobotController extends RobotController implements PropertyChangeListener, Serializable {
@@ -41,10 +42,9 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		super(gameManager);
 		this.activeRobot = null;
 		this.robots = new ArrayList<AttackRobot>();
-		this.actionSelector = new RobotActionDialog3(null, false);
+		this.actionSelector = new RobotActionDialog(null, false);
 		this.weaponSelector = new ToolsDialog(null, false);
 		currentInput = null;
-		emptyWeapons = false;
 	}
 
 	/*
@@ -89,10 +89,6 @@ public class AttackRobotController extends RobotController implements PropertyCh
 			}
 		}		
 		else if (activeRobot != null) { 
-			/*if (robotInput == null) {
-				actionSelector.showAction(activeRobot.getSprite());
-				currentInput = null; 
-			}*/
 			switch(robotInput) {
 			case IDLE: 
 				break;
@@ -117,7 +113,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 					this.target = currentInput;
 				}
 				if (target != null) {
-					Command c = new AttackCommand(weaponSelector.getSelected(), target, activeRobot);
+					Command c = new RobotAttackCommand(weaponSelector.getSelected(), target, activeRobot);
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.ATTACKING);
 					activeRobot = null;
@@ -129,7 +125,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				break;
 			case DESTROY_OBSTACLE:
 				if(currentInput != null) {
-					Command c = new AtkInteractCommand(activeRobot, currentInput);
+					Command c = new RobotAttackInteractCommand(activeRobot, currentInput);
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.DESTROY_OBSTACLE);
 					activeRobot = null;
@@ -138,7 +134,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				break;
 			case RECHARGE: 
 				if (currentInput != null) {
-					Command c = new AtkInteractCommand(activeRobot, currentInput);
+					Command c = new RobotAttackInteractCommand(activeRobot, currentInput);
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.RECHARGE);
 					activeRobot = null;
@@ -147,7 +143,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				break;
 			case TAKE_WEAPON: 
 				if (currentInput != null) {
-					Command c = new AtkInteractCommand(activeRobot, currentInput);
+					Command c = new RobotAttackInteractCommand(activeRobot, currentInput);
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.TAKE_WEAPON);
 					activeRobot = null;
@@ -162,7 +158,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 	
 	private void moveRobot() { 
 		//activeRobot.setState(RobotStates.MOVING);
-		MovementCommand mc = new  MovementCommand(activeRobot, currentInput);
+		RobotMovementCommand mc = new  RobotMovementCommand(activeRobot, currentInput);
 		activeRobot.setCommand(mc);
 		activeRobot = null;
 		robotInput = null;
@@ -189,14 +185,6 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		robots.add(robot);
 	}
 	
-	public void setEmptyWeapons(Boolean b) {
-		this.emptyWeapons = b;
-	}
-	
-	public Boolean getEmptyWeapon() {
-		return this.emptyWeapons;
-	}
-	
 	public Boolean hasAtiveRobot() {
 		if (activeRobot != null) return true;
 		return false;
@@ -206,36 +194,36 @@ public class AttackRobotController extends RobotController implements PropertyCh
 	public void propertyChange(PropertyChangeEvent arg0) {
 		
 		if(arg0.getPropertyName() == "EMPTY_WEAPONS") {
-			this.emptyWeapons = true;
-			System.out.println("PROPERTY CHANGE BROOOOO!");
+			/*this.emptyWeapons = true;
+			System.out.println("PROPERTY CHANGE BROOOOO!");*/
+			actionSelector.removeTakeWeaponButton();
 		}
-		
-		//Non mi serve dato che il robot si attiva al click, e non in base ad una scelta casuale
-		/*if(arg0.getPropertyName() == "ACTIVE") {
-			this.activeRobot = (AttackRobot) arg0.getNewValue();
-		}*/
+		if (arg0.getPropertyName() == "NO_MORE_OBSTACLES") {
+			actionSelector.removeDestroyObstacleButton();
+		}
+	
 	}
 	
 	
 	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 		inputStream.defaultReadObject();
-		this.actionSelector = new RobotActionDialog3(null, false);
+		this.actionSelector = new RobotActionDialog(null, false);
 		this.weaponSelector = new ToolsDialog(null, false);
 	}
 	
 	private ArrayList<AttackRobot> robots;
 	private AttackRobot activeRobot;	
-	transient private RobotActionDialog3 actionSelector;
-	private Vector2 target;		
+	transient private RobotActionDialog actionSelector;
+	private Coordinates target;		
 	transient private ToolsDialog weaponSelector;
-	private Boolean emptyWeapons;
+	//private Boolean emptyWeapons;
 	//Variabili di lavoro
 	private RobotStates robotInput;
 	private int i = 0;
 	private Boolean trovato = false;
 	
 	
-	private class RobotActionDialog3 extends JDialog {
+	private class RobotActionDialog extends JDialog {
 
 		private JButton moveButton;
 		private JButton attackButton;
@@ -245,7 +233,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		private JButton takeWeapon;
 		private AttackRobotController controller;
 		
-		public RobotActionDialog3(JFrame owner, boolean modal) {
+		public RobotActionDialog(JFrame owner, boolean modal) {
 			super(owner, true);
 			this.setLayout(new GridLayout(0, 1));
 			this.setUndecorated(true);
@@ -256,12 +244,13 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		}
 		
 		public void showAction(Sprite sprite) {
-			this.setLocation(sprite.getLocation().x+71, sprite.getLocation().y+30);
+			//this.setLocation(sprite.getLocation().x+71, sprite.getLocation().y+30);
+			this.setLocationRelativeTo(sprite);
 			//this.setLocationRelativeTo(sprite);	
 			
-			if (emptyWeapons) {
+			/*if (emptyWeapons) {
 				this.remove(takeWeapon);
-			}
+			}*/
 			
 			this.setVisible(true);		
 		}
@@ -276,7 +265,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				}
 			});
 			
-			attackButton = new JButton("Attacca");
+			attackButton = new JButton("Usa arma");
 			this.add(attackButton);
 			attackButton.addMouseListener(new MouseAdapter() {
 				public void mousePressed(MouseEvent e) {
@@ -325,6 +314,14 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				}
 			});
 				
+		}
+		
+		public void removeTakeWeaponButton() {
+			this.remove(takeWeapon);
+		}
+		
+		public void removeDestroyObstacleButton() {
+			this.remove(this.destroyButton);
 		}
 	}	
 }

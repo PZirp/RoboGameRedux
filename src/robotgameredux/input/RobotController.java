@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.graphic.Sprite;
 import robotgameredux.graphic.Visual;
 
@@ -17,7 +17,7 @@ public abstract class RobotController implements Serializable {
    */
 	
 	GameManager gameManager;
-	Vector2 currentInput;
+	Coordinates currentInput;
 	
 	public RobotController (GameManager gameManager) {
 		this.gameManager = gameManager;
@@ -25,7 +25,7 @@ public abstract class RobotController implements Serializable {
 	
 	public abstract void parseInput();
 	
-	public void setInput(Vector2 currentInput) {
+	public void setInput(Coordinates currentInput) {
 		this.currentInput = currentInput;
 	}
 	

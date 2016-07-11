@@ -9,8 +9,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-/*public class WeaponDialog extends JDialog{
-
+public class WeaponDialog extends JDialog{
+/*
 	
 	
 	
@@ -79,5 +79,5 @@ class wepButton extends JButton {
 		return this.index;
 	}
 	
-	private int index;
-}*/
+	private int index;*/
+}

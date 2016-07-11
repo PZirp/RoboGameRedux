@@ -3,30 +3,38 @@ package robotgameredux.Commands;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
+import robotgameredux.CommandsInterfaces.SupInteractCommandInterface;
 import robotgameredux.actors.AttackRobot;
 import robotgameredux.actors.SupportRobot;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.input.RobotStates;
 import robotgameredux.tools.UsableTool;
-import robotgameredux.weapons.Weapon;
+import robotgameredux.weapons.Pistol;
 
-public class SupInteractCommand implements Command, Serializable {
+public class RobotSupportInteractCommand implements SupInteractCommandInterface<SupportRobot>, Serializable {
 
-	public SupInteractCommand(SupportRobot robot, Vector2 target) {
+	/*
+	 * Implementazione dell'interfaccia SupInteractCommandInterface<T> per il tipo SupportRobot
+	 */
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6872378134853586932L;
+	public RobotSupportInteractCommand(SupportRobot robot, Coordinates target) {
 		this.robot = robot;
 		this.target = target;
 	}
 
 	@Override
-	public Boolean execute() throws InvalidTargetException {
-		System.out.println("All'interno del comando 0000000000000000000000000000");
-
+	public Boolean execute() throws InvalidTargetException, InsufficientEnergyException {
 		robot.setCommand(null);
 		return robot.getInteractionSystem().execute(this);
 	}
 	
-	public Vector2 getTarget() {
+	public Coordinates getTarget() {
 		return target;
 	}
 	
@@ -38,7 +46,7 @@ public class SupInteractCommand implements Command, Serializable {
 		robot.setState(state);
 	}
 	
-	public Vector2 getCoords() {
+	public Coordinates getCoords() {
 		return robot.getCoords();
 	}
 
@@ -54,15 +62,21 @@ public class SupInteractCommand implements Command, Serializable {
 		robot.removeEnergy(n);
 	}
 	
-	public ArrayList<UsableTool> getInventory() {
+/*public ArrayList<UsableTool> getInventory() {
 		return robot.getTools();
-	}
+	}*/
 	
 	public void addTool(UsableTool t) {
 		robot.addTool(t);
 	}
 	
+	public int getEnergy() {
+		return robot.getEnergy();
+	}
+	
 	private SupportRobot robot;
-	private Vector2 target;
+	private Coordinates target;
+
+
 	
 }

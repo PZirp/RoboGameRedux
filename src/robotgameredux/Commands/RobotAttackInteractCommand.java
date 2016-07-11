@@ -3,68 +3,77 @@ package robotgameredux.Commands;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
+import robotgameredux.CommandsInterfaces.AtkInteractCommandInterface;
 import robotgameredux.actors.AttackRobot;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.input.RobotStates;
+import robotgameredux.weapons.Pistol;
 import robotgameredux.weapons.Weapon;
 
-public class AtkInteractCommand implements Command, Serializable {
+public class RobotAttackInteractCommand implements AtkInteractCommandInterface<AttackRobot>, Serializable {
 
+	/*
+	 * Implementazione dell'interfaccia AtckInteractCommandInterface specifica per i tipi AttackRobot
+	 */
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8878613123004990541L;
-	public AtkInteractCommand(AttackRobot robot, Vector2 target) {
+	public RobotAttackInteractCommand(AttackRobot robot, Coordinates target) {
 		this.robot = robot;
 		this.target = target;
 	}
 
 	@Override
-	public Boolean execute() throws InvalidTargetException {
-		System.out.println("All'interno del comando 0000000000000000000000000000");
-
+	public Boolean execute() throws InvalidTargetException, InsufficientEnergyException {
 		robot.setCommand(null);
 		return robot.getInteractionSystem().execute(this);
 	}
-	
-	public Vector2 getTarget() {
+	@Override
+	public Coordinates getTarget() {
 		return target;
 	}
-	
+	@Override
 	public RobotStates getState() {
 		return robot.getState();
 	}
-	
+	@Override
 	public void setState(RobotStates state) {
 		robot.setState(state);
 	}
-	
-	public Vector2 getCoords() {
+	@Override
+	public Coordinates getCoords() {
 		return robot.getCoords();
 	}
 
+	@Override
 	public int getStrenght() {
 		return robot.getStrenght();
 	}
-	
+	@Override
 	public void addEnergy(Integer charge) {
 		robot.addEnergy(charge);
 	}
-	
+	@Override
 	public void removeEnergy(int n) {
 		robot.removeEnergy(n);
 	}
-		
-	public ArrayList<Weapon> getInventory() {
-		return robot.getWeapons();
-	}
 	
+	@Override
 	public void addWeapon(Weapon w) {
 		robot.addWeapon(w);
 	}
 	
+	@Override
+	public int getEnergy() {
+		return robot.getEnergy();
+	}
+	
 	private AttackRobot robot;
-	private Vector2 target;
+	private Coordinates target;
+	
 	
 }

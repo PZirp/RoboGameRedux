@@ -1,10 +1,10 @@
 package robotgameredux.tools;
 
-import robotgameredux.actors.Robot;
+import robotgameredux.TargetInterfaces.TargetInterface;
 
 public interface UsableTool {
 
-	public void use(Robot robot);
+	public <T> void use(TargetInterface<T> robot);
 	public String getName();
 	public int getCost();
 }

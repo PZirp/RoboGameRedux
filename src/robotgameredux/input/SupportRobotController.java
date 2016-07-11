@@ -15,15 +15,15 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import robotgameredux.Commands.Command;
-import robotgameredux.Commands.MovementCommand;
-import robotgameredux.Commands.SupInteractCommand;
-import robotgameredux.Commands.SupportCommand;
+import robotgameredux.Commands.RobotMovementCommand;
+import robotgameredux.Commands.RobotSupportInteractCommand;
+import robotgameredux.Commands.RobotSupportCommand;
+import robotgameredux.CommandsInterfaces.Command;
 import robotgameredux.actors.AttackRobot;
 import robotgameredux.actors.Robot;
 import robotgameredux.actors.SupportRobot;
 import robotgameredux.core.GameManager;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.graphic.Sprite;
 import robotgameredux.tools.ToolsDialog;
 import robotgameredux.tools.UsableTool;
@@ -44,7 +44,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 		this.toolSelector = new ToolsDialog(null, false);
 		currentInput = null;
 		this.target = null;
-		emptyTools = false;
+		//emptyTools = false;
 
 	}
 
@@ -112,7 +112,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 //							System.out.println(currentInput.toString() + "NELL'IFFFFFFFFFFFFFFF");
 					}
 					if (target != null){
-						Command c = new SupportCommand(toolSelector.getSelected(), target, activeRobot);
+						Command c = new RobotSupportCommand(toolSelector.getSelected(), target, activeRobot);
 						activeRobot.setCommand(c);
 						activeRobot = null;
 						toolSelector.resetSelected();
@@ -124,7 +124,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 				break;
 			case TAKE_OBJECT:
 				if (currentInput != null) {
-					Command c = new SupInteractCommand(activeRobot, currentInput);
+					Command c = new RobotSupportInteractCommand(activeRobot, currentInput);
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.TAKE_OBJECT);
 					activeRobot = null;
@@ -134,7 +134,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 				break;
 			case RECHARGE: 
 				if (currentInput != null) {
-					Command c = new SupInteractCommand(activeRobot, currentInput);
+					Command c = new RobotSupportInteractCommand(activeRobot, currentInput);
 					activeRobot.setCommand(c);
 					activeRobot.setState(RobotStates.RECHARGE);
 					activeRobot = null;
@@ -143,7 +143,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 				break;
 			case PUSH_OBSTACLE:
 				if(currentInput != null) {
-					Command c = new SupInteractCommand(activeRobot, currentInput);
+					Command c = new RobotSupportInteractCommand(activeRobot, currentInput);
 					activeRobot.setState(RobotStates.PUSH_OBSTACLE);
 					activeRobot.setCommand(c);
 					activeRobot = null;
@@ -173,7 +173,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 	}
 	
 	private void moveRobot() {
-		MovementCommand mc = new  MovementCommand(activeRobot, currentInput);
+		RobotMovementCommand mc = new  RobotMovementCommand(activeRobot, currentInput);
 		activeRobot.setCommand(mc);
 		activeRobot.setState(RobotStates.MOVING);
 		activeRobot = null;
@@ -193,7 +193,11 @@ public class SupportRobotController extends RobotController implements PropertyC
 	public void propertyChange(PropertyChangeEvent arg0) {
 		
 		if(arg0.getPropertyName() == "EMPTY_TOOLS") {
-			this.emptyTools = true;
+			//this.emptyTools = true;
+			actionSelector.removeTakeObjectButton();
+		}
+		if(arg0.getPropertyName() == "NO_MORE_OBSTACLES") {
+			actionSelector.removePushObstacleButton();
 		}
 	}
 	
@@ -210,8 +214,8 @@ public class SupportRobotController extends RobotController implements PropertyC
 	
 	private ArrayList<SupportRobot> robots;
 	private SupportRobot activeRobot;
-	private Vector2 target;
-	private Boolean emptyTools;
+	private Coordinates target;
+	//private Boolean emptyTools;
 	//Variabili di lavoro
 
 	private RobotStates robotInput;
@@ -247,16 +251,12 @@ public class SupportRobotController extends RobotController implements PropertyC
 		public void showAction(Sprite sprite) {
 			this.setLocationRelativeTo(sprite);	
 			
-			if(emptyTools) {
+			/*if(emptyTools) {
 				remove(takeObjectButton);
-			}
+			}*/
 			
 			this.setVisible(true);		
 		}
-		
-	/*	public void hideAction() {
-			this.setVisible(false);
-		}*/
 		
 		private void initButtons() {
 			moveButton = new JButton("Muovi");
@@ -325,8 +325,14 @@ public class SupportRobotController extends RobotController implements PropertyC
 
 				}
 			});
-			
-			
+		}
+		
+		public void removeTakeObjectButton() {
+			this.remove(takeObjectButton);
+		}
+		
+		public void removePushObstacleButton() {
+			this.remove(this.pushButton);
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package robotgameredux.Commands;
+package robotgameredux.CommandsInterfaces;
 
 import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
@@ -10,4 +10,7 @@ public interface Command {
 
 	public Boolean execute() throws InvalidTargetException, InsufficientEnergyException;
 	public void setState(RobotStates state);
+	int getEnergy();
+	void removeEnergy(int n);
+
 }

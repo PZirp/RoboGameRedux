@@ -12,7 +12,7 @@ import robotgameredux.actors.Robot;
 import robotgameredux.actors.Station;
 import robotgameredux.input.RobotStates;
 
-public class StationSprite extends JComponent {
+public class StationSprite extends Sprite {
 	
 	/**
 	 * 

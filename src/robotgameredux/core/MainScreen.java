@@ -19,15 +19,18 @@ import javax.swing.JMenuItem;
 
 public class MainScreen {
 	
-	GameManager gm;
-	File openFile;
-	JFrame frame;
+	private GameManager gm;
+	private File openFile;
+	private JFrame frame;
+	private JFileChooser fileChooser;
 	
 	public static void main(String[] args) {
 		MainScreen ms = new MainScreen();
 	}
 
 	public MainScreen() {
+		fileChooser = new JFileChooser();
+
 		frame = new JFrame();
 		frame.setTitle("RobotGame Redux");
 		frame.setSize(1280, 770);
@@ -37,31 +40,42 @@ public class MainScreen {
 	}
 	
 	private void chooseFile() {
-		JFileChooser fileChooser = new JFileChooser();
 		int returnValue = fileChooser.showOpenDialog(frame);
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			this.openFile = fileChooser.getSelectedFile(); 
 		}
 	}
-	
+			
 	private void makeMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Partita");
 		menuBar.add(menu);
-		JMenuItem nuovaMenuItem = new JMenuItem("Nuova partita");
+		JMenu nuovaSubMenuItem = new JMenu("Nuova partita");
 		JMenuItem salvaMenuItem = new JMenuItem("Salva partita");
 		JMenuItem caricaMenuItem = new JMenuItem("Carica partita");
-		menu.add(nuovaMenuItem);
-		menu.add(salvaMenuItem);
-		menu.add(caricaMenuItem);
+				
+		JMenuItem liv1 = new JMenuItem("Primo livello");
+		JMenuItem liv2 = new JMenuItem("Secondo livello");
+		JMenuItem ran = new JMenuItem("Genera");
 		
-		nuovaMenuItem.addActionListener(new ActionListener() {			
+		nuovaSubMenuItem.add(liv1);
+		nuovaSubMenuItem.add(liv2);
+		nuovaSubMenuItem.add(ran);
+		
+		liv1.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				newStage();
+				loadFirstLevel();
 			}
 		});
 		
+		ran.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				generateRandomLevel();
+			}
+		});
+				
 		salvaMenuItem.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -74,51 +88,71 @@ public class MainScreen {
 				chooseFile();
 				load();
 			}
-		});		
+		});
+		menu.add(nuovaSubMenuItem);
+		menu.add(salvaMenuItem);
+		menu.add(caricaMenuItem);
+		
 		frame.setJMenuBar(menuBar);
 	}
 	
-	public void newStage() {
+	public void loadFirstLevel() {
 		if (gm != null) {
-			frame.remove(gm.getPane());
+			frame.getContentPane().removeAll();
 			gm = null;
 		}
 		this.gm = new GameManager();
+		this.gm.firstLevel();
 		frame.add(gm.getPane(), BorderLayout.CENTER);
 		gm.createEndTurnButton();
-		//gm.initGame();
+		frame.revalidate();
+	}	
+
+	public void generateRandomLevel() {
+		if (gm != null) {
+			frame.getContentPane().removeAll();
+			//frame.remove(gm.getPane());
+			gm = null;
+		}
+		this.gm = new GameManager();
+		this.gm.randomGeneration();
+		frame.add(gm.getPane(), BorderLayout.CENTER);
+		gm.createEndTurnButton();
 		frame.revalidate();
 	}	
 	
 	public void save() {
 		try {
-			FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Paolo\\Desktop\\prova6.ser");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(gm);
-			out.close();
-			fileOut.close();
+			int returnValue = fileChooser.showSaveDialog(frame);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				FileOutputStream fileOut = new FileOutputStream(fileChooser.getSelectedFile());
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+				out.writeObject(gm);
+				out.close();
+				fileOut.close();
+			}
 		}catch (IOException e) {
 			e.printStackTrace();
 		}	
 	}
 	
 	public void load() {
-		if (gm != null) {
-			frame.remove(gm.getPane());
-			gm = null;
-			}
 		try {
-			//FileInputStream fileIn = new FileInputStream("C:\\Users\\Paolo\\Desktop\\prova6.ser");
-			FileInputStream fileIn = new FileInputStream(openFile);
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-			GameManager e = (GameManager) in.readObject();
-			in.close();
-			fileIn.close();
-			this.gm = e; //new GameManager();
-			frame.add(gm.getPane(), BorderLayout.CENTER);
-			gm.createEndTurnButton();
-			gm.checkEndTurnButton();
-			frame.revalidate();
+			if (openFile != null) {FileInputStream fileIn = new FileInputStream(openFile);
+				if (gm != null) { 
+					frame.getContentPane().removeAll();
+					gm = null;
+				}
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				GameManager e = (GameManager) in.readObject();
+				in.close();
+				fileIn.close();
+				this.gm = e; 
+				frame.add(gm.getPane(), BorderLayout.CENTER);
+				gm.createEndTurnButton();
+				//gm.checkEndTurnButton();
+				frame.revalidate();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

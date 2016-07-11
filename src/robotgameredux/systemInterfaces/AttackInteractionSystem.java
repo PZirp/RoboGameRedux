@@ -1,10 +1,12 @@
 package robotgameredux.systemInterfaces;
 
+import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.AtkInteractCommand;
+import robotgameredux.Commands.RobotAttackInteractCommand;
+import robotgameredux.CommandsInterfaces.AtkInteractCommandInterface;
 
 public interface AttackInteractionSystem {
 
-	Boolean execute(AtkInteractCommand command) throws InvalidTargetException;
+	<T> Boolean execute(AtkInteractCommandInterface<T> command) throws InvalidTargetException, InsufficientEnergyException;
 	
 }

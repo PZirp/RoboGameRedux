@@ -7,9 +7,10 @@ import javax.swing.JOptionPane;
 
 import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.MovementCommand;
+import robotgameredux.CommandsInterfaces.MovementCommandInterface;
 import robotgameredux.core.GameWorld;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.IGameWorld;
+import robotgameredux.core.Coordinates;
 import robotgameredux.input.RobotStates;
 import robotgameredux.systemInterfaces.MovementSystem;
 
@@ -19,23 +20,26 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1841818356815052104L;
-	public StandardMovementSystem(GameWorld gameWorld) {
+	public StandardMovementSystem(IGameWorld gameWorld) {
 		this.gameWorld = gameWorld;
 	}
 
+	
+	
 	@Override
-	public Boolean execute(MovementCommand command) throws InvalidTargetException, InsufficientEnergyException {
+	public <T> Boolean execute(MovementCommandInterface<T> command) throws InvalidTargetException, InsufficientEnergyException {
 		Integer dist = (int) command.getCoords().dst(command.getDestination());
 		if (follow == null) {
+			possiblePaths = gameWorld.pathfind(command.getCoords(), command.getRange());
 			if (command.getEnergy() == 0 || command.getEnergy() < dist) {
 				command.resetRobot();
+				gameWorld.disablePath(possiblePaths);
 				throw new InsufficientEnergyException(command);
 			}
-			possiblePaths = gameWorld.pathfind(command.getCoords(), command.getRange());
 			if (!beginMovement(command)) {
 				command.resetRobot();
 				gameWorld.disablePath(possiblePaths); // Migliorare
-				throw new InvalidTargetException(command);
+				throw new InvalidTargetException(command, "Impossibile eseguire il movimento");
 			}
 			gameWorld.disablePath(possiblePaths);
 		} else {
@@ -44,10 +48,9 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 		return false;
 	}
 	
-	public Boolean beginMovement(MovementCommand command) {
-		Vector2 destination = command.getDestination();
+	private <T> Boolean beginMovement(MovementCommandInterface<T> command) {
+		Coordinates destination = command.getDestination();
 		Integer dist = (int) command.getCoords().dst(destination);
-		Vector2 oldPos = command.getCoords();
 		if (destinationCheck(destination, command.getCoords()) && dist < command.getRange()) {
 			generatePath(destination, command.getCoords());		
 			if(!collisionDetection()) {
@@ -63,15 +66,15 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 			command.setState(RobotStates.MOVING);
 			return true;
 		} else {
-			JOptionPane.showMessageDialog(null, "Eccomi qui");
-			System.out.println("Casella non raggiungibile o occupata");
+			//JOptionPane.showMessageDialog(null, "Eccomi qui");
+			//System.out.println("Casella non raggiungibile o occupata");
 			command.resetRobot();
 			return false;
 		}
 	}
 	
-	public Boolean continueMovement(MovementCommand command) {
-		Vector2 oldPos = command.getCoords();
+	private <T> Boolean continueMovement(MovementCommandInterface<T> command) {
+		Coordinates oldPos = command.getCoords();
 	//	JOptionPane.showMessageDialog(null, oldPos.toString());
 			command.setCoords(follow.get(0));
 			follow.remove(0);
@@ -88,7 +91,7 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 
 	}
 	
-	private Boolean destinationCheck(Vector2 destination, Vector2 current) {
+	private Boolean destinationCheck(Coordinates destination, Coordinates current) {
 		if (validDestination(destination)) {
 			if (current.dst(destination) == 0) {
 				System.out.println("Sei già sulla tile scelta");
@@ -104,7 +107,7 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 	}
 	
 	private Boolean collisionDetection() {
-		for (Vector2 v : follow) {
+		for (Coordinates v : follow) {
 			//JOptionPane.showMessageDialog(null, v.toString());
 			if(!gameWorld.isTileFree(v)) {
 				JOptionPane.showMessageDialog(null, "Non libera");
@@ -115,29 +118,29 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 		return true;
 	}
 	
-	private ArrayList<Vector2> generatePath(Vector2 destination, Vector2 current) {
-		Vector2 direction = Vector2.sub(destination, current);
+	private ArrayList<Coordinates> generatePath(Coordinates destination, Coordinates current) {
+		Coordinates direction = destination.sub(current)/*Coordinates.sub(destination, current)*/;
 		//JOptionPane.showMessageDialog(null, direction.toString());
-		follow = new ArrayList<Vector2>();
+		follow = new ArrayList<Coordinates>();
 	
 		if (direction.getX() > 0) {
 			for (int i = 1; i <= destination.dst(current); i++) {
-				follow.add(new Vector2(current.getX() + i, current.getY()));
+				follow.add(new Coordinates(current.getX() + i, current.getY()));
 			}			
 		}
 		if (direction.getX() < 0) {
 			for (int i = 1; i <= destination.dst(current); i++) {
-				follow.add(new Vector2(current.getX() - i, current.getY()));
+				follow.add(new Coordinates(current.getX() - i, current.getY()));
 			}			
 		}
 		if (direction.getY() > 0) {
 			for (int i = 1; i <= destination.dst(current); i++) {
-				follow.add(new Vector2(current.getX(), current.getY() + i));
+				follow.add(new Coordinates(current.getX(), current.getY() + i));
 			}			
 		}
 		if (direction.getY() < 0) {
 			for (int i = 1; i <= destination.dst(current); i++) {
-				follow.add(new Vector2(current.getX(), current.getY() - i));
+				follow.add(new Coordinates(current.getX(), current.getY() - i));
 			}			
 		}
 		
@@ -145,24 +148,24 @@ public class StandardMovementSystem implements MovementSystem, Serializable {
 	}
 	
 
-	private Boolean validDestination(Vector2 destination) {
-		for (Vector2 c : possiblePaths) {
+	private Boolean validDestination(Coordinates destination) {
+		for (Coordinates c : possiblePaths) {
 			if (c.equals(destination))
 				return true;
 		}
 		return false;
 	}
 
-	private void movementComplete(Vector2 destination, Vector2 oldPos) {
+	private void movementComplete(Coordinates destination, Coordinates oldPos) {
 		gameWorld.releaseTile(oldPos);
 		//gameWorld.highlightPath(possiblePaths);
 		gameWorld.occupyTile(destination);
 	}
 
 	private int energyExpenditure;
-	private GameWorld gameWorld;
-	private ArrayList<Vector2> possiblePaths;
-	private ArrayList<Vector2> follow;
+	private IGameWorld gameWorld;
+	private ArrayList<Coordinates> possiblePaths;
+	private ArrayList<Coordinates> follow;
 }
 
 

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.Command;
+import robotgameredux.CommandsInterfaces.Command;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.graphic.VisualSup;
 import robotgameredux.input.RobotStates;
 import robotgameredux.input.SupportRobotController;
@@ -18,13 +18,17 @@ import robotgameredux.systemInterfaces.SupportSystem;
 import robotgameredux.systemsImplementations.StandardSupportSystem;
 import robotgameredux.tools.HealthPack;
 import robotgameredux.tools.UsableTool;
-import robotgameredux.weapons.Bullet;
-import robotgameredux.weapons.Weapon;
+import robotgameredux.weapons.PistolBullet;
+import robotgameredux.weapons.Pistol;
 
-public class SupportRobot extends Robot implements Support{
+public class SupportRobot extends Robot{
 	
 	
-	public SupportRobot(Vector2 coords, MovementSystem ms, SupportSystem sm, SupportInteractionSystem is) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6334439551075353024L;
+	public SupportRobot(Coordinates coords, MovementSystem ms, SupportSystem sm, SupportInteractionSystem is) {
 		super(coords, ms);
 		this.tools = new ArrayList<UsableTool>();
 		tools.add(new HealthPack());
@@ -34,7 +38,7 @@ public class SupportRobot extends Robot implements Support{
 		this.interactionSystem = is;
 	}
 	
-	public void update() throws InvalidTargetException, InsufficientEnergyException {
+	/*public void update() throws InvalidTargetException, InsufficientEnergyException {
 
 		Boolean res = false;
 		if (this.getCurrentCommand() != null) {
@@ -48,7 +52,7 @@ public class SupportRobot extends Robot implements Support{
 			getPropertyChange().firePropertyChange("DEACTIVATED", this, null);
 			return;
 		}
-	}
+	}*/
 
 	/*
 	 * Decisione da prendere.

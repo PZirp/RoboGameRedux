@@ -2,6 +2,7 @@ package robotgameredux.tools;
 
 import java.io.Serializable;
 
+import robotgameredux.TargetInterfaces.TargetInterface;
 import robotgameredux.actors.Robot;
 
 public class HealthPack implements UsableTool, Serializable {
@@ -15,7 +16,7 @@ public class HealthPack implements UsableTool, Serializable {
 	};
 	
 	@Override
-	public void use(Robot robot) {
+	public <T> void use(TargetInterface<T> robot) {
 		robot.heal(this.health);
 
 	}

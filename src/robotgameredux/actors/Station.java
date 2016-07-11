@@ -3,30 +3,31 @@ package robotgameredux.actors;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.TooManyListenersException;
-
-import robotgameredux.core.Vector2;
+import robotgameredux.core.Coordinates;
 import robotgameredux.graphic.StationSprite;
+import robotgameredux.tools.EnergyPack;
 import robotgameredux.tools.HealthPack;
 import robotgameredux.tools.UsableTool;
+import robotgameredux.weapons.Pistol;
 import robotgameredux.weapons.Weapon;
 
 public class Station extends GameObject{
 
-	public Station(Vector2 coords) {
+	public Station(Coordinates coords) {
 		super(coords);
 		tools = new ArrayList<UsableTool>();
 		weapons = new ArrayList<Weapon>();
 		energyReserve = 10000;
-		weapons.add(new Weapon());
-		weapons.add(new Weapon());
-		weapons.add(new Weapon());
 		this.propertyChange = new PropertyChangeSupport(this);
-		/*tools.add(new HealthPack());
+		weapons.add(new Pistol());
+		weapons.add(new Pistol());
+		weapons.add(new Pistol());
 		tools.add(new HealthPack());
 		tools.add(new HealthPack());
 		tools.add(new HealthPack());
-		tools.add(new HealthPack());*/
+		tools.add(new EnergyPack());
+		tools.add(new EnergyPack());
+		tools.add(new EnergyPack());
 	}
 
 	public void addObject(UsableTool o) { 
@@ -61,6 +62,9 @@ public class Station extends GameObject{
 			energyReserve = energyReserve - 100;
 			return 100;
 		}
+		if(energyReserve == 0) { 
+			propertyChange.firePropertyChange("OUT_OF_ENERGY", this, null);
+		}
 		return null;
 	}
 	
@@ -84,22 +88,27 @@ public class Station extends GameObject{
 	
 	/*
 	 * Non ho fatto in modo che gli oggetti venissero rimossi dall'array quando viene chiamato getWeapon()/getTool() per evitare side effects
+	 * Quanto tools o weapons sono vuoti, viene generato un propertyChangeEvent che fa in modo che i controllori interattivi non visualizzino più
+	 * i pulsanti per prendere oggetti e armi
 	 */
 	
+	
 	public void removeTool(int i) {
-		tools.remove(i);
+		
 		if (tools.isEmpty()) {
-			System.out.println("OOOOOOOOOOOOOH SONO QUIIIIIIIIIIIIIII");
 			propertyChange.firePropertyChange("EMPTY_TOOLS", this, null);
+			return;
 		}
+		tools.remove(i);
 	}
 	
 	public void removeWeapon(int i) {
-		weapons.remove(i);
+
 		if (weapons.isEmpty()) {
-			System.out.println("OOOOOOOOOOOOOH SONO QUIIIIIIIIIIIIIII");
 			propertyChange.firePropertyChange("EMPTY_WEAPONS", this, null);
+			return;
 		}
+		weapons.remove(i);
 	}
 	
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -133,6 +142,7 @@ public class Station extends GameObject{
 		return clone;
 	}
 	
+	public void update() {};
 	
 	private int energyReserve;
 	private ArrayList<UsableTool> tools;
