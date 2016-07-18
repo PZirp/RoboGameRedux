@@ -33,7 +33,7 @@ public class MovementTest implements IGameWorld {
 				if (i == 10-1 || i == 0 || j == 10-1 || j == 0) {
 					WallSprite s = new WallSprite(testSet[i][j], i, j);
 					testSet[i][j].setSprite(s);
-					testSet[i][j].setCalpestabile(false);
+					testSet[i][j].setOccupied(false);
 				} else {
 					TileSprite s = new TileSprite(testSet[i][j], i, j);
 					testSet[i][j].setSprite(s);
@@ -102,12 +102,12 @@ public class MovementTest implements IGameWorld {
 	
 	@Override
 	public void releaseTile(Coordinates tile) {
-		testSet[tile.getX()][tile.getY()].setCalpestabile(true);		
+		testSet[tile.getX()][tile.getY()].setOccupied(true);		
 	}
 
 	@Override
 	public void occupyTile(Coordinates tile) {
-		testSet[tile.getX()][tile.getY()].setCalpestabile(false);		
+		testSet[tile.getX()][tile.getY()].setOccupied(false);		
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class MovementTest implements IGameWorld {
 			return false;
 		}
 		
-		if (testSet[tile.getX()][tile.getY()].isCalpestabile() == true)
+		if (testSet[tile.getX()][tile.getY()].isOccupied() == true)
 			return true;
 		else 
 			return false;
@@ -172,7 +172,7 @@ public class MovementTest implements IGameWorld {
 	}
 
 	@Override
-	public Obstacle isObstacle(Coordinates target) {
+	public Boolean isObstacle(Coordinates target) {
 		return null;
 	}
 

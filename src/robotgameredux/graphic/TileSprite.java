@@ -25,18 +25,18 @@ public class TileSprite extends Sprite {
 	transient private BufferedImage spriteDefault;
 	transient private BufferedImage spriteAttiva;
 	private Tile tile;
-	private int x,y;
-	private Color color = new Color(150, 75, 0);
+	//private int x,y;
+	//private Color color = new Color(150, 75, 0);
 	
 	public TileSprite(Tile tile, int x, int y) {
 		this.tile = tile;
 		//this.setPreferredSize(new Dimension(64,64));
-		this.x = x;
-		this.y = y;
+		//this.x = x;
+		//this.y = y;
 		this.setBounds(x*64, y*64, 64, 64);
 		try {
-			spriteDefault = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\tile.png"));
-			spriteAttiva = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\tile_attiva.png"));
+			spriteDefault = ImageIO.read(getClass().getResource("/robotgameredux/images/tile.png"));
+			spriteAttiva = ImageIO.read(getClass().getResource("/robotgameredux/images/tile_attiva.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

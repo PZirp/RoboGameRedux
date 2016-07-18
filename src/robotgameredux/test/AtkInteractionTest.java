@@ -114,12 +114,12 @@ public class AtkInteractionTest implements IGameWorld {
 			for (int j = 0; j < 10; j++) {
 				testSet[i][j] = new Tile();				 
 				if (i == 10-1 || i == 0 || j == 10-1 || j == 0) {
-					WallSprite s = new WallSprite(testSet[i][j], i, j);
-					testSet[i][j].setSprite(s);
-					testSet[i][j].setCalpestabile(false);
+					//WallSprite s = new WallSprite(testSet[i][j], i, j);
+					//testSet[i][j].setSprite(s);
+					testSet[i][j].setOccupied(false);
 				} else {
-					TileSprite s = new TileSprite(testSet[i][j], i, j);
-					testSet[i][j].setSprite(s);
+					//TileSprite s = new TileSprite(testSet[i][j], i, j);
+					//testSet[i][j].setSprite(s);
 				}
 			}
 		}
@@ -181,22 +181,24 @@ public class AtkInteractionTest implements IGameWorld {
 	}
 
 	@Override
-	public Obstacle isObstacle(Coordinates target) {
+	public Boolean isObstacle(Coordinates target) {
 		for (Obstacle obs : obstacles) {
 			if (target.equals(obs.getCoords())) {
-				return obs;
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 
 	@Override
 	public Boolean destroyObstacle(Coordinates target, int robotStrenght) {
-		Obstacle o = isObstacle(target);
-		if (o != null && robotStrenght > o.getResistence()) {
-			releaseTile(o.getCoords());
-			obstacles.remove(o);
-			return true;
+		for (Obstacle obs : obstacles) {
+			if (target.equals(obs.getCoords()) && robotStrenght > obs.getResistence()) {
+				//System.out.println("FACCIO PULIZIA");
+				releaseTile(obs.getCoords());
+				obstacles.remove(obs);
+				return true;
+			}
 		}
 		return false;
 	}

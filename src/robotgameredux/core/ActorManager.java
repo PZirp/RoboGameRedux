@@ -19,8 +19,10 @@ import robotgameredux.actors.Faction;
 import robotgameredux.actors.Robot;
 import robotgameredux.actors.SupportRobot;
 import robotgameredux.graphic.Sprite;
-import robotgameredux.graphic.Visual;
-import robotgameredux.graphic.VisualSup;
+import robotgameredux.graphic.EAttackRobotSprite;
+import robotgameredux.graphic.ESupportRobotSprite;
+import robotgameredux.graphic.FAttackRobotSprite;
+import robotgameredux.graphic.FSupportRobotSprite;
 import robotgameredux.input.AttackRobotController;
 import robotgameredux.input.RobotStates;
 import robotgameredux.input.SupportRobotController;
@@ -33,18 +35,19 @@ import robotgameredux.systemsImplementations.StandardSupportInteractionSystem;
 import robotgameredux.systemsImplementations.StandardSupportSystem;
 import robotgameredux.tools.HealthPack;
 import robotgameredux.weapons.Shield;
+import robotgameredux.weapons.AIGun;
 import robotgameredux.weapons.Pistol;
 
 //ActorManager
 
-public class RobotFactory implements PropertyChangeListener, Serializable, IActorManager {
+public class ActorManager implements PropertyChangeListener, Serializable, IActorManager {
 	
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public RobotFactory(GameManager gameManager, GameWorld gameWorld, AttackRobotController attackRobotController, SupportRobotController supportRobotController, AttackRobotController AIattackRobotController, Player player, AI ai) {
+	public ActorManager(GameManager gameManager, GameWorld gameWorld, AttackRobotController attackRobotController, SupportRobotController supportRobotController, AttackRobotController AIattackRobotController, Player player, AI ai) {
 		this.gameManager = gameManager;
 		this.gameWorld = gameWorld;
 		this.attackRobotController = attackRobotController;
@@ -54,45 +57,69 @@ public class RobotFactory implements PropertyChangeListener, Serializable, IActo
 		this.player = player;
 		this.ai = ai;
 	}
+	
+	/**
+	 * Crea un robot attaccante standard. Installa i sistemi standard di movimento, combatimento e interazione.
+	 * Fornisce il robot di una pistola (arma offensiva) ed uno scudo (arma difensiva). Associa una sprite al robot e la aggiunge allo schermo.
+	 * Setta la fazione di appartenenza, ed in base ad essa lega il robot o al controllore interattivo o a quello gestito dalla CPU. In fine occupa la tile sulla quale si trova il robot
+	 * @param faction
+	 * @param position
+	 */
 
 	public void createStandardAttack(Faction faction, Coordinates position) {
 		AttackRobot newRobot = new AttackRobot(position, new StandardBattleSystem(this), new StandardMovementSystem(gameWorld), new StandardAttackInteractionSystem(gameWorld));
 		newRobot.setFaction(faction);
-		newRobot.addWeapon(new Pistol());
-		newRobot.addWeapon(new Shield());
-		Sprite spr = new Visual(newRobot);
-		newRobot.setSprite(spr);
+		Sprite spr;
 		this.robots.add(newRobot);
 		newRobot.addPropertyChangeListener(this);
 		if(faction == Faction.FRIEND) {
+			spr = new FAttackRobotSprite(newRobot);
+			newRobot.setSprite(spr);
+			newRobot.addWeapon(new Pistol());
+			newRobot.addWeapon(new Shield());
 			this.attackRobotController.addRobot(newRobot);
 			player.addRobot(newRobot);
 			newRobot.addPropertyChangeListener(player);
 		} else {
-			//this.AIattackRobotController.addRobot(newRobot);
+			spr = new EAttackRobotSprite(newRobot);
+			newRobot.setSprite(spr);
+			newRobot.addWeapon(new AIGun());
 			this.ai.addRobot(newRobot);
 			newRobot.addPropertyChangeListener(ai);
-
 		}
 		gameManager.addToScreen(spr, 1);
 		gameWorld.occupyTile(newRobot.getCoords());
-	
 	}
+	
+	/**
+	 * Crea un robot di supporto standard. Installa i sistemi standard di movimento, supporto e interazione.
+	 * Associa una sprite al robot e la aggiunge allo schermo.
+	 * Setta la fazione di appartenenza, ed in base ad essa lega il robot o al controllore interattivo o a quello gestito dalla CPU. In fine occupa la tile sulla quale si trova il robot
+	 * @param faction
+	 * @param position
+	 */
 	
 	public void createSupport(Faction faction, Coordinates position) {
 		SupportRobot newRobot = new SupportRobot(position, new StandardMovementSystem(gameWorld), new StandardSupportSystem(this), new StandardSupportInteractionSystem(gameWorld));
 		newRobot.setFaction(faction);
-		newRobot.addTool(new HealthPack());
-		Sprite spr = new VisualSup(newRobot);
-		newRobot.setSprite(spr);
+		Sprite spr;
 		newRobot.addPropertyChangeListener(this);
-		newRobot.addPropertyChangeListener(player);
 		if(faction == Faction.FRIEND) {
+			spr = new FSupportRobotSprite(newRobot);
+			newRobot.setSprite(spr);
+			for (int i = 0; i < 4; i++) {
+				newRobot.addTool(new HealthPack());
+			}
 			this.supportRobotController.addRobot(newRobot);
 			player.addRobot(newRobot);
+			newRobot.addPropertyChangeListener(player);
 		} else {
+			spr = new ESupportRobotSprite(newRobot);
+			newRobot.setSprite(spr);
+			for (int i = 0; i < 99; i++) {
+				newRobot.addTool(new HealthPack());
+			}
 			this.ai.addRobot(newRobot);
-			//this.AIattackRobotController.addRobot(newRobot);
 			newRobot.addPropertyChangeListener(ai);
 		}	
 		
@@ -102,18 +129,24 @@ public class RobotFactory implements PropertyChangeListener, Serializable, IActo
 	}
 	
 	/**
-	 * Controlla se esiste un robot che si trova nella posizione indicata, se esiste lo ritorna
-	 * @param Posizione in cui si deve trovare il robot
+	 * Controlla se esiste un robot che si trova nella posizione indicata
+	 * @param Posizione in cui si cerca il robot
 	 * @return null se non c'è nessun robot alla posizione indicata, il robot trovato altrimenti
 	 */
 	
-	public Boolean isRobot(Coordinates target) {
+	/*public Boolean isRobot(Coordinates target) {
 		for (Robot r : robots) {
 			if (r.getCoords().equals(target)) 
 				return true;
 		}
 		return false;
-	}
+	}*/
+	
+	/**
+	 * Ritorna un oggetto RobotTarget che fornisce i metodi per interagire con un robot quando è bersaglio di un attacco
+	 * @param le coordinate del target
+	 * @return il robot se è nelle coordinate giuste, null altrimenti
+	 */
 
 	public RobotTarget getTarget(Coordinates target) {
 		for (Robot r : robots) {
@@ -123,22 +156,37 @@ public class RobotFactory implements PropertyChangeListener, Serializable, IActo
 		return null;
 	}
 	
+	/**
+	 * Termina il turno del robot attivo
+	 */
+	
 	public void setTurnOver() {
-		JOptionPane.showMessageDialog(null, "TURN OVER " + activeRobot.toString());
-
 		activeRobot.setState(RobotStates.TURN_OVER);
 	}
+	
+	/**
+	 * Rimuove il robot specificato dall'ambiente
+	 * @param robot
+	 */
 	
 	private void remove(Robot robot) {
 		gameManager.removeRobot(robot.clone());
 		robots.remove(robot);		
 	}
 	
+	/**
+	 * Causa l'aggiornamento della sprite degli attori 
+	 */
+	
 	public void render() {
 		for (Robot r : robots) {
 			r.render();
 		}
 	}
+	
+	/**
+	 * All'inizio di un nuovo turno, reimposta i robot allo stato IDLE
+	 */
 	
 	public void resetRobots() {
 		for (Robot r : robots) {
@@ -148,12 +196,23 @@ public class RobotFactory implements PropertyChangeListener, Serializable, IActo
 		}
 	}
 	
+	/**
+	 * Causa l'aggiornamento dello stato del robot attivo
+	 * @throws InsufficientEnergyException
+	 * @throws InvalidTargetException
+	 */
+	
 	public void updateActiveRobot() throws InsufficientEnergyException, InvalidTargetException {
 		if (activeRobot != null) {
 			activeRobot.update();
 		}
 	}
-		
+	
+	/**
+	 * Controlla se c'è un robot attivo al momento
+	 * @return un clone del robot attivo 
+	 */
+	
 	public Robot hasActiveRobot() {
 		if (activeRobot != null) return activeRobot.clone();
 		return null;
@@ -180,16 +239,28 @@ public class RobotFactory implements PropertyChangeListener, Serializable, IActo
 
 	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 		inputStream.defaultReadObject();
-		
+		Sprite spr;
 		for (Robot r : robots) {
 			if (r instanceof AttackRobot) {
-				Sprite spr = new Visual(r);
-				r.setSprite(spr);
+				
+				if (r.getFaction() == Faction.FRIEND) {			
+					spr = new FAttackRobotSprite(r);
+					r.setSprite(spr);
+				} else if (r.getFaction() == Faction.ENEMY) {
+					spr = new EAttackRobotSprite(r);
+					r.setSprite(spr);
+				}
+			
 				
 			}
 			if (r instanceof SupportRobot) {
-				Sprite spr = new VisualSup(r);
-				r.setSprite(spr);
+				if (r.getFaction() == Faction.FRIEND) {
+					spr = new FSupportRobotSprite(r);
+					r.setSprite(spr);
+				} else if (r.getFaction() == Faction.ENEMY) {
+					spr = new ESupportRobotSprite(r);
+					r.setSprite(spr);
+				}
 			}
 		}	
 	}

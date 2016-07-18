@@ -14,13 +14,11 @@ public class Pistol implements Weapon, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7260939238210649882L;
-	//Trasformare in una interfaccia?
 	
 	public Pistol() {
-		//this.onwerBot = ownerBot;
-		bullets = 555;
+		bullets = 10;
 		damage = 10;
-		shieldPenetration = 0;
+		shieldPenetration = 5;
 		cost = 5;
 		type = WeaponType.OFFENSIVE;
 	}

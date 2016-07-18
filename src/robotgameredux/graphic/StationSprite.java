@@ -39,7 +39,6 @@ public class StationSprite extends Sprite {
 	public void update() {
 		this.setColor();
 		this.setBounds(station.getCoords().getX()*64, station.getCoords().getY()*64, 64, 64);
-		//this.repaint();
 	}
 	
 	public void paintComponent(Graphics g) {

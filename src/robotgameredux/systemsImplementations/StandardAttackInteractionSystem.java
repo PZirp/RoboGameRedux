@@ -36,7 +36,8 @@ public class StandardAttackInteractionSystem implements AttackInteractionSystem,
 			if (command.getEnergy() < interactionCost) {
 				throw new InsufficientEnergyException(command);
 			}
-			if (gameWorld.isObstacle(target) != null && command.getCoords().dst(target) <= 1) {
+			//!= null
+			if (gameWorld.isObstacle(target) == true && command.getCoords().dst(target) <= 1) {
 				if(!gameWorld.destroyObstacle(target, command.getStrenght())){
 					throw new InvalidTargetException(command);
 				}

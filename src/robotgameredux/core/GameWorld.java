@@ -51,7 +51,6 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 				tileSet[i][j].render();
 			}
 		}	
-		
 		for (Obstacle o : obstacles) {
 			o.render();
 		}
@@ -63,6 +62,12 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * Metodi di setup e costruzione della mappa
 	 */
 	
+	/**
+	 * Inizializza la mappa. La mappa è mantenuta in un array bidimensionale di oggetti Tile. Gli indici dell'array fungono da coordinate.
+	 * Le tile internet sono settate libere, ed ad ogni tile è assegnata una sprite.
+	 * Ogni tile sul bordo della mappa è settata "occupata", e gli viene assegnata una sprite diversa.
+	 */
+	
 	private void initWorld() {
 		for (int i = 0; i < GRID_LENGHT; i++) {
 			for (int j = 0; j < GRID_HEIGHT; j++) {
@@ -71,7 +76,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 					WallSprite s = new WallSprite(tileSet[i][j], i, j);
 					this.reference.addToScreen(s, 0);
 					tileSet[i][j].setSprite(s);
-					tileSet[i][j].setCalpestabile(false);
+					tileSet[i][j].setOccupied(false);
 				} else {
 					TileSprite s = new TileSprite(tileSet[i][j], i, j);
 					this.reference.addToScreen(s, 0);
@@ -79,16 +84,18 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 				}
 			}
 		}		
-		
-		
 	}
+	
+	/**
+	 * Metodo molto semplice per generare casualmente una mappa. Scorre l'array di tutte le tile e in maniera pseudo-casuale crea ostacoli sul terreno.
+	 */
 	
 	public void randomMap() {
 		createStation(new Coordinates(10,5));
 		Random rand = new Random();
 		for (int i = 0; i < GRID_LENGHT-1; i++) {
 			for (int j = 0; j < GRID_HEIGHT-1; j++) {
-				if (tileSet[i][j].isCalpestabile() == true) {
+				if (tileSet[i][j].isOccupied() == true) {
 					if ((rand.nextInt(10)) < 2) {
 						createObstacle(new Coordinates(i,j));
 					}
@@ -96,6 +103,11 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 			}
 		}
 	}
+	
+	/**
+	 * Crea un ostacolo alla posizione specificata. La tile su cui viene creato diventa occupata, in più aggiunge la sprite dell'ostacolo allo schermo.
+	 * @param le coordinate dell'ostacolo
+	 */
 	
 	public void createObstacle(Coordinates position) {
 		Obstacle o = new Obstacle(position); 
@@ -105,6 +117,12 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		obstacles.add(o);		
 		this.reference.addToScreen(op, 1);
 	}
+	
+
+	/**
+	 * Crea una stazione alla posizione specificata. La tile su cui viene creata diventa occupata, in più aggiunge la sprite della stazione allo schermo.
+	 * @param le coordinate della stazione
+	 */
 	
 	public void createStation(Coordinates position) {
 		station = new Station(position);
@@ -119,54 +137,94 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * Metodi per le tiles
 	 */
 	
+	/**
+	 * Controlla se la tile selezionata è occupata. Nel caso sia una tile di delimitazione (quindi si trova sul confine della mappa), è automaticamente occupata.
+	 * @param le coordinate della tile da controllare
+	 * @return true se la tile è libera, false altrimenti
+	 */
+	
 	public boolean isTileFree(Coordinates tile) {
 		
 		if (tile.getX() >= GRID_LENGHT-1 || tile.getY() >= GRID_HEIGHT-1 || tile.getX() < 1 || tile.getY() < 1) {
 			return false;
 		}
 		
-		if (tileSet[tile.getX()][tile.getY()].isCalpestabile() == true)
+		if (tileSet[tile.getX()][tile.getY()].isOccupied() == true)
 			return true;
 		else 
 			return false;
 	}
 	
+	/**
+	 * Libera la tile selezionata
+	 * @param Le coordinate della tile da liberare
+	 */
+	
 	public void releaseTile(Coordinates tile) {
-		tileSet[tile.getX()][tile.getY()].setCalpestabile(true);
+		tileSet[tile.getX()][tile.getY()].setOccupied(true);
 	}
 	
+	/**
+	 * Occupa la tile selezionata
+	 * @param Le coordinate della tile da occupare
+	 */
+		
 	public void occupyTile(Coordinates tile) {
-		tileSet[tile.getX()][tile.getY()].setCalpestabile(false);
+		tileSet[tile.getX()][tile.getY()].setOccupied(false);
 	}
 	
 	/*
 	 * Metodi relativi agli ostacoli
 	 */
 	
-	public Obstacle isObstacle(Coordinates target) {
+	/**
+	 * Controlla se il target selezionato è un ostacolo o meno.
+	 * @param Le coordinate da controllare
+	 * @return true se è un ostacolo, false altrimenti
+	 */
+	
+	public Boolean isObstacle(Coordinates target) {
 		for (Obstacle obs : obstacles) {
 			if (target.equals(obs.getCoords())) {
-				return obs;
+				return true;
 			}
 		}
-		return null;
-	}
-	
-	public Boolean destroyObstacle(Coordinates target, int robotStrenght) {
-		Obstacle o = isObstacle(target);
-		if (o != null && robotStrenght > o.getResistence()) {
-			//System.out.println("FACCIO PULIZIA");
-			reference.removeFromScreen(o.getSprite());
-			releaseTile(o.getCoords());
-			obstacles.remove(o);
-			if (obstacles.isEmpty()) {
-				propertyChange.firePropertyChange("NO_MORE_OBSTACLES", null, null);
-			}
-			return true;
-		}
-		
 		return false;
 	}
+	
+	/**
+	 * Distrugge l'ostacolo indicato. Se le coordinate indicate puntano ad un ostacolo e la forza del robot è sufficiente (forza > resistenza), l'ostacolo è distrutto, altrimenti
+	 * l'azione fallisce. La tile su cui si trovava l'ostacolo viene liberata. Se viene distrutto l'ultimo ostacolo presente sulla mappa, viene generato un PropertyChangeEvent.
+	 * @param le coordinate scelte
+	 * @param la forza del robot che sta attacando
+	 * @return true se l'ostacolo viene distrutto, falso altrimenti
+	 */
+	
+	public Boolean destroyObstacle(Coordinates target, int robotStrenght) {
+		for (Obstacle obs : obstacles) {
+			if (target.equals(obs.getCoords()) && robotStrenght > obs.getResistence()) {
+				reference.removeFromScreen(obs.getSprite());
+				releaseTile(obs.getCoords());
+				obstacles.remove(obs);
+				if (obstacles.isEmpty()) {
+					propertyChange.firePropertyChange("NO_MORE_OBSTACLES", null, null);
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Sposta l'ostacolo indicato. Se le coordinate indicate puntano ad un ostacolo e la forza del robot è sufficiente (forza > resistenza), si calcola la direzione in cui l'ostacolo deve muoversi.
+	 * (La formula per calcolare la direzione è coordinate dell'ostacolo - coordinate del robot che spinge. La nuova posizione si trova sommando il risultato della sottrazione alla vecchia posizione
+	 * dell'ostacolo). La tile precedente viene liberata, e la nuova occupata. Se l'ostacolo viene spinto verso una tile occupata, l'azione fallisce. 
+	 * @param le coordinate dell'ostacolo
+	 * @param la forza del robot che sta attacando
+	 * @param le coordinate in cui si trova il robot
+	 * @return true se l'ostacolo viene spostato, falso altrimenti
+	 */
+	
 	
 	/* Cosa fa: Calcolo la direzione in cui devo muovermi (direction) e la sommo alla posizone attuale. 
 	 * Se la nuova posizitione è libera, sposto l'ostacolo.
@@ -177,28 +235,32 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 */
 	
 	public Boolean pushObstacle(Coordinates target, int robotStrenght, Coordinates coords) {
-		Obstacle o = isObstacle(target);
-		if (o != null && robotStrenght > o.getWeight()) {
-			// Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
-			Coordinates direction = o.getCoords().sub(coords);/*Coordinates.sub(o.getCoords(), coords);*/
-			//System.out.println(direction.toString() + "DIREZIONE");
-			Coordinates newPosition = direction.add(o.getCoords());
-			if (isTileFree(newPosition)) {
-				releaseTile(o.getCoords());
-				o.setCoords(newPosition);
-				occupyTile(newPosition);
-				return true;
+		for (Obstacle obs : obstacles) {
+			if (target.equals(obs.getCoords()) && robotStrenght > obs.getWeight()) {
+				Coordinates direction = obs.getCoords().sub(coords); // Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
+				Coordinates newPosition = direction.add(obs.getCoords()); //La nuova posizione dell'ostacolo
+				if (isTileFree(newPosition)) {
+					releaseTile(obs.getCoords());
+					obs.setCoords(newPosition);
+					occupyTile(newPosition);
+					return true;
+				}
+				return false;
 			}
-			return false;
 		}
 		return false;
+		
 	}
 
 	/*
 	 * Metodi relativi alla stazione di rifornimento
 	 */
 	
-	
+	/**
+	 * Controlla se le coordinate scelte corrispondono ad una stazione
+	 * @param le coordinate
+	 * @return true se è una stazione, false altrimenti
+	 */
 	public boolean isStation(Coordinates position) {
 		if (position.equals(station.getCoords())) {
 			return true;
@@ -206,11 +268,17 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		return false;
 	}
 	
+	/**
+	 * Metodo utilizzato dagli attori per interagire con l'ambiente. 
+	 * Aggiunge l'arma selezionata dalla stazione all'attore che vi interagisce. L'arma viene rimossa dalla stazione, ed aggiunta a quelle disponibili per l'attore.
+	 * Monstra un dialogo per la selezione dell'arma.
+	 * @return l'arma scelta, null altrimenti
+	 */
 	public Weapon getWeapon() {
 		
 		if (station.getWeapons() != null) {
 			this.dialog.showWeapons(station.getWeapons());
-			JOptionPane.showMessageDialog(null, dialog.getSelected());
+			//JOptionPane.showMessageDialog(null, dialog.getSelected());
 			int selection = dialog.getSelected();
 			if (selection > -1) {
 				Weapon weapon = station.getWeapon(selection);
@@ -220,6 +288,13 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		}
 		return null;
 	}
+	
+	/**
+	 * Metodo utilizzato dagli attori per interagire con l'ambiente. 
+	 * Aggiunge l'oggetto selezionato dalla stazione all'attore che vi interagisce. L'oggetto viene rimosso dalla stazione, ed aggiunto a quelli disponibili per l'attore.
+	 * Monstra un dialogo per la selezione dell'oggetto.
+	 * @return l'oggetto scelto, null altrimenti
+	 */
 	
 	public UsableTool getTool() {
 		if (station.getTools() != null) {
@@ -235,6 +310,12 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		return null;
 	}
 	
+	/**
+	 * Metodo utilizzato dagli attori per interagire con l'ambiente. 
+	 * Ricarica l'energia dell'attore che vi interagisce. 
+	 * @return la quantità di energia da ricaricare
+	 */
+	
 	public Integer recharge() {
 		return station.recharge();
 	}
@@ -243,9 +324,16 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * Metodi di pathfinding
 	 */
 	
+	/**
+	 * Metodo per trovare le tile raggiungibili da un attore.
+	 * Calcola i path possibili su tutte e quattro le direzioni di movimento. Si ferma quando raggiunge il bordo dell'ambiente o quando è al massimo del range del robot
+	 * @param le coordinate di partenza dell'attore
+	 * @param range il range di movimento massimo dell'attore
+	 * @return arraylist di tile raggiungibili
+	 */
+	
 	public ArrayList<Coordinates> pathfind(Coordinates origin, int range) {
 		ArrayList<Coordinates> path = new ArrayList<Coordinates>();
-
 		for (int i = 0; i < range; i++) {
 			if (origin.getY() + i < GRID_HEIGHT-1) {
 				path.add(new Coordinates(origin.getX(), origin.getY() + i));
@@ -259,10 +347,15 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 			if (origin.getX() - i >= 1) {
 				path.add(new Coordinates(origin.getX() - i, origin.getY()));
 			}
-		}
-		
+		}		
 		return path;
 	}
+	
+	/**
+	 * Evidenzia i possibili path disponbili per un attore
+	 * @param le coordinate dell'attore
+	 * @param il range massimo di movimento
+	 */
 	
 	public void highlightPath(Coordinates origin, int range) {
 		ArrayList<Coordinates> path = pathfind(origin, range);
@@ -288,14 +381,27 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		//reference.repaint();
 	}
 
+	/**
+	 * Disattiva le caselle evidenziate
+	 * @param ArrayList di caselle da disattivare
+	 */
+	
 	public void disablePath(ArrayList<Coordinates> path) {
 		for (Coordinates t : path) {
 			tileSet[t.getX()][t.getY()].setActive(false);
 		}
 	}
 	
+	
 	/*
 	 * Metodi relativi alla serializzazione
+	 */
+	
+	/**
+	 * Oltre a deserializzare l'oggeto, il metodo associa una nuova sprite ad ogni elemento letto.
+	 * @param inputStream
+	 * @throws IOException
+	 * @throws ClassNotFoundException
 	 */
 	
 	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
@@ -303,11 +409,10 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		
 		for (int i = 0; i < GRID_LENGHT; i++) {
 			for (int j = 0; j < GRID_HEIGHT; j++) {
-				tileSet[i][j] = new Tile();				 
 				if (i == GRID_LENGHT-1 || i == 0 || j == GRID_HEIGHT-1 || j == 0) {
 					WallSprite s = new WallSprite(tileSet[i][j], i, j);
 					tileSet[i][j].setSprite(s);
-					tileSet[i][j].setCalpestabile(false);
+					tileSet[i][j].setOccupied(false);
 				} else {
 					TileSprite s = new TileSprite(tileSet[i][j], i, j);
 					tileSet[i][j].setSprite(s);
@@ -321,28 +426,10 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		StationSprite ss = new StationSprite(station);
 		station.setSprite(ss);
 	}
-		
-	/*public void postSerialization() {
-		for (int i = 0; i < GRID_LENGHT; i++) {
-			for (int j = 0; j < GRID_HEIGHT; j++) {
-				tileSet[i][j] = new Tile();				 
-				if (i == GRID_LENGHT-1 || i == 0 || j == GRID_HEIGHT-1 || j == 0) {
-					WallSprite s = new WallSprite(tileSet[i][j], i, j);
-					tileSet[i][j].setSprite(s);
-					tileSet[i][j].setCalpestabile(false);
-				} else {
-					TileSprite s = new TileSprite(tileSet[i][j], i, j);
-					tileSet[i][j].setSprite(s);
-				}
-			}
-		}
-		for (Obstacle s : obstacles) {
-			ObstacleSprite os = new ObstacleSprite(s);
-			s.setSprite(os);
-		}
-		StationSprite ss = new StationSprite(station);
-		station.setSprite(ss);
-	}*/
+	
+	/**
+	 * Dopo che la deserializzazione è completa, questo metodo aggiunge nuovamente le sprite allo schermo
+	 */
 	
 	public void postDeserialization() {
 		for (int i = 0; i < 20; i++) {

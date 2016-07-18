@@ -150,7 +150,7 @@ public class MainScreen {
 				this.gm = e; 
 				frame.add(gm.getPane(), BorderLayout.CENTER);
 				gm.createEndTurnButton();
-				//gm.checkEndTurnButton();
+				gm.checkEndTurnButton();
 				frame.revalidate();
 			}
 		} catch (IOException e) {

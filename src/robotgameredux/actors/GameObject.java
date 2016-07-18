@@ -6,13 +6,21 @@ import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
 import robotgameredux.core.Coordinates;
 
-public abstract class GameObject implements Cloneable, Serializable {
+/**
+ * Questa classe rappresenta un oggetto di gioco basilare. Ogni oggetto di gioco deve avere una sua posizione.
+ * Inoltre, fornire i metodi update() e render(), che devono essere opportunamente implementati per la sottoclasse che 
+ * concretizza un GameObject.
+ *  
+ * @author Paolo Zirpoli
+ */
 
+public abstract class GameObject implements Cloneable, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2357436338766396248L;
+	
 	public GameObject(Coordinates coords) {
 		this.coords = coords;
 	}
@@ -79,8 +87,7 @@ public abstract class GameObject implements Cloneable, Serializable {
 	public abstract void update() throws InvalidTargetException, InsufficientEnergyException;
 	public abstract void render();
 	
-	/** Le coordinate dell'oggetto **/
-	
+	/** Le coordinate dell'oggetto **/	
 	private Coordinates coords;	
 	
 }

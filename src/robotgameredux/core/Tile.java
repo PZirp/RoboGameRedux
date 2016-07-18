@@ -19,7 +19,7 @@ public class Tile implements Serializable{
 	private static final long serialVersionUID = -427813845990404269L;
 		public Tile() {
 			this.sprite = null;
-			calpestabile = true;
+			occupied = true;
 			this.active = false;
 			/*try {
 				img = ImageIO.read(new File("C:\\Utenti\\Paolo\\Desktop\\tile.png"));
@@ -38,11 +38,11 @@ public class Tile implements Serializable{
 			return sprite;
 		}
 		
-		public Boolean isCalpestabile() {
-			return calpestabile;
+		public Boolean isOccupied() {
+			return occupied;
 		}
-		public void setCalpestabile(Boolean calpestabile) {
-			this.calpestabile = calpestabile;
+		public void setOccupied(Boolean occupied) {
+			this.occupied = occupied;
 		}
 			
 		public void render() {
@@ -57,9 +57,7 @@ public class Tile implements Serializable{
 			this.active = active;
 		}
 		
-		// private int baseID; Individua la texture da usare per questa tile
-		private Boolean calpestabile;
-		private BufferedImage img = null;
+		private Boolean occupied;
 		transient private Sprite sprite;
 		private Boolean active;
 }

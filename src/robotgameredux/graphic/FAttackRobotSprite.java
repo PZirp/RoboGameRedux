@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,22 +18,17 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-public class Visual extends Sprite{
+public class FAttackRobotSprite extends Sprite{
 	
 	private static final long serialVersionUID = 441178591544695129L;
-	transient private BufferedImage spriteDefault;
-	transient private BufferedImage spriteTurnOver;
-	transient private BufferedImage spriteInactive;
-	transient private JLabel HP;
-	transient private JLabel energy;
-	transient private JLabel defense;
+
 	
-	public Visual(Robot robot) {
+	public FAttackRobotSprite(Robot robot) {
 		this.robot = robot;
 		try {
-			spriteDefault = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\prova.png"));
-			spriteTurnOver = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\turn_over.png"));
-			spriteInactive = ImageIO.read(new File("C:\\Users\\Paolo\\Desktop\\disabled.png"));
+			spriteDefault = ImageIO.read(getClass().getResource("/robotgameredux/images/f_attack_idle.png"));
+			spriteTurnOver = ImageIO.read(getClass().getResource("/robotgameredux/images/turn_over.png"));
+			spriteInactive = ImageIO.read(getClass().getResource("/robotgameredux/images/disabled.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -70,5 +66,11 @@ public class Visual extends Sprite{
 		
 	Dimension preferredSize;
 	Robot robot;
+	transient private BufferedImage spriteDefault;
+	transient private BufferedImage spriteTurnOver;
+	transient private BufferedImage spriteInactive;
+	transient private JLabel HP;
+	transient private JLabel energy;
+	transient private JLabel defense;
 }
  

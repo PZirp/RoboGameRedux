@@ -1,7 +1,6 @@
 package robotgameredux.core;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -9,36 +8,23 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import Exceptions.CriticalStatusException;
 import Exceptions.InsufficientEnergyException;
 import Exceptions.InvalidTargetException;
-import robotgameredux.actors.AttackRobot;
 import robotgameredux.actors.Faction;
-import robotgameredux.actors.Obstacle;
 import robotgameredux.actors.Robot;
-import robotgameredux.actors.RobotType;
-import robotgameredux.actors.Station;
-import robotgameredux.actors.SupportRobot;
-import robotgameredux.graphic.InfoDialog;
 import robotgameredux.graphic.Sprite;
-import robotgameredux.graphic.Visual;
 import robotgameredux.input.AttackRobotController;
 import robotgameredux.input.RobotStates;
 import robotgameredux.input.SupportRobotController;
 import robotgameredux.players.AI;
 import robotgameredux.players.Player;
-import robotgameredux.systemsImplementations.StandardAttackInteractionSystem;
-import robotgameredux.systemsImplementations.StandardBattleSystem;
-import robotgameredux.systemsImplementations.StandardMovementSystem;
-import robotgameredux.weapons.Pistol;
 
 public class GameManager implements PropertyChangeListener, Serializable {
 	
@@ -57,6 +43,10 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		//randomGeneration();
 	}
 	
+	/**
+	 * Inizializza l'ambiente. Crea un gameWorld che mantiene l'ambiente, un ActorManager che gestisce gli attori, e inizializza il player interattivo e quello gestito dalla CPU.
+	 */
+	
 	private void gameSetUp() {
 		gameWorld = new GameWorld(this);
 		attackRobotController = new AttackRobotController(this);
@@ -67,13 +57,17 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		ai = new AI(gameWorld, robotFactory);
 		ai.addPropertyChangeListener(this);
 
-		robotFactory = new RobotFactory (this, gameWorld, attackRobotController, supportRobotController, AIattackRobotController, player, ai);		
+		robotFactory = new ActorManager (this, gameWorld, attackRobotController, supportRobotController, AIattackRobotController, player, ai);		
 
 		ai.setRF(robotFactory);
 		gameWorld.addPropertyChangeListener(attackRobotController);
 		gameWorld.addPropertyChangeListener(AIattackRobotController);
 		gameWorld.addPropertyChangeListener(supportRobotController);
 	}
+	
+	/**
+	 * Inizializza i vari attori standard all'inizio di una partita. Crea sia gli attori controllati interattivamente, sia quelli controllati dalla CPU.
+	 */
 	
 	private void actorsSetUp() {
 		robotFactory.createStandardAttack(Faction.FRIEND, new Coordinates(1,3));
@@ -86,7 +80,14 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		//System.out.println(r.toString());
 		robotFactory.createSupport(Faction.FRIEND, new Coordinates(1,4));
 		//System.out.println(sr.toString());
+
+		robotFactory.createSupport(Faction.ENEMY, new Coordinates(18,4));
+		//System.out.println(sr.toString());
 	}
+	
+	/**
+	 * Metodo per la creazione di un ambiente pseudo-casuale
+	 */
 	
 	public void randomGeneration() {
 		gameSetUp();
@@ -95,20 +96,20 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		runGameLoop();
 	}
 	
-	public void addToScreen(Sprite sprite, int layer) {
-		this.pane.add(sprite, layer);
-	}
+
 		
+	/**
+	 * Metodo di servizio per la creazione del primo livello
+	 */
+	
 	public void firstLevel() {
 		gameSetUp();
 		actorsSetUp();
 		
 		gameWorld.createObstacle(new Coordinates(5,8));
-		gameWorld.createObstacle(new Coordinates(15,8));
-		
+		gameWorld.createObstacle(new Coordinates(15,8));		
 		gameWorld.createObstacle(new Coordinates(5,2));
-		gameWorld.createObstacle(new Coordinates(15,2));
-		
+		gameWorld.createObstacle(new Coordinates(15,2));		
 		gameWorld.createObstacle(new Coordinates(10,4));
 		gameWorld.createObstacle(new Coordinates(11,4));
 		gameWorld.createObstacle(new Coordinates(11,6));
@@ -121,15 +122,39 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		
 		runGameLoop();
 	}
+	
+	/**
+	 * Rimuove il robot specificato dal gioco
+	 * @param robot da rimuovere
+	 */
 		
 	public void removeRobot(Robot robot) {
 		gameWorld.releaseTile(robot.getCoords());
 		pane.remove(robot.getSprite());
 	}
 	
+	/**
+	 * Rimuove la sprite indicata dallo schermo
+	 * @param sprite da rimuovere
+	 */
+	
+	/**
+	 * Metodo usato per aggiungere sprite allo schermo
+	 * @param sprite la sprite da aggiungere
+	 * @param layer il layer del JLayeredPane in cui aggiungere la sprite
+	 */
+	
+	public void addToScreen(Sprite sprite, int layer) {
+		this.pane.add(sprite, layer);
+	}
+	
 	public void removeFromScreen(Sprite sprite) {
 		pane.remove(sprite);
 	}
+	
+	/**
+	 * Crea il thread su cui gira la logica e lo fa partire
+	 */
 	
 	private void runGameLoop() {
 		Thread loop = new Thread()
@@ -141,12 +166,17 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		loop.start();
 	}
 
+	/**
+	 * Metodo usato per decidere l'ordine di movimento in un nuovo turno.
+	 * Se nessuno dei due giocatori è attivo, ed entrambi hanno mosso, inizia un nuovo turno, quindi tutti gli attori vengono resettati, insieme ai controllori.
+	 * Viene scelto casualmente un controllore che muoverà per primo.
+	 * Se uno dei due controllori ha mosso, viene attivato l'altro.
+	 */
+	
 	private void turn() {
 		if (!player.isActve() && !ai.isActve()) {
 			if(player.hasMoved() && ai.hasMoved()) {
 				robotFactory.resetRobots();
-				/*player.setMoved(false);
-				ai.setMoved(false);*/
 				player.resetMoved();
 				ai.resetMoved();
 				random = new Random();
@@ -167,6 +197,13 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		}
 	}
 	
+	
+	/**
+	 * Metodo che contiene il loop principale del programma.
+	 * Ad ogni iterazione, se il controllore interattivo è attivo, esamina l'input, se il controllore gestito dalla CPU è attivo, questo sceglie una mossa.
+	 * In segito alla scelta e al controllo dell'input, viene aggiornato il robot attivo, e viene effettuato il painting dell'ambiente aggiornato.
+	 * Il metodo inoltre si occupa di catturare e gestire le eccezioni lanciate dai robot. 
+	 */
 	private void gameLoop() {
 		
 		while(isRunning) {
@@ -204,8 +241,7 @@ public class GameManager implements PropertyChangeListener, Serializable {
 					e.getCommand().setState(RobotStates.IDLE);
 				}
 				catch (CriticalStatusException e) {
-					System.out.println(e.getMessage());
-					
+					System.out.println(e.getMessage());					
 					JOptionPane.showMessageDialog(pane, "Un tuo robot è in stato critico!");
 					robotFactory.setTurnOver();
 				}
@@ -215,9 +251,18 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		}
 	}
 	
+	/**
+	 * Evidenzia i percorsi percorribili da un robot (tramite il metodo di gameWorld)
+	 */
+	
 	public void highlight(Robot r) {
 		gameWorld.highlightPath(r.getCoords(), r.getRange());
 	}
+
+	/**
+	 * Controlla se c'è un robot attualmente attivo;
+	 * @return il robot attivo se presente, null altrimenti
+	 */
 	
 	public Robot hasActiveRobot() {
 		Robot r = robotFactory.hasActiveRobot();
@@ -227,37 +272,45 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		return null;
 	}
 		
-	public void endTurn() {
+	/**
+	 * Termina il turno quando entrambi i player (interattivo e non) hanno effettuato la loro mossa
+	 */
+	
+	private void endTurn() {
 		player.setActive(false);
 		ai.setActive(false);
 	}
 
-	public JLayeredPane getPane() {
-		return pane;
-	}
 	
 	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 		inputStream.defaultReadObject();
 		postSerialization();
 	}
 	
-	public void postSerialization() {
+	/**
+	 * In seguito alla deserializzazione, esegue i metodi post-deserializzazione di ActorManager e GameWorld, installa un nuovo mouselistener e fa ripartire il loop
+	 */
+	
+	private void postSerialization() {
 		this.pane = new JLayeredPane();
 		gameWorld.postDeserialization();
 		robotFactory.postDeserialization();
 		pane.addMouseListener(new InputHandler2());
-//		JOptionPane.showMessageDialog(null, "Eccomi");
 		runGameLoop();
 	}
 	
-	/*public void checkEndTurnButton() {
+	public void checkEndTurnButton() {
 		if (ai.isActve() && ai.hasMoved()) {
 			endTurnButton.setEnabled(true);
 		}
 		if (player.isActve() && player.hasMoved()) {
 			endTurnButton.setEnabled(true);
 		}
-	}*/
+	}
+	
+	/**
+	 * Crea il bottone di fine turno da aggiungere al frame padre;
+	 */
 	
 	public void createEndTurnButton() {
 		endTurnButton = new JButton("Termina turno");
@@ -278,6 +331,10 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		}
 		endTurnButton.setEnabled(false);
 	}
+
+	public JLayeredPane getPane() {
+		return pane;
+	}
 	
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
@@ -287,71 +344,55 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		if (arg0.getPropertyName() == "PLAYER_LOST") {
 			JOptionPane.showMessageDialog(null, "HAI PERSO!");
 			this.pane.removeAll();
+			pane.repaint();
+			isRunning = false;
 		}
 		if (arg0.getPropertyName() == "AI_LOST") {
 			JOptionPane.showMessageDialog(null, "HAI VINTO!");
 			pane.removeAll();
 			pane.repaint();
+			isRunning = false;
 			
 		}
 		
 	}
 	
+
+	
 	
 	private GameWorld gameWorld;
-	private RobotFactory robotFactory;
-	//private Station station;
+	private ActorManager robotFactory;
 	transient private JLayeredPane pane;
 	transient private JButton endTurnButton;
 	private AI ai;
 	private Player player;
-	//private Robot activeRobot;
 	private Boolean isRunning = true;
-	//private ArrayList<Robot> actors;
-	//private ArrayList<Obstacle> obstacles;
 	private AttackRobotController attackRobotController;
 	private AttackRobotController AIattackRobotController;
 	private SupportRobotController supportRobotController;
 	private Random random;
 	
-	class InputHandler2 extends MouseAdapter{
+	class InputHandler2 extends MouseAdapter{	
 		
-		InfoDialog info;
+		public InputHandler2() {}			
 		
-		public InputHandler2() {
-			info = new InfoDialog(null, false);
-		}
-		
-		
+		/**
+		 * Converte le coordinate del click in coordinate usabili dalla logica del programma 
+		 */
 		
 		@Override
 		public void mousePressed(MouseEvent e) {
-			/* Passa l'input ai controller */
+			// Passa l'input ai controller 
 			System.out.println(e.getX()/64);
 			System.out.println(e.getY()/64);
 			Coordinates click = new Coordinates(e.getX()/64, e.getY()/64);
-			System.out.println(click.toString() + "NUOVOOOOOOOOOOOO CLICK");
+			//System.out.println(click.toString() + "NUOVOOOOOOOOOOOO CLICK");
 			if (player.isActve()) {
 			attackRobotController.setInput(click);
 			supportRobotController.setInput(click);
 			}
-			AIattackRobotController.setInput(click);
-			
-			
+			AIattackRobotController.setInput(click);				
 		}
-		
-		/*public void mouseMoved(MouseEvent e) {
-			Robot r = null;
-			Vector2 pos = new Vector2(e.getX()/64, e.getY()/64);
-			r = robotFactory.isRobot(pos);
-			if (r != null) {
-				//JOptionPane.showMessageDialog(null, r.getEnergy());
-				info.setHPlabel(r.getHealth());
-				info.setEnergyLabel(r.getEnergy());
-				info.setVisible(true);
-				info.setLocation(e.getPoint());
-			}
-		}*/
 	}
 
 	

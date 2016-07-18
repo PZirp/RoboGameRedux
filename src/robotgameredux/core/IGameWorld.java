@@ -19,7 +19,7 @@ public interface IGameWorld {
 	public void createObstacle(Coordinates position);
 	public void createStation(Coordinates position);
 	
-	public Obstacle isObstacle(Coordinates target);
+	public Boolean isObstacle(Coordinates target);
 	public Boolean destroyObstacle(Coordinates target, int robotStrenght);
 	public Boolean pushObstacle(Coordinates target, int robotStrenght, Coordinates coords);
 	public boolean isStation(Coordinates position);

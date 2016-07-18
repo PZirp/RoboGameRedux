@@ -30,7 +30,7 @@ import robotgameredux.tools.ToolsDialog;
 import robotgameredux.weapons.Pistol;
 import robotgameredux.weapons.Weapon;
 
-public class AttackRobotController extends RobotController implements PropertyChangeListener, Serializable {
+public class AttackRobotController implements PropertyChangeListener, Serializable {
 
 	/**
 	 * 
@@ -39,7 +39,8 @@ public class AttackRobotController extends RobotController implements PropertyCh
 
 
 	public AttackRobotController (GameManager gameManager) {
-		super(gameManager);
+		//super(gameManager);
+		this.gameManager = gameManager;
 		this.activeRobot = null;
 		this.robots = new ArrayList<AttackRobot>();
 		this.actionSelector = new RobotActionDialog(null, false);
@@ -68,6 +69,12 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		this.weaponSelector = new ToolsDialog(null, false);
 	}*/
 	
+	
+	/**
+	 * Metodo che interpreta l'input dell'utente.
+	 * Prima controlla se l'input è effettivamente da eseguire. Nel caso in cui ci sia un robot attivo che non è sotto il controllo di questo controllore.
+	 * Se non c'è alcun robot attivo, il robot selezionato viene attivato e si analizza l'input.
+	 */
 	public void parseInput() {
 	
 
@@ -77,7 +84,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 			while (!trovato && i < robots.size()) {
 				AttackRobot robot = robots.get(i);
 				if (robot.getCoords().equals(currentInput) && robot.getState() == RobotStates.IDLE){
-					Robot r = getReference().hasActiveRobot();
+					Robot r = gameManager.hasActiveRobot();
 					if (r == null) {
 						trovato = activateRobot(robot);
 					}
@@ -96,7 +103,7 @@ public class AttackRobotController extends RobotController implements PropertyCh
 				doNothing();
 				break;
 			case MOVING: 
-				getReference().highlight(activeRobot);
+				gameManager.highlight(activeRobot);
 				if(currentInput != null)
 					moveRobot();
 				break;
@@ -156,6 +163,10 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		currentInput = null;
 	}
 	
+	public void setInput(Coordinates currentInput) {
+		this.currentInput = currentInput;
+	}
+	
 	private void moveRobot() { 
 		//activeRobot.setState(RobotStates.MOVING);
 		RobotMovementCommand mc = new  RobotMovementCommand(activeRobot, currentInput);
@@ -211,6 +222,9 @@ public class AttackRobotController extends RobotController implements PropertyCh
 		this.weaponSelector = new ToolsDialog(null, false);
 	}
 	
+
+	private GameManager gameManager;
+	private Coordinates currentInput;
 	private ArrayList<AttackRobot> robots;
 	private AttackRobot activeRobot;	
 	transient private RobotActionDialog actionSelector;

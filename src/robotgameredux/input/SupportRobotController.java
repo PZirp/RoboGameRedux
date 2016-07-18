@@ -28,7 +28,7 @@ import robotgameredux.graphic.Sprite;
 import robotgameredux.tools.ToolsDialog;
 import robotgameredux.tools.UsableTool;
 
-public class SupportRobotController extends RobotController implements PropertyChangeListener, Serializable {
+public class SupportRobotController implements PropertyChangeListener, Serializable {
 
 	
 	/**
@@ -37,14 +37,14 @@ public class SupportRobotController extends RobotController implements PropertyC
 	private static final long serialVersionUID = 160442651970251872L;
 
 	public SupportRobotController(GameManager gameManager) {
-		super(gameManager);
+		//super(gameManager);
+		this.gameManager = gameManager;
 		this.activeRobot = null;
 		this.robots = new ArrayList<SupportRobot>();
 		this.actionSelector = new SupportDialog3(null, false);
 		this.toolSelector = new ToolsDialog(null, false);
 		currentInput = null;
 		this.target = null;
-		//emptyTools = false;
 
 	}
 
@@ -60,17 +60,14 @@ public class SupportRobotController extends RobotController implements PropertyC
 		return true;
 	}*/
 	
-	@Override
 	public void parseInput() {
-		
-
 		i = 0;
 		trovato = false;
 		if (this.currentInput != null && activeRobot == null) {
 			while (!trovato && i < robots.size()) {
 				SupportRobot robot = robots.get(i);
 				if (robot.getCoords().equals(currentInput) && robot.getState() == RobotStates.IDLE){
-					Robot r = getReference().hasActiveRobot();
+					Robot r = gameManager.hasActiveRobot();
 					if (r == null) {
 						trovato = activateRobot(robot);
 					}
@@ -92,7 +89,7 @@ public class SupportRobotController extends RobotController implements PropertyC
 				doNothing();
 				break;
 			case MOVING:
-				getReference().highlight(activeRobot);
+				gameManager.highlight(activeRobot);
 				if(currentInput != null)  
 					moveRobot();
 				break;
@@ -189,6 +186,10 @@ public class SupportRobotController extends RobotController implements PropertyC
 		return false;
 	}
 	
+	public void setInput(Coordinates currentInput) {
+		this.currentInput = currentInput;
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
 		
@@ -212,12 +213,12 @@ public class SupportRobotController extends RobotController implements PropertyC
 		this.toolSelector = new ToolsDialog(null, false);
 	}*/
 	
+
+	private GameManager gameManager;
+	private Coordinates currentInput;
 	private ArrayList<SupportRobot> robots;
 	private SupportRobot activeRobot;
 	private Coordinates target;
-	//private Boolean emptyTools;
-	//Variabili di lavoro
-
 	private RobotStates robotInput;
 	private int i = 0;
 	private Boolean trovato = false;

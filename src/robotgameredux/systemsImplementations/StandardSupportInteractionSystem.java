@@ -36,7 +36,7 @@ public class StandardSupportInteractionSystem implements SupportInteractionSyste
 			if (command.getEnergy() < interactionCost) {
 				throw new InsufficientEnergyException(command);
 			}
-			if (gameWorld.isObstacle(target) != null && command.getCoords().dst(target) <= 1) {
+			if (gameWorld.isObstacle(target) == true && command.getCoords().dst(target) <= 1) {
 				if(!gameWorld.pushObstacle(target, command.getStrenght(), command.getCoords())) {
 					throw new InvalidTargetException(command);
 				}

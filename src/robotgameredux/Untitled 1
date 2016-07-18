@@ -1,0 +1,110 @@
+	
+		/* 
+		 * Coordinates tempV = null;
+		Coordinates dest = null;
+		int tempDist = 0;
+		int dist = 0;
+		boolean occupied = false;
+		tempV = robot.getCoords();
+		 * do {
+			tempV = new Coordinates(tempV.getX()+1, tempV.getY());
+			if(gameWorld.isTileFree(tempV) == false) {
+				occupied = true;
+				tempV = new Coordinates(tempV.getX()-1, tempV.getY());
+			} else {
+				tempDist = robot.getCoords().dst(tempV);
+				if (tempDist == robot.getRange()-1) {
+					occupied = true;
+				}
+			}
+		} while(occupied != true);
+		
+		if (tempDist > dist) {
+			dist = tempDist;
+			dest = tempV;
+		}
+		occupied = false;
+		tempV = robot.getCoords();
+		
+		do {
+			tempV = new Coordinates(tempV.getX()-1, tempV.getY());
+			if(gameWorld.isTileFree(tempV) == false) {
+				occupied = true;
+				tempV = new Coordinates(tempV.getX()+1, tempV.getY());
+			} else {
+				tempDist = robot.getCoords().dst(tempV);
+				if (tempDist == robot.getRange()-1) {
+					occupied = true;
+				}
+			}
+		} while(occupied != true);
+		
+		if (tempDist > dist) {
+			dist = tempDist;
+			dest = tempV;
+		}
+		occupied = false;
+		tempV = robot.getCoords();
+		
+		do {
+			tempV = new Coordinates(tempV.getX(), tempV.getY()+1);
+			if(gameWorld.isTileFree(tempV) == false) {
+				occupied = true;
+				tempV = new Coordinates(tempV.getX(), tempV.getY()-1);
+			} else {
+				tempDist = robot.getCoords().dst(tempV);
+				if (tempDist == robot.getRange()-1) {
+					occupied = true;
+				}
+			}
+		} while(occupied != true);
+		
+		if (tempDist > dist) {
+			dist = tempDist;
+			dest = tempV;
+		}
+		occupied = false;
+		tempV = robot.getCoords();
+		
+		do {
+			tempV = new Coordinates(tempV.getX(), tempV.getY()-1);
+			if(gameWorld.isTileFree(tempV) == false) {
+				occupied = true;
+				tempV = new Coordinates(tempV.getX(), tempV.getY()+1);
+			} else {
+				tempDist = robot.getCoords().dst(tempV);
+				if (tempDist == robot.getRange()-1) {
+					occupied = true;
+				}
+			}
+		} while(occupied != true);
+		
+		if (tempDist > dist) {
+			dist = tempDist;
+			dest = tempV;
+		}
+		occupied = false;*/
+		
+		//return dest;
+		
+		
+			/*	public boolean attemptMovement(Robot robot) {
+		//for (Coordinates v : possiblePaths) {
+			if (actorManager.isRobot(v)) {
+				if(actorManager.getTarget(v).getFaction() != robot.getFaction()) {
+					robot.setState(RobotStates.ACTIVE);
+					RobotAttackCommand cmd = new RobotAttackCommand(1, v, (AttackRobot) robot);
+					robot.setCommand(cmd);
+				}
+			} else {
+			Coordinates dest = null;
+			do {
+				dest = choosePath(robot);
+			} while (dest.equals(robot.getCoords()));
+			RobotMovementCommand cmd2 = new RobotMovementCommand(robot, dest);
+			robot.setCommand(cmd2);
+			return true;
+			//}
+		//}
+	}*/
+	

@@ -114,7 +114,7 @@ public class SupInteractionTest implements IGameWorld {
 				if (i == 10-1 || i == 0 || j == 10-1 || j == 0) {
 					WallSprite s = new WallSprite(testSet[i][j], i, j);
 					testSet[i][j].setSprite(s);
-					testSet[i][j].setCalpestabile(false);
+					testSet[i][j].setOccupied(false);
 				} else {
 					TileSprite s = new TileSprite(testSet[i][j], i, j);
 					testSet[i][j].setSprite(s);
@@ -136,7 +136,7 @@ public class SupInteractionTest implements IGameWorld {
 			return false;
 		}
 		
-		if (testSet[tile.getX()][tile.getY()].isCalpestabile() == true)
+		if (testSet[tile.getX()][tile.getY()].isOccupied() == true)
 			return true;
 		else 
 			return false;
@@ -170,13 +170,13 @@ public class SupInteractionTest implements IGameWorld {
 	}
 
 	@Override
-	public Obstacle isObstacle(Coordinates target) {
+	public Boolean isObstacle(Coordinates target) {
 		for (Obstacle obs : obstacles) {
 			if (target.equals(obs.getCoords())) {
-				return obs;
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 
 	@Override
@@ -186,19 +186,18 @@ public class SupInteractionTest implements IGameWorld {
 
 	@Override
 	public Boolean pushObstacle(Coordinates target, int robotStrenght, Coordinates coords) {
-		Obstacle o = isObstacle(target);
-		if (o != null && robotStrenght > o.getWeight()) {
-			// Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
-			Coordinates direction = o.getCoords().sub(coords)/*Coordinates.sub(o.getCoords(), coords)*/;
-			//System.out.println(direction.toString() + "DIREZIONE");
-			Coordinates newPosition = direction.add(o.getCoords());
-			if (isTileFree(newPosition)) {
-				releaseTile(o.getCoords());
-				o.setCoords(newPosition);
-				occupyTile(newPosition);
-				return true;
+		for (Obstacle obs : obstacles) {
+			if (target.equals(obs.getCoords()) && robotStrenght > obs.getWeight()) {
+				Coordinates direction = obs.getCoords().sub(coords); // Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
+				Coordinates newPosition = direction.add(obs.getCoords()); //La nuova posizione dell'ostacolo
+				if (isTileFree(newPosition)) {
+					releaseTile(obs.getCoords());
+					obs.setCoords(newPosition);
+					occupyTile(newPosition);
+					return true;
+				}
+				return false;
 			}
-			return false;
 		}
 		return false;
 	}

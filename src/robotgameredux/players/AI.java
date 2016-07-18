@@ -5,18 +5,20 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JOptionPane;
 
 import robotgameredux.Commands.RobotAttackCommand;
 import robotgameredux.Commands.RobotMovementCommand;
+import robotgameredux.Commands.RobotSupportCommand;
 import robotgameredux.CommandsInterfaces.Command;
 import robotgameredux.TargetImplementations.RobotTarget;
 import robotgameredux.actors.AttackRobot;
 import robotgameredux.actors.Robot;
 import robotgameredux.actors.SupportRobot;
 import robotgameredux.core.GameWorld;
-import robotgameredux.core.RobotFactory;
+import robotgameredux.core.ActorManager;
 import robotgameredux.core.Coordinates;
 import robotgameredux.input.RobotStates;
 import robotgameredux.weapons.Weapon;
@@ -29,7 +31,7 @@ public class AI implements IPlayer, PropertyChangeListener, Serializable {
 	 */
 	private static final long serialVersionUID = -1884744116804446163L;
 		
-	public AI(GameWorld gameWorld, RobotFactory actorManager) {
+	public AI(GameWorld gameWorld, ActorManager actorManager) {
 		this.lost = false;
 		this.active = false;
 		this.moved = true;
@@ -38,163 +40,202 @@ public class AI implements IPlayer, PropertyChangeListener, Serializable {
 		this.attackRobots = new ArrayList<AttackRobot>();
 		this.supportRobots = new ArrayList<SupportRobot>();
 		this.propertyChange = new PropertyChangeSupport(this);
+	//	this.prevDirections = new ArrayList<>();
 	}
 	
 
-	public void setRF(RobotFactory rf) {
+	public void setRF(ActorManager rf) {
 		this.actorManager = rf;
 	}
 	
 	public void update() {
-		for (AttackRobot a : attackRobots) {
-			if (a.getState() == RobotStates.IDLE) {
+	//	for (AttackRobot a : attackRobots) {
+		for (int i = 0; i < this.attackRobots.size(); i++) {
+			if (attackRobots.get(i).getState() == RobotStates.IDLE) {
+				attackRobots.get(i).setState(RobotStates.ACTIVE);
 				JOptionPane.showMessageDialog(null, "Ecco");
-				Coordinates pos = a.getCoords();
+				//Coordinates pos = a.getCoords();
 				//ArrayList<Vector2> possiblePaths = gameWorld.pathfind(pos, a.getRange());
-				attemptAttack(a);
-				choosePath(a);
+				//JOptionPane.showMessageDialog(null, "Vedo se attaccare");
+				boolean res;
+				res = attemptAttack(attackRobots.get(i));
+			//	JOptionPane.showMessageDialog(null, "Vedo se muovermi");
+				if (res == false) {				
+				//	JOptionPane.showMessageDialog(null, "Indice: " + i + "Prev dir: " + this.prevDirections.get(i));
+					res = attemptMovement(attackRobots.get(i), i);	
+				}
+				return;
+			}
+		}
+		
+		for (int i = 0; i < this.supportRobots.size(); i++) {
+			if (supportRobots.get(i).getState() == RobotStates.IDLE) {
+				supportRobots.get(i).setState(RobotStates.ACTIVE);
+				JOptionPane.showMessageDialog(null, "Ecco");
+				//Coordinates pos = a.getCoords();
+				//ArrayList<Vector2> possiblePaths = gameWorld.pathfind(pos, a.getRange());
+				//JOptionPane.showMessageDialog(null, "Vedo se guarire");
+				boolean res;
+				res = attemptHeal(supportRobots.get(i));
+				//JOptionPane.showMessageDialog(null, "Vedo se muovermi");
+				if (res == false) {				
+					//JOptionPane.showMessageDialog(null, "Indice: " + i + "Prev dir: " + this.prevDirections.get(i+attackRobots.size()-1));
+					res = attemptMovement(supportRobots.get(i), i+attackRobots.size());	
+				}
 				return;
 			}
 		}
 	}
 	
-	
-	public void attemptAttack(AttackRobot robot) {
-		
-		ArrayList<Coordinates> paths = gameWorld.pathfind(robot.getCoords(), 20);
-		
-		for (Coordinates v : paths) {
-			if (actorManager.isRobot(v)) {
-				RobotTarget target = actorManager.getTarget(v);
-				if (target.getFaction() != robot.getFaction()) {
-					//Weapon w = robot.getWeapons().get(0);
-					Command c = new RobotAttackCommand(0, v, robot);
-					robot.setCommand(c);
-					robot.setState(RobotStates.ACTIVE);
 
+	public boolean attemptHeal(SupportRobot robot) {
+		ArrayList<Coordinates> paths = gameWorld.pathfind(robot.getCoords(), 20);
+		for (Coordinates v : paths) {
+			RobotTarget target = actorManager.getTarget(v);
+			if(target != null) {
+				if (target.getFaction() == robot.getFaction() && target.getHealth() < 50) {
+					Command c = new RobotSupportCommand(0, v, robot);
+					robot.setCommand(c);
+					robot.setState(RobotStates.USE_OBJECT);
+					return true;
 				}
 			}
 		}
-		
+		return false;
 	}
 	
-	public Coordinates choosePath(Robot robot) {
+	
+	
+	public boolean attemptAttack(AttackRobot robot) {
+		ArrayList<Coordinates> paths = gameWorld.pathfind(robot.getCoords(), 20);
+		for (Coordinates v : paths) {
+			RobotTarget target = actorManager.getTarget(v);
+			if(target != null) {
+				if (target.getFaction() != robot.getFaction()) {
+					Command c = new RobotAttackCommand(0, v, robot);
+					robot.setCommand(c);
+					robot.setState(RobotStates.ATTACKING);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public Coordinates choosePath(Robot robot, int i) {
 		
 		//ArrayList<Vector2> paths = gameWorld.pathfind(robot.getCoords(), robot.getRange());
 		
 		Coordinates tempV = null;
-		Coordinates dest = null;
 		int tempDist = 0;
-		int dist = 0;
 		boolean occupied = false;
 		tempV = robot.getCoords();
-				
-		do {
-			tempV = new Coordinates(tempV.getX()+1, tempV.getY());
-			if(gameWorld.isTileFree(tempV) == false) {
-				occupied = true;
-				tempV = new Coordinates(tempV.getX()-1, tempV.getY());
-			} else {
-				tempDist = robot.getCoords().dst(tempV);
-				if (tempDist == robot.getRange()-1) {
-					occupied = true;
-				}
-			}
-		} while(occupied != true);
+		Directions dir = null;
+		//do {
+			dir = Directions.getDirection();
+		//} while (dir.isOpposite(prevDirections.get(i)));
 		
-		if (tempDist > dist) {
-			dist = tempDist;
-			dest = tempV;
-		}
-		occupied = false;
-		tempV = robot.getCoords();
+		//JOptionPane.showMessageDialog(null, "TempV iniziale: " + tempV.toString());
 		
-		do {
-			tempV = new Coordinates(tempV.getX()-1, tempV.getY());
-			if(gameWorld.isTileFree(tempV) == false) {
-				occupied = true;
+		switch(dir) {
+		case RIGHT:
+			 do {
 				tempV = new Coordinates(tempV.getX()+1, tempV.getY());
-			} else {
-				tempDist = robot.getCoords().dst(tempV);
-				if (tempDist == robot.getRange()-1) {
-					occupied = true;
+//					JOptionPane.showMessageDialog(null, "Destinazione nel loop: " + tempV.toString());
+					if(gameWorld.isTileFree(tempV) == false) {
+						occupied = true;
+						tempV = new Coordinates(tempV.getX()-1, tempV.getY());
+//						JOptionPane.showMessageDialog(null, "Destinazione: " + tempV.toString());
+					} else {
+						tempDist = robot.getCoords().dst(tempV);
+						if (tempDist == robot.getRange()-1 || tempDist >= robot.getEnergy()) {
+							occupied = true;
+						}
+					}
+				
+			 } while(occupied != true);
+//			 JOptionPane.showMessageDialog(null, "Direzione scelta: "+ dir.toString());
+			// prevDirections.set(i, dir);
+			 break;
+		case LEFT:
+			do {
+				tempV = new Coordinates(tempV.getX()-1, tempV.getY());
+//					JOptionPane.showMessageDialog(null, "Destinazione nel loop: " + tempV.toString());
+					if(gameWorld.isTileFree(tempV) == false) {
+						occupied = true;
+						tempV = new Coordinates(tempV.getX()+1, tempV.getY());
+//						JOptionPane.showMessageDialog(null, "Destinazione: " + tempV.toString());
+					} else {
+					tempDist = robot.getCoords().dst(tempV);
+						if (tempDist == robot.getRange()-1 || tempDist >= robot.getEnergy()) {
+						occupied = true;
+					}
 				}
-			}
-		} while(occupied != true);
-		
-		if (tempDist > dist) {
-			dist = tempDist;
-			dest = tempV;
-		}
-		occupied = false;
-		tempV = robot.getCoords();
-		
-		do {
-			tempV = new Coordinates(tempV.getX(), tempV.getY()+1);
-			if(gameWorld.isTileFree(tempV) == false) {
-				occupied = true;
-				tempV = new Coordinates(tempV.getX(), tempV.getY()-1);
-			} else {
-				tempDist = robot.getCoords().dst(tempV);
-				if (tempDist == robot.getRange()-1) {
-					occupied = true;
-				}
-			}
-		} while(occupied != true);
-		
-		if (tempDist > dist) {
-			dist = tempDist;
-			dest = tempV;
-		}
-		occupied = false;
-		tempV = robot.getCoords();
-		
-		do {
-			tempV = new Coordinates(tempV.getX(), tempV.getY()-1);
-			if(gameWorld.isTileFree(tempV) == false) {
-				occupied = true;
+			} while(occupied != true);
+//			JOptionPane.showMessageDialog(null, "Direzione scelta: "+ dir.toString());
+			//prevDirections.set(i, dir);
+			break;
+		case DOWN:
+			do {
 				tempV = new Coordinates(tempV.getX(), tempV.getY()+1);
-			} else {
-				tempDist = robot.getCoords().dst(tempV);
-				if (tempDist == robot.getRange()-1) {
-					occupied = true;
+//					JOptionPane.showMessageDialog(null, "Destinazione nel loop: " + tempV.toString());
+					if(gameWorld.isTileFree(tempV) == false) {
+						occupied = true;
+						tempV = new Coordinates(tempV.getX(), tempV.getY()-1);
+//						JOptionPane.showMessageDialog(null, "Destinazione: " + tempV.toString());
+					} else {
+						tempDist = robot.getCoords().dst(tempV);
+						if (tempDist == robot.getRange()-1 || tempDist >= robot.getEnergy()) {
+							occupied = true;
+						}
 				}
-			}
-		} while(occupied != true);
-		
-		if (tempDist > dist) {
-			dist = tempDist;
-			dest = tempV;
+			} while(occupied != true);
+//			JOptionPane.showMessageDialog(null, "Direzione scelta: "+ dir.toString());
+			//prevDirections.set(i, dir);
+			break;
+		case UP:
+			do {
+				tempV = new Coordinates(tempV.getX(), tempV.getY()-1);
+//					JOptionPane.showMessageDialog(null, "Destinazione nel loop: " + tempV.toString());
+					if(gameWorld.isTileFree(tempV) == false) {
+						occupied = true;
+						tempV = new Coordinates(tempV.getX(), tempV.getY()+1);
+//						JOptionPane.showMessageDialog(null, "Destinazione: " + tempV.toString());
+					} else {
+						tempDist = robot.getCoords().dst(tempV);
+						if (tempDist == robot.getRange()-1 || tempDist >= robot.getEnergy()) {
+							occupied = true;
+						}
+				}
+			} while(occupied != true);
+//			JOptionPane.showMessageDialog(null, "Direzione scelta: "+ dir.toString());
+		//	prevDirections.set(i, dir);
+			break;
 		}
-		occupied = false;
 		
-		return dest;
+		return tempV;
+	
 	}
 
-	public void chooseAction(Robot robot) {
-		//for (Vector2 v : possiblePaths) {
-			/*if (actorManager.isRobot(v)) {
-				if(actorManager.getTarget(v).getFaction() != robot.getFaction()) {
-					robot.setState(RobotStates.ACTIVE);
-					RobotAttackCommand cmd = new RobotAttackCommand(1, v, (AttackRobot) robot);
-					robot.setCommand(cmd);
-				}
-			} else {*/
-				robot.setState(RobotStates.ACTIVE);
-				
-				/*Vector2 dest = choosePath(robot);
-				RobotMovementCommand cmd2 = new RobotMovementCommand(robot, dest);
-				robot.setCommand(cmd2);*/
-			//}
-		//}
+	public boolean attemptMovement(Robot robot, int i) {
+			Coordinates dest = null;
+			do {
+				dest = choosePath(robot, i);
+			} while (dest.equals(robot.getCoords()));
+			RobotMovementCommand cmd2 = new RobotMovementCommand(robot, dest);
+			robot.setCommand(cmd2);
+			return true;
 	}
 	
 	public void addRobot(AttackRobot robot) {
 		attackRobots.add(robot);
+		//this.prevDirections.add(Directions.RIGHT);
 	}
 	
 	public void addRobot(SupportRobot robot) {
 		supportRobots.add(robot);
+		//this.prevDirections.add(Directions.RIGHT);
+
 	}
 	
 	@Override
@@ -288,7 +329,8 @@ public class AI implements IPlayer, PropertyChangeListener, Serializable {
 	}
 	
 	
-	@Override
+	
+	
 	public void propertyChange(PropertyChangeEvent arg0) {
 		if (arg0.getPropertyName() == "DESTROYED") {
 			Robot r = (Robot) arg0.getOldValue();
@@ -300,8 +342,7 @@ public class AI implements IPlayer, PropertyChangeListener, Serializable {
 		}
 		if (arg0.getPropertyName() == "TURN_OVER") {
 			yieldTurn();
-		}		
-
+		}			
 	}
 	
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -309,9 +350,9 @@ public class AI implements IPlayer, PropertyChangeListener, Serializable {
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChange.removePropertyChangeListener(listener);
+        this.propertyChange.removePropertyChangeListener(listener);        
     }
-
+    
 	private Boolean lost;
 	private Boolean active;
 	private Boolean moved;
@@ -319,6 +360,44 @@ public class AI implements IPlayer, PropertyChangeListener, Serializable {
 	private ArrayList<SupportRobot> supportRobots;
 	private PropertyChangeSupport propertyChange;
 	private GameWorld gameWorld;
-	private RobotFactory actorManager;
-
+	private ActorManager actorManager;
+//	private ArrayList<Directions> prevDirections;
+	
+	private enum Directions {
+		UP,
+		DOWN,
+		RIGHT,
+		LEFT;
+		
+		private static Random rand = new Random();
+		
+		private static Directions getDirection() {
+			return values()[rand.nextInt(4)];
+		}
+		
+		private boolean isOpposite(Directions prev) {
+			
+			if (this == UP && prev == DOWN) {
+				return true;
+			}
+			
+			if (this == DOWN && prev == UP) {
+				return true;
+			}
+			
+			if (this == LEFT && prev == RIGHT) {
+				return true;
+			}
+			
+			if (this == RIGHT && prev == LEFT) {
+				return true;
+			}
+			
+			return false;
+		}
+		
+	}
+	
 }
+
+

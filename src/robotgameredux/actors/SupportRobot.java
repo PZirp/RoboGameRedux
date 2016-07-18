@@ -8,7 +8,7 @@ import robotgameredux.CommandsInterfaces.Command;
 import robotgameredux.core.GameManager;
 import robotgameredux.core.GameWorld;
 import robotgameredux.core.Coordinates;
-import robotgameredux.graphic.VisualSup;
+import robotgameredux.graphic.FSupportRobotSprite;
 import robotgameredux.input.RobotStates;
 import robotgameredux.input.SupportRobotController;
 import robotgameredux.systemInterfaces.AttackInteractionSystem;
@@ -31,9 +31,6 @@ public class SupportRobot extends Robot{
 	public SupportRobot(Coordinates coords, MovementSystem ms, SupportSystem sm, SupportInteractionSystem is) {
 		super(coords, ms);
 		this.tools = new ArrayList<UsableTool>();
-		tools.add(new HealthPack());
-		tools.add(new HealthPack());
-		tools.add(new HealthPack());
 		this.supportSystem = sm;
 		this.interactionSystem = is;
 	}
@@ -54,36 +51,63 @@ public class SupportRobot extends Robot{
 		}
 	}*/
 
-	/*
-	 * Decisione da prendere.
-	 * Far passare l'oggetto (ed i proiettili, e le altri interazioni) come oggetto primo per il gameWorld per farle arrivare al target che poi
-	 * le usa su di sè.
-	 * O farsi passare il target dal gameworld, ed utilizzare un metodo esposto tipo applyEffect() che prende come argomento l'oggetto e lo usa?
-	 * Oppure passare il riferimento direttamente all'oggetto e gg; No, conviene passare l'oggetto tramite metodo, perchè altrimenti bisogna 
-	 * esporre troppi metodi get/set che rovinano l'incapsulamento... Ma in effetti anche se passo l'oggetto quei metodi devo esporli. 
-	 * !!!I metodi get e set non rovinano l'incapsulamento!!!
+
+	/**
+	 * Aggiunge il tool specificato come parametro al robot.
+	 * @param tool il tool da aggiungere
 	 */
 		
 	public void addTool(UsableTool tool) {
 		tools.add(tool); //fare add(tool.clone())
 	}
 	
+
+	/**
+	 * Ritorna una copia dell'array dei  tool del robot
+	 * @return l'array dei tool (clone)
+	 */
+	
+	
 	public ArrayList<UsableTool> getTools() {
 		return tools; //ritornare un clone
 	}
 
 	
+
+	/**
+	 * Ritorna il tool specificato dall'indice del parametro
+	 * @param i l'indice del tool nell'array
+	 * @return il tool scelto
+	 */
+	
+	
 	public UsableTool getActiveTool(Integer i) {
 		return tools.get(i);
 	}
+	
+	/**
+	 * Rimuove il tool usato specificato
+	 * @param tool da rimuovere
+	 */
 	
 	public void removeUsedTool(UsableTool tool) {
 		this.tools.remove(tool);
 	}
 
+	/**
+	 * Ritorna un riferimento al sistema di supporto di una istanza del robot di supporto
+	 * @return il sistema di supporto
+	 */
+	
 	public SupportSystem getSupportSystem() {
 		return supportSystem;
 	}
+	
+
+	/**
+	 * Ritorna un riferimento al sistema di interazione usato dall'istanza del robot di supporto
+	 * @return il sistema di interazione usato
+	 */
 	
 	public SupportInteractionSystem getInteractionSystem() {
 		return interactionSystem;
