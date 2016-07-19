@@ -2,22 +2,16 @@ package robotgameredux.systemsImplementations;
 
 import java.io.Serializable;
 
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.RobotSupportCommand;
-import robotgameredux.CommandsInterfaces.Command;
 import robotgameredux.CommandsInterfaces.SupportCommandInterface;
 import robotgameredux.TargetInterfaces.TargetInterface;
-import robotgameredux.actors.Faction;
-import robotgameredux.actors.Robot;
-import robotgameredux.core.IActorManager;
-import robotgameredux.core.ActorManager;
 import robotgameredux.core.Coordinates;
-import robotgameredux.input.RobotStates;
+import robotgameredux.core.IActorManager;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.systemInterfaces.SupportSystem;
 import robotgameredux.tools.UsableTool;
 
-public class StandardSupportSystem implements SupportSystem, Serializable{
+public class StandardSupportSystem implements SupportSystem, Serializable, Cloneable {
 
 	/**
 	 * 
@@ -28,34 +22,52 @@ public class StandardSupportSystem implements SupportSystem, Serializable{
 		this.actorsManager = rf;
 	}
 
-	public <T> Boolean execute(SupportCommandInterface<T> command) throws InvalidTargetException, InsufficientEnergyException {
+	@Override
+	public <T> Boolean execute(SupportCommandInterface<T> command)
+			throws InvalidTargetException, InsufficientEnergyException {
 		Coordinates target = command.getTarget();
 		UsableTool tool = command.getActiveTool();
-//		TargetInterface<?> targeted = null;
-		
+
 		if (command.getEnergy() < tool.getCost()) {
-			throw new InsufficientEnergyException(command);
+			throw new InsufficientEnergyException(command, tool.getCost());
 		}
-		
+
 		TargetInterface<?> targeted = actorsManager.getTarget(target);
-		/*if (actorsManager.isRobot(target) == true) {
-			targeted = actorsManager.getTarget(target);
-		} else {*/
 		if (targeted == null || targeted.getFaction() != command.getFaction()) {
 			throw new InvalidTargetException(command);
 		}
-		
-		//if (targeted.getFaction() == command.getFaction()) {
-			tool.use(targeted);
-			command.removeUsedTool(tool);
-			command.removeEnergy(tool.getCost());
-			return true;
-		/*} else {
-			throw new InvalidTargetException(command);
-		} */
+
+		tool.use(targeted);
+		command.removeUsedTool(tool);
+		command.removeEnergy(tool.getCost());
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "[ActorManager: " + actorsManager.toString() + "]";
+	}
+
+	@Override
+	public StandardSupportSystem clone() {
+		try {
+			StandardSupportSystem clone = (StandardSupportSystem) super.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject == null)
+			return false;
+		if (getClass() != otherObject.getClass())
+			return false;
+		StandardSupportSystem other = (StandardSupportSystem) otherObject;
+		return actorsManager.equals(other.actorsManager);
 	}
 
 	private IActorManager actorsManager;
 
-	
 }

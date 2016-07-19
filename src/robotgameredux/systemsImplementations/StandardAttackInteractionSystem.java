@@ -2,17 +2,13 @@ package robotgameredux.systemsImplementations;
 
 import java.io.Serializable;
 
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.RobotAttackInteractCommand;
 import robotgameredux.CommandsInterfaces.AtkInteractCommandInterface;
-import robotgameredux.actors.Robot;
-import robotgameredux.core.GameWorld;
-import robotgameredux.core.IGameWorld;
 import robotgameredux.core.Coordinates;
-import robotgameredux.input.RobotStates;
+import robotgameredux.core.IGameWorld;
+import robotgameredux.enums.RobotStates;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.systemInterfaces.AttackInteractionSystem;
-import robotgameredux.weapons.Pistol;
 import robotgameredux.weapons.Weapon;
 
 public class StandardAttackInteractionSystem implements AttackInteractionSystem, Cloneable, Serializable {
@@ -28,17 +24,18 @@ public class StandardAttackInteractionSystem implements AttackInteractionSystem,
 	}
 
 	@Override
-	public <T> Boolean execute(AtkInteractCommandInterface<T> command) throws InvalidTargetException, InsufficientEnergyException {
+	public <T> Boolean execute(AtkInteractCommandInterface<T> command)
+			throws InvalidTargetException, InsufficientEnergyException {
 		Coordinates target = command.getTarget();
-		
+
 		switch (command.getState()) {
-		case DESTROY_OBSTACLE: 
+		case DESTROY_OBSTACLE:
 			if (command.getEnergy() < interactionCost) {
-				throw new InsufficientEnergyException(command);
+				throw new InsufficientEnergyException(command, interactionCost);
 			}
-			//!= null
+			// != null
 			if (gameWorld.isObstacle(target) == true && command.getCoords().dst(target) <= 1) {
-				if(!gameWorld.destroyObstacle(target, command.getStrenght())){
+				if (!gameWorld.destroyObstacle(target, command.getStrenght())) {
 					throw new InvalidTargetException(command);
 				}
 				command.removeEnergy(interactionCost);
@@ -47,7 +44,7 @@ public class StandardAttackInteractionSystem implements AttackInteractionSystem,
 			}
 			return true;
 		case RECHARGE:
-			if(gameWorld.isStation(target) && command.getCoords().dst(target) <= 1){
+			if (gameWorld.isStation(target) && command.getCoords().dst(target) <= 1) {
 				Integer charge = gameWorld.recharge();
 				if (charge != null) {
 					command.addEnergy(charge);
@@ -58,9 +55,9 @@ public class StandardAttackInteractionSystem implements AttackInteractionSystem,
 			return true;
 		case TAKE_WEAPON:
 			if (command.getEnergy() < interactionCost) {
-				throw new InsufficientEnergyException(command);
+				throw new InsufficientEnergyException(command, interactionCost);
 			}
-			if(gameWorld.isStation(target) && command.getCoords().dst(target) <= 1) {
+			if (gameWorld.isStation(target) && command.getCoords().dst(target) <= 1) {
 				Weapon w = gameWorld.getWeapon();
 				if (w != null) {
 					command.addWeapon(w);
@@ -74,12 +71,36 @@ public class StandardAttackInteractionSystem implements AttackInteractionSystem,
 			}
 			return true;
 		}
-			
+
 		return false;
 	}
-	
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "[GameWorld: " + gameWorld.toString() + " InteractionCost: " + interactionCost;
+	}
+
+	@Override
+	public StandardAttackInteractionSystem clone() {
+		try {
+			StandardAttackInteractionSystem clone = (StandardAttackInteractionSystem) super.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject == null)
+			return false;
+		if (getClass() != otherObject.getClass())
+			return false;
+		StandardAttackInteractionSystem other = (StandardAttackInteractionSystem) otherObject;
+		return interactionCost == other.interactionCost && gameWorld.equals(other.gameWorld);
+	}
+
 	private IGameWorld gameWorld;
 	private final int interactionCost;
-
 
 }

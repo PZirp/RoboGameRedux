@@ -4,24 +4,24 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
-import robotgameredux.actors.Robot;
-import robotgameredux.input.RobotStates;
+import robotgameredux.enums.RobotStates;
+import robotgameredux.gameobjects.Actor;
 
 public class ESupportRobotSprite extends Sprite {
 	/**
 	 *  
 	 */
-	
-	//Creare classe unica per le sprite che estende JComponent e poi estendere quella per le sprite dei vari gameobjects 
+
+	// Creare classe unica per le sprite che estende JComponent e poi estendere
+	// quella per le sprite dei vari gameobjects
 	private static final long serialVersionUID = -1343989742137472214L;
-	
-	public ESupportRobotSprite(Robot robot) {
+
+	public ESupportRobotSprite(Actor robot) {
 		this.robot = robot;
 		try {
 			spriteDefault = ImageIO.read(getClass().getResource("/robotgameredux/images/e_support_idle.png"));
@@ -41,20 +41,21 @@ public class ESupportRobotSprite extends Sprite {
 		defense.setForeground(Color.WHITE);
 		this.add(HP);
 		this.add(energy);
-		this.add(defense);		
+		this.add(defense);
 	}
-	
 
+	@Override
 	public void update() {
 		this.HP.setText("S: " + robot.getHealth());
 		this.energy.setText("E: " + robot.getEnergy());
 		this.defense.setText("D:" + robot.getDefense());
-		this.setBounds(robot.getCoords().getX()*64, robot.getCoords().getY()*64, 64, 64);
+		this.setBounds(robot.getCoords().getX() * 64, robot.getCoords().getY() * 64, 64, 64);
 	}
-	
+
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if(robot.getState() == RobotStates.TURN_OVER) {
+		if (robot.getState() == RobotStates.TURN_OVER) {
 			g.drawImage(spriteTurnOver, 0, -16, null);
 		} else if (robot.getState() == RobotStates.INACTIVE) {
 			g.drawImage(spriteInactive, 0, -16, null);
@@ -63,9 +64,8 @@ public class ESupportRobotSprite extends Sprite {
 		}
 	}
 
-
 	Dimension preferredSize;
-	Robot robot;
+	Actor robot;
 	transient private BufferedImage spriteDefault;
 	transient private BufferedImage spriteTurnOver;
 	transient private BufferedImage spriteInactive;
@@ -73,5 +73,3 @@ public class ESupportRobotSprite extends Sprite {
 	transient private JLabel energy;
 	transient private JLabel defense;
 }
- 
-

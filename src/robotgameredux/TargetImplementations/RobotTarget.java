@@ -1,19 +1,19 @@
 package robotgameredux.TargetImplementations;
 
 import robotgameredux.TargetInterfaces.TargetInterface;
-import robotgameredux.actors.Faction;
-import robotgameredux.actors.Robot;
+import robotgameredux.enums.Faction;
+import robotgameredux.gameobjects.Actor;
 
-public class RobotTarget implements TargetInterface<Robot>{
+public class RobotTarget implements TargetInterface<Actor> {
 
 	/*
-	 *  Wrapper target per attore generico.
+	 * Wrapper target per attore generico.
 	 */
-	
-	public RobotTarget(Robot robot) {
+
+	public RobotTarget(Actor robot) {
 		this.robot = robot;
 	}
-	
+
 	@Override
 	public int getHealth() {
 		return robot.getHealth();
@@ -27,8 +27,8 @@ public class RobotTarget implements TargetInterface<Robot>{
 	@Override
 	public void setDefense(int defense) {
 		robot.setDefense(defense);
-	}	
-	
+	}
+
 	@Override
 	public void applyDamage(int damage) {
 		robot.damage(damage);
@@ -48,13 +48,12 @@ public class RobotTarget implements TargetInterface<Robot>{
 	public void addEnergy(int energy) {
 		robot.addEnergy(energy);
 	}
-	
+
 	@Override
 	public void heal(int health) {
 		robot.heal(health);
 	}
-	
-	Robot robot;
 
-	
+	Actor robot;
+
 }

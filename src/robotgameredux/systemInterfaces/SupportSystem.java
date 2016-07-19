@@ -1,11 +1,11 @@
 package robotgameredux.systemInterfaces;
 
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
 import robotgameredux.CommandsInterfaces.SupportCommandInterface;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
 
 public interface SupportSystem {
 
 	<T> Boolean execute(SupportCommandInterface<T> command) throws InvalidTargetException, InsufficientEnergyException;
-//Use object	
+	// Use object
 }

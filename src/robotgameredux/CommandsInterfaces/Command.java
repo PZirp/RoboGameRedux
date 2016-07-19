@@ -1,16 +1,17 @@
 package robotgameredux.CommandsInterfaces;
 
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
-import robotgameredux.actors.Robot;
-import robotgameredux.actors.SupportRobot;
-import robotgameredux.input.RobotStates;
+import robotgameredux.enums.RobotStates;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
 
 public interface Command {
 
 	public Boolean execute() throws InvalidTargetException, InsufficientEnergyException;
+
 	public void setState(RobotStates state);
+
 	int getEnergy();
+
 	void removeEnergy(int n);
 
 }

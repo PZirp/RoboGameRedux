@@ -2,23 +2,20 @@ package robotgameredux.test;
 
 import java.util.ArrayList;
 
-import Exceptions.CriticalStatusException;
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.RobotAttackInteractCommand;
 import robotgameredux.Commands.RobotSupportInteractCommand;
-import robotgameredux.actors.AttackRobot;
-import robotgameredux.actors.Faction;
-import robotgameredux.actors.Obstacle;
-import robotgameredux.actors.Station;
-import robotgameredux.actors.SupportRobot;
+import robotgameredux.core.Coordinates;
 import robotgameredux.core.IGameWorld;
 import robotgameredux.core.Tile;
-import robotgameredux.core.Coordinates;
+import robotgameredux.enums.Faction;
+import robotgameredux.enums.RobotStates;
+import robotgameredux.exceptions.CriticalStatusException;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
+import robotgameredux.gameobjects.Obstacle;
+import robotgameredux.gameobjects.Station;
+import robotgameredux.gameobjects.SupportRobot;
 import robotgameredux.graphic.TileSprite;
 import robotgameredux.graphic.WallSprite;
-import robotgameredux.input.RobotStates;
-import robotgameredux.systemsImplementations.StandardAttackInteractionSystem;
 import robotgameredux.systemsImplementations.StandardSupportInteractionSystem;
 import robotgameredux.tools.UsableTool;
 import robotgameredux.weapons.Weapon;
@@ -27,14 +24,15 @@ public class SupInteractionTest implements IGameWorld {
 	public ArrayList<Obstacle> obstacles;
 	public Station station;
 	private Tile[][] testSet;
-	
+
 	public static void main(String[] args) {
 		System.out.println(">>>INIZIO TEST<<<");
 		SupInteractionTest tester = new SupInteractionTest();
-		SupportRobot testRobot = new SupportRobot(new Coordinates(1,1), null, null, new StandardSupportInteractionSystem(tester));
+		SupportRobot testRobot = new SupportRobot(new Coordinates(1, 1), null, null,
+				new StandardSupportInteractionSystem(tester));
 		testRobot.setFaction(Faction.FRIEND);
-		tester.createObstacle(new Coordinates(1,2));
-		tester.createStation(new Coordinates(2,1));
+		tester.createObstacle(new Coordinates(1, 2));
+		tester.createStation(new Coordinates(2, 1));
 		RobotSupportInteractCommand ic = null;
 		testRobot.removeEnergy(80);
 		System.out.println(">>>Stato alla partenza<<<");
@@ -47,13 +45,13 @@ public class SupInteractionTest implements IGameWorld {
 		}
 		System.out.println(">>>Spingo un ostacolo<<<");
 		testRobot.setState(RobotStates.PUSH_OBSTACLE);
-		tester.interact(testRobot, ic, new Coordinates(1,2));
+		tester.interact(testRobot, ic, new Coordinates(1, 2));
 		System.out.println(">>>Provo a spingere un ostacolo che non esiste<<<");
 		testRobot.setState(RobotStates.PUSH_OBSTACLE);
-		tester.interact(testRobot, ic, new Coordinates(1,2));
+		tester.interact(testRobot, ic, new Coordinates(1, 2));
 		System.out.println(">>>Prendo un oggetto<<<");
 		testRobot.setState(RobotStates.TAKE_OBJECT);
-		tester.interact(testRobot, ic, new Coordinates(2,1));
+		tester.interact(testRobot, ic, new Coordinates(2, 1));
 		System.out.println(">>>Prendo un'oggetto con stazione vuota<<<");
 		tester.station.removeTool(0);
 		tester.station.removeTool(0);
@@ -61,19 +59,19 @@ public class SupInteractionTest implements IGameWorld {
 		tester.station.removeTool(0);
 		tester.station.removeTool(0);
 		testRobot.setState(RobotStates.TAKE_OBJECT);
-		tester.interact(testRobot, ic, new Coordinates(2,1));
+		tester.interact(testRobot, ic, new Coordinates(2, 1));
 		System.out.println(">>>Ricarico il robot<<<");
 		testRobot.setState(RobotStates.RECHARGE);
-		tester.interact(testRobot, ic, new Coordinates(2,1));
+		tester.interact(testRobot, ic, new Coordinates(2, 1));
 		System.out.println(">>>FINE TEST<<<");
 
-	}	
-	
-	public void interact(SupportRobot testRobot, RobotSupportInteractCommand ic,  Coordinates target) {
-		ic = new  RobotSupportInteractCommand(testRobot, target);
+	}
+
+	public void interact(SupportRobot testRobot, RobotSupportInteractCommand ic, Coordinates target) {
+		ic = new RobotSupportInteractCommand(testRobot, target);
 		testRobot.setCommand(ic);
 		try {
-			while(testRobot.getState() != RobotStates.TURN_OVER && testRobot.getState() != RobotStates.INACTIVE) {
+			while (testRobot.getState() != RobotStates.TURN_OVER && testRobot.getState() != RobotStates.INACTIVE) {
 				testRobot.update();
 				System.out.println(testRobot.toString());
 				if (!obstacles.isEmpty()) {
@@ -81,7 +79,7 @@ public class SupInteractionTest implements IGameWorld {
 				}
 				if (station != null) {
 					System.out.println(station.toString());
-				}			
+				}
 				testRobot.setState(RobotStates.TURN_OVER);
 
 			}
@@ -89,13 +87,11 @@ public class SupInteractionTest implements IGameWorld {
 			System.out.println("Mossa non valida");
 			System.out.println(e.getMessage());
 			e.getCommand().setState(RobotStates.IDLE);
-		}
-		catch (InsufficientEnergyException e) {
+		} catch (InsufficientEnergyException e) {
 			System.out.println(e.getMessage());
 			System.out.println("Il robot non ha abbastanza energia per compiere quest'azione!");
 			e.getCommand().setState(RobotStates.IDLE);
-		}
-		catch (CriticalStatusException e) {
+		} catch (CriticalStatusException e) {
 			System.out.println(e.getMessage());
 			System.out.println("Un tuo robot è in stato critico!");
 			testRobot.setState(RobotStates.TURN_OVER);
@@ -103,15 +99,14 @@ public class SupInteractionTest implements IGameWorld {
 			testRobot.setState(RobotStates.IDLE);
 		}
 	}
-	
-	
+
 	public SupInteractionTest() {
 		obstacles = new ArrayList<>();
-		testSet = new Tile[10][10]; 
+		testSet = new Tile[10][10];
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				testSet[i][j] = new Tile();				 
-				if (i == 10-1 || i == 0 || j == 10-1 || j == 0) {
+				testSet[i][j] = new Tile();
+				if (i == 10 - 1 || i == 0 || j == 10 - 1 || j == 0) {
 					WallSprite s = new WallSprite(testSet[i][j], i, j);
 					testSet[i][j].setSprite(s);
 					testSet[i][j].setOccupied(false);
@@ -122,23 +117,25 @@ public class SupInteractionTest implements IGameWorld {
 			}
 		}
 	}
-	
-	@Override
-	public void releaseTile(Coordinates tile) {}
 
 	@Override
-	public void occupyTile(Coordinates tile) {}
+	public void releaseTile(Coordinates tile) {
+	}
+
+	@Override
+	public void occupyTile(Coordinates tile) {
+	}
 
 	@Override
 	public boolean isTileFree(Coordinates tile) {
-		
-		if (tile.getX() >= 10-1 || tile.getY() >= 10-1 || tile.getX() < 1 || tile.getY() < 1) {
+
+		if (tile.getX() >= 10 - 1 || tile.getY() >= 10 - 1 || tile.getX() < 1 || tile.getY() < 1) {
 			return false;
 		}
-		
+
 		if (testSet[tile.getX()][tile.getY()].isOccupied() == true)
 			return true;
-		else 
+		else
 			return false;
 	}
 
@@ -148,19 +145,22 @@ public class SupInteractionTest implements IGameWorld {
 	}
 
 	@Override
-	public void disablePath(ArrayList<Coordinates> path) {}
+	public void disablePath(ArrayList<Coordinates> path) {
+	}
 
 	@Override
-	public void highlightPath(Coordinates origin, int range) {}
+	public void highlightPath(Coordinates origin, int range) {
+	}
 
 	@Override
-	public void randomMap() {}
+	public void randomMap() {
+	}
 
 	@Override
 	public void createObstacle(Coordinates position) {
-		Obstacle o = new Obstacle(position); 
+		Obstacle o = new Obstacle(position);
 		occupyTile(position);
-		obstacles.add(o);		
+		obstacles.add(o);
 	}
 
 	@Override
@@ -188,8 +188,22 @@ public class SupInteractionTest implements IGameWorld {
 	public Boolean pushObstacle(Coordinates target, int robotStrenght, Coordinates coords) {
 		for (Obstacle obs : obstacles) {
 			if (target.equals(obs.getCoords()) && robotStrenght > obs.getWeight()) {
-				Coordinates direction = obs.getCoords().sub(coords); // Direzione in cui si muoverà l'ostacolo dopo essere stato colpito dal robot
-				Coordinates newPosition = direction.add(obs.getCoords()); //La nuova posizione dell'ostacolo
+				Coordinates direction = obs.getCoords().sub(coords); // Direzione
+																		// in
+																		// cui
+																		// si
+																		// muoverà
+																		// l'ostacolo
+																		// dopo
+																		// essere
+																		// stato
+																		// colpito
+																		// dal
+																		// robot
+				Coordinates newPosition = direction.add(obs.getCoords()); // La
+																			// nuova
+																			// posizione
+																			// dell'ostacolo
 				if (isTileFree(newPosition)) {
 					releaseTile(obs.getCoords());
 					obs.setCoords(newPosition);
@@ -218,11 +232,11 @@ public class SupInteractionTest implements IGameWorld {
 	@Override
 	public UsableTool getTool() {
 		if (station.getTools() != null) {
-				UsableTool tool = station.getTool(0);
-				station.removeTool(0);
-				return tool;
-			
-		} 
+			UsableTool tool = station.getTool(0);
+			station.removeTool(0);
+			return tool;
+
+		}
 		return null;
 	}
 

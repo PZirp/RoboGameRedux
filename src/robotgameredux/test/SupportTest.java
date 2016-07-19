@@ -2,18 +2,17 @@ package robotgameredux.test;
 
 import java.util.ArrayList;
 
-import Exceptions.CriticalStatusException;
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.RobotAttackCommand;
 import robotgameredux.Commands.RobotSupportCommand;
 import robotgameredux.TargetImplementations.RobotTarget;
-import robotgameredux.actors.Faction;
-import robotgameredux.actors.Robot;
-import robotgameredux.actors.SupportRobot;
 import robotgameredux.core.Coordinates;
 import robotgameredux.core.IActorManager;
-import robotgameredux.input.RobotStates;
+import robotgameredux.enums.Faction;
+import robotgameredux.enums.RobotStates;
+import robotgameredux.exceptions.CriticalStatusException;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
+import robotgameredux.gameobjects.Actor;
+import robotgameredux.gameobjects.SupportRobot;
 import robotgameredux.systemsImplementations.StandardSupportSystem;
 import robotgameredux.tools.HealthPack;
 
@@ -22,15 +21,18 @@ public class SupportTest implements IActorManager {
 	public static void main(String[] args) {
 		System.out.println(">>>INIZIO TEST<<<");
 		SupportTest tester = new SupportTest();
-		SupportRobot testRobotFriend = new SupportRobot(new Coordinates(1,1), null, new StandardSupportSystem(tester), null);
+		SupportRobot testRobotFriend = new SupportRobot(new Coordinates(1, 1), null, new StandardSupportSystem(tester),
+				null);
 		testRobotFriend.setFaction(Faction.FRIEND);
 		testRobotFriend.addTool(new HealthPack());
 		testRobotFriend.addTool(new HealthPack());
 		testRobotFriend.addTool(new HealthPack());
-		SupportRobot testRobotEnemy = new SupportRobot(new Coordinates(2,1), null, new StandardSupportSystem(tester), null);
+		SupportRobot testRobotEnemy = new SupportRobot(new Coordinates(2, 1), null, new StandardSupportSystem(tester),
+				null);
 		testRobotEnemy.setFaction(Faction.ENEMY);
 		testRobotEnemy.damage(50);
-		SupportRobot testRobotFriend2 = new SupportRobot(new Coordinates(1,2), null, new StandardSupportSystem(tester), null);
+		SupportRobot testRobotFriend2 = new SupportRobot(new Coordinates(1, 2), null, new StandardSupportSystem(tester),
+				null);
 		testRobotFriend2.setFaction(Faction.FRIEND);
 		testRobotFriend2.damage(50);
 		tester.addRobot(testRobotFriend);
@@ -44,43 +46,43 @@ public class SupportTest implements IActorManager {
 		System.out.println("Terzo robot (amico): " + testRobotFriend2.toString());
 		System.out.println("Guarisco il robot nemico");
 		testRobotFriend.setState(RobotStates.ATTACKING);
-		tester.support(testRobotFriend, ac, new Coordinates(2,1));
+		tester.support(testRobotFriend, ac, new Coordinates(2, 1));
 		System.out.println("Primo robot (amico): " + testRobotFriend.toString());
 		System.out.println("Secondo robot (nemico): " + testRobotEnemy.toString());
 		System.out.println("Terzo robot (amico): " + testRobotFriend2.toString());
 		System.out.println("Guarisco il robot amico");
 		testRobotFriend.setState(RobotStates.ATTACKING);
-		tester.support(testRobotFriend, ac, new Coordinates(1,2));
+		tester.support(testRobotFriend, ac, new Coordinates(1, 2));
 		System.out.println("Primo robot (amico): " + testRobotFriend.toString());
 		System.out.println("Secondo robot (nemico): " + testRobotEnemy.toString());
 		System.out.println("Terzo robot (amico): " + testRobotFriend2.toString());
 		System.out.println("Gurisco una coordinata vuota");
 		testRobotFriend.setState(RobotStates.ATTACKING);
-		tester.support(testRobotFriend, ac, new Coordinates(3,1));
+		tester.support(testRobotFriend, ac, new Coordinates(3, 1));
 		System.out.println("Primo robot (amico): " + testRobotFriend.toString());
 		System.out.println("Secondo robot (nemico): " + testRobotEnemy.toString());
 		System.out.println("Terzo robot (amico): " + testRobotFriend2.toString());
 		System.out.println("Guarisco una coordinata non valida (diagonale)");
 		testRobotFriend.setState(RobotStates.ATTACKING);
-		tester.support(testRobotFriend, ac, new Coordinates(2,2));
+		tester.support(testRobotFriend, ac, new Coordinates(2, 2));
 		System.out.println("Primo robot (amico): " + testRobotFriend.toString());
 		System.out.println("Secondo robot (nemico): " + testRobotEnemy.toString());
 		System.out.println("Terzo robot (amico): " + testRobotFriend2.toString());
 		System.out.println(">>>FINE TEST<<<");
 	}
-	
+
 	public SupportTest() {
 		this.robots = new ArrayList<>();
 	}
-	
+
 	public void support(SupportRobot testRobot, RobotSupportCommand ac, Coordinates target) {
 		ac = new RobotSupportCommand(0, target, testRobot);
 		testRobot.setCommand(ac);
 		try {
-			while(testRobot.getState() != RobotStates.TURN_OVER) {
+			while (testRobot.getState() != RobotStates.TURN_OVER) {
 				testRobot.update();
 			}
-		} catch (InvalidTargetException e) {	
+		} catch (InvalidTargetException e) {
 			System.out.println("Mossa non valida");
 			System.out.println(e.getMessage());
 			e.getCommand().setState(RobotStates.IDLE);
@@ -96,26 +98,26 @@ public class SupportTest implements IActorManager {
 			testRobot.setState(RobotStates.IDLE);
 		}
 	}
-	
+
 	@Override
 	public RobotTarget getTarget(Coordinates target) {
-		for (Robot r : robots) {
+		for (Actor r : robots) {
 			if (r.getCoords().equals(target)) {
 				return new RobotTarget(r);
 			}
-		}	
+		}
 		return null;
 	}
-	
+
 	private void show() {
-		for (Robot r : robots) {
+		for (Actor r : robots) {
 		}
 	}
-	
-	private void addRobot(Robot robot) {
+
+	private void addRobot(Actor robot) {
 		robots.add(robot);
 	}
-	
-	private ArrayList<Robot> robots;
+
+	private ArrayList<Actor> robots;
 
 }

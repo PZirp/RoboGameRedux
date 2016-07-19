@@ -2,7 +2,9 @@ package robotgameredux.weapons;
 
 import java.io.Serializable;
 
-public class Shield implements Weapon, Serializable {
+import robotgameredux.enums.WeaponType;
+
+public class Shield implements Weapon, Serializable, Cloneable {
 
 	public Shield() {
 		bullets = 1;
@@ -10,7 +12,7 @@ public class Shield implements Weapon, Serializable {
 		cost = 10;
 		type = WeaponType.DEFENSIVE;
 	}
-	
+
 	public int getDefense() {
 		return defense;
 	}
@@ -25,7 +27,8 @@ public class Shield implements Weapon, Serializable {
 
 	public Boolean hasBullets() {
 		if (bullets > 0) {
-			return true;}
+			return true;
+		}
 		return false;
 	}
 
@@ -42,7 +45,7 @@ public class Shield implements Weapon, Serializable {
 	@Override
 	public Boolean isSameWeapon(Weapon other) {
 		if (name.equals(other.getName()))
-				return true;
+			return true;
 		return false;
 	}
 
@@ -60,9 +63,18 @@ public class Shield implements Weapon, Serializable {
 	public WeaponType getType() {
 		return type;
 	}
-	
 
-	private final String name = "Shield";
+	@Override
+	public Shield clone() {
+		try {
+			Shield clone = (Shield) super.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+
+	private final String name = "Scudo";
 	private int bullets;
 	private int defense;
 	private int cost;

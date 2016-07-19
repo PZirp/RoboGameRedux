@@ -16,14 +16,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-
 public class MainScreen {
-	
+
 	private GameManager gm;
 	private File openFile;
 	private JFrame frame;
 	private JFileChooser fileChooser;
-	
+
 	public static void main(String[] args) {
 		MainScreen ms = new MainScreen();
 	}
@@ -36,16 +35,16 @@ public class MainScreen {
 		frame.setSize(1280, 770);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		makeMenu();
-		frame.setVisible(true);	
+		frame.setVisible(true);
 	}
-	
+
 	private void chooseFile() {
 		int returnValue = fileChooser.showOpenDialog(frame);
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			this.openFile = fileChooser.getSelectedFile(); 
+			this.openFile = fileChooser.getSelectedFile();
 		}
 	}
-			
+
 	private void makeMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Partita");
@@ -53,36 +52,36 @@ public class MainScreen {
 		JMenu nuovaSubMenuItem = new JMenu("Nuova partita");
 		JMenuItem salvaMenuItem = new JMenuItem("Salva partita");
 		JMenuItem caricaMenuItem = new JMenuItem("Carica partita");
-				
+
 		JMenuItem liv1 = new JMenuItem("Primo livello");
 		JMenuItem liv2 = new JMenuItem("Secondo livello");
 		JMenuItem ran = new JMenuItem("Genera");
-		
+
 		nuovaSubMenuItem.add(liv1);
 		nuovaSubMenuItem.add(liv2);
 		nuovaSubMenuItem.add(ran);
-		
-		liv1.addActionListener(new ActionListener() {			
+
+		liv1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				loadFirstLevel();
 			}
 		});
-		
-		ran.addActionListener(new ActionListener() {			
+
+		ran.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				generateRandomLevel();
 			}
 		});
-				
-		salvaMenuItem.addActionListener(new ActionListener() {			
+
+		salvaMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				save();
 			}
 		});
-		caricaMenuItem.addActionListener(new ActionListener() {			
+		caricaMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				chooseFile();
@@ -92,10 +91,10 @@ public class MainScreen {
 		menu.add(nuovaSubMenuItem);
 		menu.add(salvaMenuItem);
 		menu.add(caricaMenuItem);
-		
+
 		frame.setJMenuBar(menuBar);
 	}
-	
+
 	public void loadFirstLevel() {
 		if (gm != null) {
 			frame.getContentPane().removeAll();
@@ -106,12 +105,12 @@ public class MainScreen {
 		frame.add(gm.getPane(), BorderLayout.CENTER);
 		gm.createEndTurnButton();
 		frame.revalidate();
-	}	
+	}
 
 	public void generateRandomLevel() {
 		if (gm != null) {
 			frame.getContentPane().removeAll();
-			//frame.remove(gm.getPane());
+			// frame.remove(gm.getPane());
 			gm = null;
 		}
 		this.gm = new GameManager();
@@ -119,8 +118,8 @@ public class MainScreen {
 		frame.add(gm.getPane(), BorderLayout.CENTER);
 		gm.createEndTurnButton();
 		frame.revalidate();
-	}	
-	
+	}
+
 	public void save() {
 		try {
 			int returnValue = fileChooser.showSaveDialog(frame);
@@ -131,15 +130,16 @@ public class MainScreen {
 				out.close();
 				fileOut.close();
 			}
-		}catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-		}	
+		}
 	}
-	
+
 	public void load() {
 		try {
-			if (openFile != null) {FileInputStream fileIn = new FileInputStream(openFile);
-				if (gm != null) { 
+			if (openFile != null) {
+				FileInputStream fileIn = new FileInputStream(openFile);
+				if (gm != null) {
 					frame.getContentPane().removeAll();
 					gm = null;
 				}
@@ -147,7 +147,7 @@ public class MainScreen {
 				GameManager e = (GameManager) in.readObject();
 				in.close();
 				fileIn.close();
-				this.gm = e; 
+				this.gm = e;
 				frame.add(gm.getPane(), BorderLayout.CENTER);
 				gm.createEndTurnButton();
 				gm.checkEndTurnButton();

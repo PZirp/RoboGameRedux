@@ -3,14 +3,11 @@ package robotgameredux.systemsImplementations;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
-import robotgameredux.Commands.RobotMovementCommand;
 import robotgameredux.CommandsInterfaces.MovementCommandInterface;
-import robotgameredux.actors.Robot;
-import robotgameredux.core.GameWorld;
 import robotgameredux.core.Coordinates;
-import robotgameredux.input.RobotStates;
+import robotgameredux.core.GameWorld;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.systemInterfaces.MovementSystem;
 
 public class TeleportMovementSystem implements MovementSystem, Serializable {
@@ -19,21 +16,23 @@ public class TeleportMovementSystem implements MovementSystem, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 3887894413285630332L;
+
 	public TeleportMovementSystem(GameWorld gameWorld) {
 		this.gameWorld = gameWorld;
 	}
 
 	@Override
-	public Boolean execute(MovementCommandInterface command) throws InvalidTargetException, InsufficientEnergyException {
+	public Boolean execute(MovementCommandInterface command)
+			throws InvalidTargetException, InsufficientEnergyException {
 
 		Coordinates destination = command.getDestination();
 		Integer dist = (int) command.getCoords().dst(destination);
 		Coordinates oldPos = command.getCoords();
 
 		if (command.getEnergy() == 0 || command.getEnergy() < dist)
-			throw new InsufficientEnergyException(command);
+			// throw new InsufficientEnergyException(command);
 
-		pathfind(command.getCoords(), command.getRange());
+			pathfind(command.getCoords(), command.getRange());
 
 		if (destinationCheck(destination, command.getCoords())) {
 			if (dist < command.getRange()) {
@@ -59,13 +58,13 @@ public class TeleportMovementSystem implements MovementSystem, Serializable {
 		path = new ArrayList<Coordinates>();
 
 		for (int i = 0; i < range; i++) {
-			if (origin.getY() + i < gameWorld.GRID_HEIGHT) {
+			if (origin.getY() + i < GameWorld.GRID_HEIGHT) {
 				path.add(new Coordinates(origin.getX(), origin.getY() + i));
 			}
 			if (origin.getY() - i >= 0) {
 				path.add(new Coordinates(origin.getX(), origin.getY() - i));
 			}
-			if (origin.getX() + i < gameWorld.GRID_LENGHT) {
+			if (origin.getX() + i < GameWorld.GRID_LENGHT) {
 				path.add(new Coordinates(origin.getX() + i, origin.getY()));
 			}
 			if (origin.getX() - i >= 0) {

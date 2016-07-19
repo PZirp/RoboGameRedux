@@ -2,123 +2,93 @@ package robotgameredux.systemsImplementations;
 
 import java.io.Serializable;
 
-import javax.swing.JOptionPane;
-
-import Exceptions.InsufficientEnergyException;
-import Exceptions.InvalidTargetException;
 import robotgameredux.CommandsInterfaces.AttackCommandInterface;
 import robotgameredux.TargetInterfaces.TargetInterface;
-import robotgameredux.core.IActorManager;
-import robotgameredux.core.ActorManager;
 import robotgameredux.core.Coordinates;
+import robotgameredux.core.IActorManager;
+import robotgameredux.enums.WeaponType;
+import robotgameredux.exceptions.InsufficientEnergyException;
+import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.systemInterfaces.BattleSystem;
 import robotgameredux.weapons.IBullet;
-import robotgameredux.weapons.Weapon;
-import robotgameredux.weapons.WeaponType;;
+import robotgameredux.weapons.Weapon;;
 
-public class StandardBattleSystem implements BattleSystem, Serializable{
+public class StandardBattleSystem implements BattleSystem, Serializable, Cloneable {
 
-	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4306228035835923018L;
-	
+
 	public StandardBattleSystem(IActorManager rf) {
 		this.actorsManager = rf;
 	}
-	
+
 	/**
-	 * Metodo che esegue la funzione di attacco.
-	 * Prende come argomento un AttackCommandInterface generico, che può incapsulare un qualunque tipo di entità capace di attaccare.
-	 * Per prima cosa controlla che l'attaccante abbia sufficiente energia. Se così non dovesse essere, lancia una InsufficientEnergiException.
-	 * Poi controlla che il target sia valido tramite un actorManager. Se il target è valido, controlla che sia in una posizione valida.
-	 * Se una delle due condizioni di cui sopra non sia verificata, lancia una InvalidTargetException.
-	 * Controlla il tipo di arma, e l'appartenenza alle varie fazioni. Infine esegue l'attacco vero e proprio.
-	 * Usa il metodo fire dell'interfaccia Weapon per creare un bullet, che incapsula i dati sull'attacco. Rimuove l'energia necessaria per operare l'arma dall'attaccante,
-	 * e colpisce l'obiettivo.
-	 * @param AttackCommandInterface<T>, interfaccia che rappresenta l'attaccante
+	 * Metodo che esegue la funzione di attacco. Prende come argomento un
+	 * AttackCommandInterface generico, che può incapsulare un qualunque tipo di
+	 * entità capace di attaccare. Per prima cosa controlla che l'attaccante
+	 * abbia sufficiente energia. Se così non dovesse essere, lancia una
+	 * InsufficientEnergiException. Poi controlla che il target sia valido
+	 * tramite un actorManager. Se il target è valido, controlla che sia in una
+	 * posizione valida. Se una delle due condizioni di cui sopra non sia
+	 * verificata, lancia una InvalidTargetException. Controlla il tipo di arma,
+	 * e l'appartenenza alle varie fazioni. Infine esegue l'attacco vero e
+	 * proprio. Usa il metodo fire dell'interfaccia Weapon per creare un bullet,
+	 * che incapsula i dati sull'attacco. Rimuove l'energia necessaria per
+	 * operare l'arma dall'attaccante, e colpisce l'obiettivo.
+	 * 
+	 * @param AttackCommandInterface<T>,
+	 *            interfaccia che rappresenta l'attaccante
 	 * @return true se l'attacco ha successo, false altrimenti
 	 * @throws InvalidTargetException
 	 * @throws InsufficientEnergiException
 	 */
-	
-	public <T> Boolean execute(AttackCommandInterface<T> command) throws InvalidTargetException, InsufficientEnergyException {
-		
+
+	@Override
+	public <T> Boolean execute(AttackCommandInterface<T> command)
+			throws InvalidTargetException, InsufficientEnergyException {
+
 		Coordinates target = command.getTarget();
 		Weapon weapon = command.getActiveWeapon();
-//		TargetInterface<?> targeted = null;
-		
+
 		if (command.getEnergy() < weapon.getCost()) {
-			throw new InsufficientEnergyException(command);
-		}	
-		
+			throw new InsufficientEnergyException(command, weapon.getCost());
+		}
+
 		TargetInterface<?> targeted = actorsManager.getTarget(target);
 		Boolean result = checkTrajectory(command.getCoords(), command.getTarget());
-		
-		//if(actorsManager.isRobot(target) == true) {
-	//		targeted = actorsManager.getTarget(target);
-		//} else {
+
 		if (targeted == null || result == false) {
-			throw new InvalidTargetException(command);			
-		}		
+			throw new InvalidTargetException(command);
+		}
 		if (weapon.getType() == WeaponType.OFFENSIVE && targeted.getFaction() == command.getFaction()) {
 			throw new InvalidTargetException(command);
-		}	
+		}
 		if (weapon.getType() == WeaponType.DEFENSIVE && targeted.getFaction() != command.getFaction()) {
 			throw new InvalidTargetException(command);
-		}		
-		
-		//Boolean result = checkTrajectory(command.getCoords(), command.getTarget());
-		
-		//if (result == true) {
-			IBullet bullet = weapon.fire();
-			command.removeEnergy(weapon.getCost());
-			bullet.hit(targeted);
-			return true;
-		/*}	else {
-			throw new InvalidTargetException(command);
-		}*/
-		
-		/*
-		if (result == true) {
-			if (weapon.getType() == WeaponType.OFFENSIVE) {	
-				if (targeted.getFaction() != command.getFaction()) {
-					Bullet bullet = weapon.fire();
-					command.removeEnergy(weapon.getCost());
-					bullet.hit(targeted);
-					command.setState(RobotStates.IDLE);
-					return true;
-				} else {
-					throw new InvalidTargetException(command);
-				}
-			} else if (weapon.getType() == WeaponType.DEFENSIVE) {
-				if (targeted.getFaction() == command.getFaction()) {
-					Bullet bullet = weapon.fire();
-					command.removeEnergy(weapon.getCost());					
-					bullet.hit(targeted);					
-					command.setState(RobotStates.IDLE);
-					return true;
-				} else {
-					throw new InvalidTargetException(command);
-				}
-			}
-		} else {
-			throw new InvalidTargetException(command);
-		}*/
-		//return false;
+		}
+		IBullet bullet = weapon.fire();
+		command.removeEnergy(weapon.getCost());
+		bullet.hit(targeted);
+		return true;
 	}
-	
+
 	/**
-	 * Metodo che analizza la traiettoria di un attacco. In questa implementazione, l'obiettivo del proiettile si deve trovare sopra, sotto, a sinistra o a destra
-	 * dell'origine dell'attacco.
-	 * @param origin punto d'origine dell'attacco
-	 * @param target obiettivo dell'attacco
+	 * Metodo che analizza la traiettoria di un attacco. In questa
+	 * implementazione, l'obiettivo del proiettile si deve trovare sopra, sotto,
+	 * a sinistra o a destra dell'origine dell'attacco.
+	 * 
+	 * @param origin
+	 *            punto d'origine dell'attacco
+	 * @param target
+	 *            obiettivo dell'attacco
 	 * @return true se la mossa è consentita, false altrimenti
 	 */
-	
+
 	private Boolean checkTrajectory(Coordinates origin, Coordinates target) {
-		Coordinates direction = origin.sub(target)/*Coordinates.sub(origin, target)*/;
+		Coordinates direction = origin
+				.sub(target)/* Coordinates.sub(origin, target) */;
 		if (direction.getX() > 0 && direction.getY() == 0) {
 			return true;
 		}
@@ -135,6 +105,31 @@ public class StandardBattleSystem implements BattleSystem, Serializable{
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "[ActorManager: " + actorsManager.toString() + "]";
+	}
+
+	@Override
+	public StandardBattleSystem clone() {
+		try {
+			StandardBattleSystem clone = (StandardBattleSystem) super.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject == null)
+			return false;
+		if (getClass() != otherObject.getClass())
+			return false;
+		StandardBattleSystem other = (StandardBattleSystem) otherObject;
+		return actorsManager.equals(other.actorsManager);
 	}
 
 	private IActorManager actorsManager;
