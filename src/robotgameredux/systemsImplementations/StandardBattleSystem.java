@@ -13,6 +13,19 @@ import robotgameredux.systemInterfaces.BattleSystem;
 import robotgameredux.weapons.IBullet;
 import robotgameredux.weapons.Weapon;;
 
+/**
+ * Classe che implementa una modalità "standard" per eseguire il comando di attacco.
+ * Quando un attore con la capacità di attaccare viene creato, è possibile aggiungere
+ * questo sistema standard se non si vuole dare un comportamento specifico all'attacco
+ * dell'attore.
+ * In particolare questa implementazione permette di attaccare solo nelle quattro direzioni
+ * (su, giù, destra e sinistra) una volta per turno con un arma selezionata, e non tiene
+ * conto di potenziali ostacoli presenti tra chi attacca e l'obiettivo.
+ * Questa classe implementa l'interfaccia BattleSystem.
+ * 
+ * @author Paolo Zirpoli
+ */
+
 public class StandardBattleSystem implements BattleSystem, Serializable, Cloneable {
 
 	/**

@@ -1,6 +1,8 @@
 package robotgameredux.tools;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -31,9 +33,9 @@ public class ToolsDialog extends JDialog {
 			System.out.println(tools.get(i).getName() + "NOME DI UN TOOL");
 			toolButton but = new toolButton(tools.get(i).getName() + " (Costo: " + tools.get(i).getCost() + ")", i);
 			this.add(but);
-			but.addMouseListener(new MouseAdapter() {
+			but.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					selected = but.getSelectionIndex();
 					setVisible(false);
 					getContentPane().removeAll(); // Rimuove i pulsanti dal
@@ -43,9 +45,9 @@ public class ToolsDialog extends JDialog {
 		}
 
 		JButton annullaBtn = new JButton("Annulla");
-		annullaBtn.addMouseListener(new MouseAdapter() {
+		annullaBtn.addActionListener(new ActionListener() {
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				selected = -1;
 				setVisible(false);
 				getContentPane().removeAll(); // Rimuove i pulsanti dal dialog
@@ -73,9 +75,9 @@ public class ToolsDialog extends JDialog {
 				toolButton but = new toolButton(
 						arrayList.get(i).getName() + "(" + arrayList.get(i).getBulletCount() + ")", i);
 				this.add(but);
-				but.addMouseListener(new MouseAdapter() {
+				but.addActionListener(new ActionListener() {
 					@Override
-					public void mousePressed(MouseEvent e) {
+					public void actionPerformed(ActionEvent e) {
 						selected = but.getSelectionIndex();
 						setVisible(false);
 						getContentPane().removeAll(); // Rimuove i pulsanti dal
@@ -86,9 +88,9 @@ public class ToolsDialog extends JDialog {
 		}
 
 		JButton annullaBtn = new JButton("Annulla");
-		annullaBtn.addMouseListener(new MouseAdapter() {
+		annullaBtn.addActionListener(new ActionListener() {
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				selected = -1;
 				setVisible(false);
 				getContentPane().removeAll(); // Rimuove i pulsanti dal dialog

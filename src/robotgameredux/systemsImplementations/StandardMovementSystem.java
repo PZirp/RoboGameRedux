@@ -11,6 +11,19 @@ import robotgameredux.exceptions.InsufficientEnergyException;
 import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.systemInterfaces.MovementSystem;
 
+
+/**
+ * Classe che implementa una modalità standard per eseguire il comando di movimento.
+ * Quando un attore viene creato, è possibile aggiungere questo sistema standard se 
+ * non si vuole dare un comportamento specifico al movimento dell'attore.
+ * Questo sistema permette di muoversi solo nelle quattro direzioni
+ * (su, giù, destra e sinistra) una volta per turno, tenendo conto del fatto che la
+ * strada scelta deve essere priva di ostacoli e caselle occupate.
+ * Questa classe implementa l'interfaccia MovementSystem.
+ * 
+ * @author Paolo Zirpoli
+ */
+
 public class StandardMovementSystem implements MovementSystem, Serializable, Cloneable {
 
 	/**

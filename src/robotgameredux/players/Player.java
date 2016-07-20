@@ -15,13 +15,6 @@ import robotgameredux.gameobjects.SupportRobot;
 
 public class Player implements PropertyChangeListener, IPlayer, Serializable {
 
-	private Boolean lost;
-	private Boolean active;
-	private Boolean moved;
-	private ArrayList<AttackRobot> attackRobots;
-	private ArrayList<SupportRobot> supportRobots;
-	private PropertyChangeSupport propertyChange;
-
 	public Player() {
 		this.lost = false;
 		this.active = false;
@@ -185,4 +178,13 @@ public class Player implements PropertyChangeListener, IPlayer, Serializable {
 		}
 	}
 
+
+	private Boolean lost;
+	private Boolean active;
+	private Boolean moved;
+	private ArrayList<AttackRobot> attackRobots;
+	private ArrayList<SupportRobot> supportRobots;
+	private PropertyChangeSupport propertyChange;
+
+	
 }

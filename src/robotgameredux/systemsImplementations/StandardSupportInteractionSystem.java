@@ -11,6 +11,22 @@ import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.systemInterfaces.SupportInteractionSystem;
 import robotgameredux.tools.UsableTool;
 
+/**
+ * Classe che implementa una modalità standard per eseguire un comando di interazione per classi di supporto.
+ * Quando un attore di supporto viene creato, è possibile aggiungere questo sistema standard se 
+ * non si vuole dare un comportamento particolare all'interazione dell'attore.
+ * Questo sistema permette di interagira con l'ambiente in tre modi:
+ * 1) Spingere un ostacolo, se l'attore ha abbastanza forza ed lo spostamento è consentito
+ * 2) Prendere oggetti di tipo UsableTool dalla stazione di ricarica
+ * 3) Ricaricare l'energia di un attore tramite stazione di ricarica
+ * In tutti e tre i casi l'attore deve essere adiacente all'obiettivo. 
+ * 
+ * Questa classe implementa l'interfaccia MovementSystem.
+ * 
+ * @author Paolo Zirpoli
+ */
+
+
 public class StandardSupportInteractionSystem implements SupportInteractionSystem, Serializable, Cloneable {
 
 	/**

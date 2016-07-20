@@ -1,6 +1,8 @@
 package robotgameredux.input;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -250,9 +252,9 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 		private void initButtons() {
 			moveButton = new JButton("Muovi");
 			this.add(moveButton);
-			moveButton.addMouseListener(new MouseAdapter() {
+			moveButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.MOVING;
 					setVisible(false);
 				}
@@ -260,9 +262,9 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 
 			attackButton = new JButton("Usa arma");
 			this.add(attackButton);
-			attackButton.addMouseListener(new MouseAdapter() {
+			attackButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.ATTACKING;
 					setVisible(false);
 				}
@@ -270,9 +272,9 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 
 			takeWeapon = new JButton("Prendi arma");
 			this.add(takeWeapon);
-			takeWeapon.addMouseListener(new MouseAdapter() {
+			takeWeapon.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.TAKE_WEAPON;
 					setVisible(false);
 				}
@@ -280,9 +282,9 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 
 			destroyButton = new JButton("Distruggi ostacolo");
 			this.add(destroyButton);
-			destroyButton.addMouseListener(new MouseAdapter() {
+			destroyButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.DESTROY_OBSTACLE;
 					setVisible(false);
 				}
@@ -290,9 +292,9 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 
 			rechargeButton = new JButton("Ricaricati");
 			this.add(rechargeButton);
-			rechargeButton.addMouseListener(new MouseAdapter() {
+			rechargeButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.RECHARGE;
 					setVisible(false);
 				}
@@ -300,9 +302,9 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 
 			doNothingButton = new JButton("Non fare nulla");
 			this.add(doNothingButton);
-			doNothingButton.addMouseListener(new MouseAdapter() {
+			doNothingButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.DO_NOTHING;
 					setVisible(false);
 				}

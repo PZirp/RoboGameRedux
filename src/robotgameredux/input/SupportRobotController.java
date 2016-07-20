@@ -1,6 +1,8 @@
 package robotgameredux.input;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -252,9 +254,9 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 		private void initButtons() {
 			moveButton = new JButton("Muovi");
 			this.add(moveButton);
-			moveButton.addMouseListener(new MouseAdapter() {
+			moveButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.MOVING;
 					setVisible(false);
 
@@ -263,9 +265,9 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 
 			takeObjectButton = new JButton("Prendi oggetto");
 			this.add(takeObjectButton);
-			takeObjectButton.addMouseListener(new MouseAdapter() {
+			takeObjectButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.TAKE_OBJECT;
 					setVisible(false);
 
@@ -274,9 +276,9 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 
 			pushButton = new JButton("Spingi ostacolo");
 			this.add(pushButton);
-			pushButton.addMouseListener(new MouseAdapter() {
+			pushButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.PUSH_OBSTACLE;
 					setVisible(false);
 
@@ -285,9 +287,9 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 
 			doNothingButton = new JButton("Non fare nulla");
 			this.add(doNothingButton);
-			doNothingButton.addMouseListener(new MouseAdapter() {
+			doNothingButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.DO_NOTHING;
 					setVisible(false);
 
@@ -296,9 +298,9 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 
 			useObjectButton = new JButton("Usa oggetto");
 			this.add(useObjectButton);
-			useObjectButton.addMouseListener(new MouseAdapter() {
+			useObjectButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.USE_OBJECT;
 					setVisible(false);
 
@@ -307,9 +309,9 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 
 			rechargeButton = new JButton("Ricaricati");
 			this.add(rechargeButton);
-			rechargeButton.addMouseListener(new MouseAdapter() {
+			rechargeButton.addActionListener(new ActionListener() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					robotInput = RobotStates.RECHARGE;
 					setVisible(false);
 
