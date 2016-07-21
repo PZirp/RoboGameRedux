@@ -94,8 +94,8 @@ public class RobotAttackCommand implements AttackCommandInterface<AttackRobot>, 
 	/**
 	 * Aggiorna lo stato del robot che ha ricevuto il comando
 	 * 
-	 * @param il
-	 *            nuovo stato del robot (enum RobotStates)
+	 * @param state
+	 *            il nuovo stato del robot (enum RobotStates)
 	 */
 
 	@Override
@@ -107,8 +107,8 @@ public class RobotAttackCommand implements AttackCommandInterface<AttackRobot>, 
 	 * Rimuove l'energia (costo dell'azione) dal robot che ha ricevuto il
 	 * comando
 	 * 
-	 * @param l'energia
-	 *            da rimuovere
+	 * @param n
+	 *           l'energia da rimuovere
 	 */
 
 	@Override
@@ -120,7 +120,7 @@ public class RobotAttackCommand implements AttackCommandInterface<AttackRobot>, 
 	/**
 	 * Ritorna le coordinate del robot che ha ricevuto il comando
 	 * 
-	 * @param le
+	 * @return coordinates
 	 *            coordinate del robot
 	 */
 

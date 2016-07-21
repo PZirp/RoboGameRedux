@@ -3,7 +3,7 @@ package robotgameredux.test;
 import java.util.ArrayList;
 
 import robotgameredux.Commands.RobotAttackCommand;
-import robotgameredux.TargetImplementations.RobotTarget;
+import robotgameredux.TargetInterfaces.RobotTarget;
 import robotgameredux.core.Coordinates;
 import robotgameredux.core.IActorManager;
 import robotgameredux.enums.Faction;

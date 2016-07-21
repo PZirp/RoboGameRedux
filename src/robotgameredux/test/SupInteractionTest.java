@@ -16,7 +16,8 @@ import robotgameredux.gameobjects.Station;
 import robotgameredux.gameobjects.SupportRobot;
 import robotgameredux.graphic.TileSprite;
 import robotgameredux.graphic.WallSprite;
-import robotgameredux.systemsImplementations.StandardSupportInteractionSystem;
+import robotgameredux.systemsImplementations.SupportInteractionSystem;
+import robotgameredux.tools.EnergyPack;
 import robotgameredux.tools.UsableTool;
 import robotgameredux.weapons.Weapon;
 
@@ -29,7 +30,7 @@ public class SupInteractionTest implements IGameWorld {
 		System.out.println(">>>INIZIO TEST<<<");
 		SupInteractionTest tester = new SupInteractionTest();
 		SupportRobot testRobot = new SupportRobot(new Coordinates(1, 1), null, null,
-				new StandardSupportInteractionSystem(tester));
+				new SupportInteractionSystem(tester));
 		testRobot.setFaction(Faction.FRIEND);
 		tester.createObstacle(new Coordinates(1, 2));
 		tester.createStation(new Coordinates(2, 1));
@@ -167,6 +168,8 @@ public class SupInteractionTest implements IGameWorld {
 	public void createStation(Coordinates position) {
 		station = new Station(position);
 		occupyTile(position);
+		station.addObject(new EnergyPack());
+
 	}
 
 	@Override

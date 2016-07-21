@@ -38,6 +38,10 @@ public class EAttackRobotSprite extends Sprite {
 		this.add(defense);
 	}
 
+	/**
+	 * Aggiorna l'immagine analizzando lo stato corrente del robot
+	 */
+	
 	@Override
 	public void update() {
 		this.HP.setText("S: " + robot.getHealth());
@@ -46,6 +50,10 @@ public class EAttackRobotSprite extends Sprite {
 		this.setBounds(robot.getCoords().getX() * 64, robot.getCoords().getY() * 64, 64, 64);
 	}
 
+	/**
+	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+	 */
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);

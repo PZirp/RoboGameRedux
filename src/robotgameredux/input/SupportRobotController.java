@@ -182,6 +182,7 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 	 * Aggiunge un robot all'array del controllore
 	 * 
 	 * @param robot
+	 * 		il robot da aggiungere
 	 */
 
 	public void addRobot(SupportRobot robot) {
@@ -192,6 +193,7 @@ public class SupportRobotController implements PropertyChangeListener, Serializa
 	 * Imposta l'input ricevuto come input corrente
 	 * 
 	 * @param currentInput
+	 * 		il nuovo input
 	 */
 
 	public void setInput(Coordinates currentInput) {

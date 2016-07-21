@@ -51,11 +51,13 @@ public class StandardBattleSystem implements BattleSystem, Serializable, Cloneab
 	 * che incapsula i dati sull'attacco. Rimuove l'energia necessaria per
 	 * operare l'arma dall'attaccante, e colpisce l'obiettivo.
 	 * 
-	 * @param AttackCommandInterface<T>,
-	 *            interfaccia che rappresenta l'attaccante
+	 * @param command,
+	 *            interfaccia che rappresenta il comando di attacco
 	 * @return true se l'attacco ha successo, false altrimenti
 	 * @throws InvalidTargetException
-	 * @throws InsufficientEnergiException
+	 * 			Se il target non è valido
+	 * @throws InsufficientEnergyException
+	 * 			Se non c'è energia sufficiente per eseguire il comando
 	 */
 
 	@Override

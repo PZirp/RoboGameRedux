@@ -22,6 +22,10 @@ public class ActorMovementCommand implements MovementCommandInterface<Actor>, Se
 	 * Esegue questo comando. Tramite il riferimento all'attore che ha ricevuto
 	 * il comando, chiama il metodo execute(Command) del sistema a cui si
 	 * riferisce questo comando.
+	 * @param actor 
+	 * 			l'attore da muovere
+	 * @param destination
+	 * 		la destinazione scelta
 	 */
 
 	public ActorMovementCommand(Actor actor, Coordinates destination) {
@@ -46,8 +50,8 @@ public class ActorMovementCommand implements MovementCommandInterface<Actor>, Se
 	/**
 	 * Aggiorna lo stato dall'attore che ha ricevuto il comando
 	 * 
-	 * @param il
-	 *            nuovo stato dell'attore (enum RobotStates)
+	 * @param state
+	 *           il nuovo stato dell'attore (enum RobotStates)
 	 */
 
 	@Override
@@ -69,8 +73,8 @@ public class ActorMovementCommand implements MovementCommandInterface<Actor>, Se
 	/**
 	 * Ritorna le coordinate dell'attore che ha ricevuto il comando
 	 * 
-	 * @param le
-	 *            coordinate dell'attore
+	 * @return coordinates
+	 *           le coordinate dell'attore
 	 */
 
 	@Override
@@ -81,8 +85,8 @@ public class ActorMovementCommand implements MovementCommandInterface<Actor>, Se
 	/**
 	 * Aggiorna la posizione corrente dell'attore con quella indicata
 	 * 
-	 * @param la
-	 *            nuova poszione dell'attore
+	 * @param coords
+	 *           le nuova poszione dell'attore
 	 */
 
 	@Override
@@ -105,8 +109,8 @@ public class ActorMovementCommand implements MovementCommandInterface<Actor>, Se
 	 * Rimuove l'energia (costo dell'azione) dall'attore che ha ricevuto il
 	 * comando
 	 * 
-	 * @param l'energia
-	 *            da rimuovere
+	 * @param n 
+	 * 		l'energia da rimuovere
 	 */
 
 	@Override

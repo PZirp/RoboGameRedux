@@ -52,8 +52,8 @@ public class RobotSupportCommand implements SupportCommandInterface<SupportRobot
 	 * Rimuove l'energia (costo dell'azione) dal robot che ha ricevuto il
 	 * comando
 	 * 
-	 * @param l'energia
-	 *            da rimuovere
+	 * @param e
+	 *         l'energia da rimuovere
 	 */
 
 	@Override
@@ -98,8 +98,8 @@ public class RobotSupportCommand implements SupportCommandInterface<SupportRobot
 	/**
 	 * Aggiorna lo stato del robot che ha ricevuto il comando
 	 * 
-	 * @param il
-	 *            nuovo stato del robot (enum RobotStates)
+	 * @param state
+	 *           il nuovo stato del robot (enum RobotStates)
 	 */
 
 	@Override
@@ -111,8 +111,8 @@ public class RobotSupportCommand implements SupportCommandInterface<SupportRobot
 	 * Rimuove l'oggetto indicato (usato nell'esecuzione del comando) dal robot
 	 * che ha ricevuto il comando
 	 * 
-	 * @param l'oggetto
-	 *            da rimuovere
+	 * @param tool
+	 *           l'oggetto da rimuovere
 	 */
 
 	@Override

@@ -13,7 +13,7 @@ import robotgameredux.Commands.ActorMovementCommand;
 import robotgameredux.Commands.RobotAttackCommand;
 import robotgameredux.Commands.RobotSupportCommand;
 import robotgameredux.CommandsInterfaces.Command;
-import robotgameredux.TargetImplementations.RobotTarget;
+import robotgameredux.TargetInterfaces.RobotTarget;
 import robotgameredux.core.ActorManager;
 import robotgameredux.core.Coordinates;
 import robotgameredux.core.GameWorld;
@@ -42,36 +42,46 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 		this.propertyChange = new PropertyChangeSupport(this);
 	}
 
-	public void setRF(ActorManager rf) {
-		this.actorManager = rf;
-	}
+
+	/**
+	 * Aggiorna i robot controllati dalla CPU.
+	 * L'ordine è prima tutti i robot attaccanti, poi quelli di supporto.
+	 * Quando un robot è in stato TURN_OVER non viene aggiornato.
+	 */
 
 	public void update() {
-		for (int i = 0; i < this.attackRobots.size(); i++) {
-			if (attackRobots.get(i).getState() == RobotStates.IDLE) {
-				attackRobots.get(i).setState(RobotStates.ACTIVE);
+		for (AttackRobot r : attackRobots) {
+			if (r.getState() == RobotStates.IDLE) {
+				r.setState(RobotStates.ACTIVE);
 				boolean res;
-				res = attemptAttack(attackRobots.get(i));
+				res = attemptAttack(r);
 				if (res == false) {
-					res = attemptMovement(attackRobots.get(i), i);
+					res = attemptMovement(r);
 				}
 				return;
 			}
 		}
-
-		for (int i = 0; i < this.supportRobots.size(); i++) {
-			if (supportRobots.get(i).getState() == RobotStates.IDLE) {
-				supportRobots.get(i).setState(RobotStates.ACTIVE);
+		for (SupportRobot r : supportRobots) {
+			if (r.getState() == RobotStates.IDLE) {
+				r.setState(RobotStates.ACTIVE);
 				boolean res;
-				res = attemptHeal(supportRobots.get(i));
+				res = attemptHeal(r);
 				if (res == false) {
-					res = attemptMovement(supportRobots.get(i), i + attackRobots.size());
+					res = attemptMovement(r);
 				}
 				return;
 			}
 		}
 	}
 
+	/**
+	 * Quando è il turno di un robot di supporto, se c'è un robot alleato nel raggio d'azione 
+	 * con meno di 50 di vita, viene curato.
+	 * @param robot 
+	 * 			il robot attualmente attivo
+	 * @return true se l'azione è avvenuta, false altrimenti
+	 */
+	
 	public boolean attemptHeal(SupportRobot robot) {
 		ArrayList<Coordinates> paths = gameWorld.pathfind(robot.getCoords(), 20);
 		for (Coordinates v : paths) {
@@ -88,6 +98,14 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 		return false;
 	}
 
+	/**
+	 * Quando è il turno di un robot attaccante, se c'è un nemico nel raggio d'azione
+	 * questo lo attacca. 
+	 @param robot 
+	 * 			il robot attualmente attivo 
+	 * @return true se l'azione è avvenuta, false altrimenti
+	 */
+	
 	public boolean attemptAttack(AttackRobot robot) {
 		ArrayList<Coordinates> paths = gameWorld.pathfind(robot.getCoords(), 20);
 		for (Coordinates v : paths) {
@@ -104,7 +122,34 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 		return false;
 	}
 
-	public Coordinates choosePath(Actor robot, int i) {
+	/**
+	 * Quando è il turno di un robot, se non ha effettuato altre azioni,
+	 * viene mosso 
+	 @param robot 
+	 * 			il robot attualmente attivo 
+	 * @return true se l'azione è avvenuta, false altrimenti
+	 */
+	
+	public boolean attemptMovement(Actor robot) {
+		Coordinates dest = null;
+		do {
+			dest = choosePath(robot);
+		} while (dest.equals(robot.getCoords()));
+		ActorMovementCommand cmd2 = new ActorMovementCommand(robot, dest);
+		robot.setCommand(cmd2);
+		return true;
+	}
+	
+	/**
+	 * Sceglie casualmente una direzione in cui muovere il robot.
+	 * Ne calcola anche il cammino per vedere se risulta valido.
+	 * @param robot
+	 * 			il robot da muovere
+	 * @return Coordinates
+	 * 			le coordinate della destinazione scelta
+	 */
+	
+	public Coordinates choosePath(Actor robot) {
 		Coordinates tempV = null;
 		int tempDist = 0;
 		boolean occupied = false;
@@ -171,54 +216,79 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 		}
 
 		return tempV;
-
 	}
 
-	public boolean attemptMovement(Actor robot, int i) {
-		Coordinates dest = null;
-		do {
-			dest = choosePath(robot, i);
-		} while (dest.equals(robot.getCoords()));
-		ActorMovementCommand cmd2 = new ActorMovementCommand(robot, dest);
-		robot.setCommand(cmd2);
-		return true;
-	}
 
+	/**
+	 * Aggiunge il robot specificato come paramentro alla collezione 
+	 * del controllore
+	 * @param robot
+	 * 			il robot da aggiungere
+	 */
+	
 	public void addRobot(AttackRobot robot) {
 		attackRobots.add(robot);
 	}
 
+	/**
+	 * Aggiunge il robot specificato come paramentro alla collezione 
+	 * del controllore
+	 * @param robot
+	 * 			il robot da aggiungere
+	 */
+	
 	public void addRobot(SupportRobot robot) {
 		supportRobots.add(robot);
 	}
 
+	/**
+	 * Attiva questo controllore durante il suo turno
+	 * @param active
+	 * 			il nuovo stato di attivazione
+	 */
+	
 	@Override
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
+	/**
+	 * Ritorna lo stato di attivazione del controllore
+	 * @return lo stato di attivazione
+	 */
+	
 	@Override
 	public Boolean isActve() {
 		return active;
 	}
 
+	/**
+	 * Reimposta il campo moved a false
+	 */
+	
 	@Override
 	public void resetMoved() {
 		this.moved = false;
 	}
 
+	/**
+	 * Ritorna lo stato corrente del campo moved
+	 * @return moved
+	 * 			true se il controllore ha mosso tutti i suoi robot in questo turno, false altrimenti
+	 */
+	
 	@Override
 	public Boolean hasMoved() {
 		return moved;
 	}
+	
+	/**
+	 * Controlla se questo controllore ha perso la partita
+	 */
 
 	private void checkLost() {
 		RobotStates state;
-		/*
-		 * Controlla se il gicoatore non ha più robot attaccanti, vuol dire che
-		 * ha perso perchè non può più combattere
-		 */
-
+		
 		if (attackRobots.isEmpty()) {
 			setLost();
 		} else {
@@ -228,18 +298,6 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 				}
 			}
 		}
-
-		/*
-		 * Se il giocatore ha ancora dei robot attaccanti, allora controlla se
-		 * sono tutti disattivati.
-		 */
-
-		/*
-		 * Se il giocatore non ha più robot attaccanti attivi, allora controlla
-		 * se ha dei robot di supporto attivi. Se non li ha, non può dare
-		 * energia hai robot attaccanti, quindi ha perso perchè non può
-		 * combattere
-		 */
 
 		if (supportRobots.isEmpty()) {
 			setLost();
@@ -254,6 +312,10 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 		setLost();
 	}
 
+	/**
+	 * Termina il turno se non ci sono più robot in attesa di essere mossi
+	 */
+	
 	private void yieldTurn() {
 		for (AttackRobot r : attackRobots) {
 			if (r.getState() != RobotStates.TURN_OVER && r.getState() != RobotStates.INACTIVE) {
@@ -269,11 +331,22 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 		active = false;
 	}
 
+	/**
+	 * Se il controllore ha perso, il campo lost è settato a true ed 
+	 * è generato un PropertyChangeEvent
+	 */
+	
 	private void setLost() {
 		this.lost = true;
 		this.propertyChange.firePropertyChange("AI_LOST", this, null);
 	}
 
+	/**
+	 * Rimuove il robot specificato nel parametro
+	 * @param r
+	 * 		il robot da rimuovere
+	 */
+	
 	private void removeRobot(Actor r) {
 		for (int i = 0; i < attackRobots.size(); i++) {
 			if (attackRobots.get(i).equals(r)) {
@@ -286,6 +359,12 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 				supportRobots.remove(i);
 		}
 	}
+	
+	/**
+	 * Gestisce i PropertyChangeEvent
+	 * @param arg0
+	 * 			l'evento da gestire
+	 */
 
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
@@ -302,10 +381,23 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 		}
 	}
 
+	/**
+	 * Aggiunge un PropertyChangeListener
+	 * @param listener
+	 * 			il listener da aggiungere
+	 */
+	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		this.propertyChange.addPropertyChangeListener(listener);
 	}
 
+	
+	/**
+	 * Rimuove un PropertyChangeListener
+	 * @param listener
+	 * 			il listener da rimuovere
+	 */
+	
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		this.propertyChange.removePropertyChangeListener(listener);
 	}
@@ -324,9 +416,18 @@ public class CPUController implements IPlayer, PropertyChangeListener, Serializa
 
 		private static Random rand = new Random();
 
+		/**
+		 * Seleziona pseudo-casualmente una direzione in cui muoversi;
+		 * @return la direzione scelta
+		 */
+		
 		private static Directions getDirection() {
 			return values()[rand.nextInt(4)];
 		}
 	}
 
+	public void setRF(ActorManager rf) {
+		this.actorManager = rf;
+	}
+	
 }

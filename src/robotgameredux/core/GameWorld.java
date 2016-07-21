@@ -108,7 +108,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * Crea un ostacolo alla posizione specificata. La tile su cui viene creato
 	 * diventa occupata, in più aggiunge la sprite dell'ostacolo allo schermo.
 	 * 
-	 * @param le
+	 * @param position
 	 *            coordinate dell'ostacolo
 	 */
 
@@ -127,7 +127,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * diventa occupata, in più aggiunge la sprite della stazione allo schermo e
 	 * inizializza la stazione con alcuni UsableTools e Weapon standard.
 	 * 
-	 * @param le
+	 * @param position
 	 *            coordinate della stazione
 	 */
 
@@ -159,7 +159,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * delimitazione (quindi si trova sul confine della mappa), è
 	 * automaticamente occupata.
 	 * 
-	 * @param le
+	 * @param tile
 	 *            coordinate della tile da controllare
 	 * @return true se la tile è libera, false altrimenti
 	 */
@@ -180,7 +180,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	/**
 	 * Libera la tile selezionata
 	 * 
-	 * @param Le
+	 * @param tile
 	 *            coordinate della tile da liberare
 	 */
 
@@ -192,7 +192,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	/**
 	 * Occupa la tile selezionata
 	 * 
-	 * @param Le
+	 * @param tile
 	 *            coordinate della tile da occupare
 	 */
 
@@ -208,7 +208,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	/**
 	 * Controlla se il target selezionato è un ostacolo o meno.
 	 * 
-	 * @param Le
+	 * @param target
 	 *            coordinate da controllare
 	 * @return true se è un ostacolo, false altrimenti
 	 */
@@ -225,14 +225,14 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 
 	/**
 	 * Distrugge l'ostacolo indicato. Se le coordinate indicate puntano ad un
-	 * ostacolo e la forza del robot è sufficiente (forza > resistenza),
+	 * ostacolo e la forza del robot è sufficiente (forza maggiore di resistenza),
 	 * l'ostacolo è distrutto, altrimenti l'azione fallisce. La tile su cui si
 	 * trovava l'ostacolo viene liberata. Se viene distrutto l'ultimo ostacolo
 	 * presente sulla mappa, viene generato un PropertyChangeEvent.
 	 * 
-	 * @param le
+	 * @param target
 	 *            coordinate scelte
-	 * @param la
+	 * @param robotStrenght
 	 *            forza del robot che sta attacando
 	 * @return true se l'ostacolo viene distrutto, falso altrimenti
 	 */
@@ -255,7 +255,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 
 	/**
 	 * Sposta l'ostacolo indicato. Se le coordinate indicate puntano ad un
-	 * ostacolo e la forza del robot è sufficiente (forza > resistenza), si
+	 * ostacolo e la forza del robot è sufficiente (forza maggiore di resistenza), si
 	 * calcola la direzione in cui l'ostacolo deve muoversi. (La formula per
 	 * calcolare la direzione è coordinate dell'ostacolo - coordinate del robot
 	 * che spinge. La nuova posizione si trova sommando il risultato della
@@ -263,11 +263,11 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * viene liberata, e la nuova occupata. Se l'ostacolo viene spinto verso una
 	 * tile occupata, l'azione fallisce.
 	 * 
-	 * @param le
+	 * @param target
 	 *            coordinate dell'ostacolo
-	 * @param la
+	 * @param robotStrenght
 	 *            forza del robot che sta attacando
-	 * @param le
+	 * @param coords
 	 *            coordinate in cui si trova il robot
 	 * @return true se l'ostacolo viene spostato, falso altrimenti
 	 */
@@ -324,7 +324,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	/**
 	 * Controlla se le coordinate scelte corrispondono ad una stazione
 	 * 
-	 * @param le
+	 * @param position
 	 *            coordinate
 	 * @return true se è una stazione, false altrimenti
 	 */
@@ -403,7 +403,7 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	 * raggiunge il bordo dell'ambiente o quando è al massimo del range del
 	 * robot
 	 * 
-	 * @param le
+	 * @param origin
 	 *            coordinate di partenza dell'attore
 	 * @param range
 	 *            il range di movimento massimo dell'attore
@@ -433,9 +433,9 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	/**
 	 * Evidenzia i possibili path disponbili per un attore
 	 * 
-	 * @param le
+	 * @param origin
 	 *            coordinate dell'attore
-	 * @param il
+	 * @param range
 	 *            range massimo di movimento
 	 */
 
@@ -463,8 +463,8 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 	/**
 	 * Disattiva le caselle evidenziate
 	 * 
-	 * @param ArrayList
-	 *            di caselle da disattivare
+	 * @param path
+	 *            ArrayList di caselle da disattivare
 	 */
 
 	@Override
@@ -526,10 +526,22 @@ public class GameWorld implements Serializable, PropertyChangeListener, IGameWor
 		}
 		reference.addToScreen(station.getSprite(), 1);
 	}
-
+	
+	/**
+	 * Aggiunge un PropertyChangeListener
+	 * @param listener
+	 * 			il listener da aggiungere
+	 */
+	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		this.propertyChange.addPropertyChangeListener(listener);
 	}
+	
+	/**
+	 * Gestisce i PropertyChangeEvent
+	 * @param arg0
+	 * 			l'evento da gestire
+	 */
 
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {

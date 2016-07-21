@@ -1,6 +1,6 @@
 package robotgameredux.core;
 
-import robotgameredux.TargetImplementations.RobotTarget;
+import robotgameredux.TargetInterfaces.RobotTarget;
 
 public interface IActorManager {
 

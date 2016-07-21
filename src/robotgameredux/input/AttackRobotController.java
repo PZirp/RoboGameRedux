@@ -142,6 +142,7 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 	 * Imposta l'input ricevuto come input corrente
 	 * 
 	 * @param currentInput
+	 * 		il nuovo input
 	 */
 
 	public void setInput(Coordinates currentInput) {
@@ -189,6 +190,7 @@ public class AttackRobotController implements PropertyChangeListener, Serializab
 	 * Aggiunge un robot all'array del controllore
 	 * 
 	 * @param robot
+	 * 		il robot da aggiungere
 	 */
 
 	public void addRobot(AttackRobot robot) {

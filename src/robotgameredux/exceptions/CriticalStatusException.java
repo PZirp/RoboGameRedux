@@ -15,11 +15,23 @@ public class CriticalStatusException extends RuntimeException {
 	public CriticalStatusException(String msg) {
 		super(msg);
 	}
+	
+	/**
+	 * Ritorna la salute residua dell'attore che ha generato questa eccezione
+	 * @return health
+	 * 			la salute residua
+	 */
 
 	public int getResidualHealth() {
 		return actor.getHealth();
 	}
 
+	/**
+	 * Ritorna la fazione dell'attore che ha generato questa eccezione
+	 * @return Faction
+	 * 			la fazione dell'attore
+	 */
+	
 	public Faction getFaction() {
 		return actor.getFaction();
 	}

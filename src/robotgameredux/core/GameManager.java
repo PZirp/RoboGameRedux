@@ -72,18 +72,11 @@ public class GameManager implements PropertyChangeListener, Serializable {
 
 	private void actorsSetUp() {
 		robotFactory.createStandardAttack(Faction.FRIEND, new Coordinates(1, 3));
-		// System.out.println(r.toString());
 		robotFactory.createStandardAttack(Faction.FRIEND, new Coordinates(1, 5));
-		// System.out.println(r.toString());
-		robotFactory.createStandardAttack(Faction.ENEMY, new Coordinates(18, 3));
-		// System.out.println(r.toString());
-		robotFactory.createStandardAttack(Faction.ENEMY, new Coordinates(18, 5));
-		// System.out.println(r.toString());
+		robotFactory.createStandardAttack(Faction.ENEMY, new Coordinates(18, 2));
+		robotFactory.createStandardAttack(Faction.ENEMY, new Coordinates(18, 6));
 		robotFactory.createSupport(Faction.FRIEND, new Coordinates(1, 4));
-		// System.out.println(sr.toString());
-
 		robotFactory.createSupport(Faction.ENEMY, new Coordinates(18, 4));
-		// System.out.println(sr.toString());
 	}
 
 	/**
@@ -123,6 +116,28 @@ public class GameManager implements PropertyChangeListener, Serializable {
 	}
 
 	/**
+	 * Metodo di servizio per la creazione del secondo livello
+	 */
+
+	public void secondLevel() {
+		gameSetUp();
+		actorsSetUp();
+
+		gameWorld.createObstacle(new Coordinates(5, 8));
+		gameWorld.createObstacle(new Coordinates(15, 8));
+		gameWorld.createObstacle(new Coordinates(5, 2));
+		gameWorld.createObstacle(new Coordinates(5, 5));
+		gameWorld.createObstacle(new Coordinates(15, 5));
+		
+		gameWorld.createObstacle(new Coordinates(10, 2));
+		gameWorld.createObstacle(new Coordinates(15, 2));
+		gameWorld.createObstacle(new Coordinates(10, 8));
+		gameWorld.createStation(new Coordinates(10, 5));
+
+		runGameLoop();
+	}
+	
+	/**
 	 * Rimuove il robot specificato dal gioco
 	 * 
 	 * @param robot
@@ -154,6 +169,15 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		this.pane.add(sprite, layer);
 	}
 
+
+	/**
+	 * Metodo usato per rimuovere una sprite allo schermo
+	 * 
+	 * @param sprite
+	 *            la sprite da aggiungere
+	 */
+
+	
 	public void removeFromScreen(Sprite sprite) {
 		pane.remove(sprite);
 	}
@@ -174,17 +198,17 @@ public class GameManager implements PropertyChangeListener, Serializable {
 				ai.resetMoved();
 				random = new Random();
 				if (random.nextBoolean() == true) {
-					JOptionPane.showMessageDialog(null, "Player attivo RAND");
+					JOptionPane.showMessageDialog(null, "Turno del giocatore");
 					player.setActive(true);
 				} else {
-					JOptionPane.showMessageDialog(null, "AI attiva RAND");
+					JOptionPane.showMessageDialog(null, "Turno della CPU");
 					ai.setActive(true);
 				}
 			} else if (!player.hasMoved()) {
 				player.setActive(true);
-				JOptionPane.showMessageDialog(null, "Player attivo");
+				JOptionPane.showMessageDialog(null, "Turno del giocatore");
 			} else if (!ai.hasMoved()) {
-				JOptionPane.showMessageDialog(null, "AI attiva");
+				JOptionPane.showMessageDialog(null, "Turno della CPU");
 				ai.setActive(true);
 			}
 		}
@@ -203,22 +227,11 @@ public class GameManager implements PropertyChangeListener, Serializable {
 
 		while (isRunning) {
 			turn();
-
-			/*
-			 * GameManager vede i vari attori solo come GameObjects, non gli
-			 * interessa se sono robot attaccanti, di supporto, stazioni o
-			 * ostacoli. Utilizza i metodi update() e render() di GameObject per
-			 * causarne l'aggiornamento e il render a prescindere dal tipo
-			 * tramite polimorfismo. "Utilizza" i vari controller per far
-			 * processare l'input ai componenti interattivi
-			 */
 			try {
 				if (player.isActve()) {
 					attackRobotController.parseInput(); // Processa l'input
 					supportRobotController.parseInput(); // Processa l'input
 				} else if (ai.isActve() && this.robotFactory.hasActiveRobot() == null) {
-					// JOptionPane.showMessageDialog(null, "Prova");
-					// AIattackRobotController.parseInput();
 					ai.update();
 				}
 				robotFactory.updateActiveRobot();
@@ -229,17 +242,14 @@ public class GameManager implements PropertyChangeListener, Serializable {
 
 			} catch (InvalidTargetException e) {
 				JOptionPane.showMessageDialog(pane, "Mossa non valida");
-				// System.out.println(e.getMessage());
 				e.getCommand().setState(RobotStates.IDLE);
 			} catch (InsufficientEnergyException e) {
-				// System.out.println(e.getMessage());
 				JOptionPane.showMessageDialog(pane,
 						"Il robot non ha abbastanza energia per compiere quest'azione!\n" + "Energia necessaria: "
 								+ e.getRequiredEnergy() + " Energia residua: " + e.getResidualEnergy());
 				e.getCommand().setState(RobotStates.IDLE);
 			} catch (CriticalStatusException e) {
 				if (e.getFaction() == Faction.FRIEND) {
-					// System.out.println(e.getMessage());
 					JOptionPane.showMessageDialog(pane,
 							"Un tuo robot è in stato critico!\n" + "Salute residua: " + e.getResidualHealth());
 				}
@@ -253,6 +263,8 @@ public class GameManager implements PropertyChangeListener, Serializable {
 	/**
 	 * Evidenzia i percorsi percorribili da un robot (tramite il metodo di
 	 * gameWorld)
+	 * @param r
+	 * 		l'attore di cui si deve evidenziare il percorso
 	 */
 
 	public void highlight(Actor r) {
@@ -327,10 +339,6 @@ public class GameManager implements PropertyChangeListener, Serializable {
 			}
 		});
 		pane.getParent().add(endTurnButton, BorderLayout.SOUTH);
-		/*
-		 * if (ai.isActve() && ai.hasMoved()) { endTurnButton.setEnabled(true);
-		 * }
-		 */
 		if (player.isActve() && player.hasMoved()) {
 			endTurnButton.setEnabled(true);
 		}
@@ -354,6 +362,12 @@ public class GameManager implements PropertyChangeListener, Serializable {
 		};
 		loop.start();
 	}
+	
+	/**
+	 * Gestisce i PropertyChangeEvent
+	 * @param arg0
+	 * 			l'evento da gestire
+	 */
 
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {

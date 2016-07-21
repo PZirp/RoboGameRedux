@@ -39,7 +39,7 @@ public abstract class GameObject implements Cloneable, Serializable {
 	/**
 	 * Setta le coordinate dell'oggetto in base all'argomento
 	 * 
-	 * @param le
+	 * @param coords
 	 *            nuove coordinate dell'oggetto
 	 */
 
@@ -63,8 +63,8 @@ public abstract class GameObject implements Cloneable, Serializable {
 	 * Effettua un controllo di equivalenza dell'oggetto con il parametro
 	 * passato
 	 * 
-	 * @param l'oggetto
-	 *            da confrontare
+	 * @param  otherObject
+	 * 		l'oggetto da confrontare
 	 * @return true se gli oggetti sono uguali, false altrimenti
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */

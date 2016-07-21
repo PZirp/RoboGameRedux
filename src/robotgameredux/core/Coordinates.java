@@ -14,11 +14,6 @@ public final class Coordinates implements Cloneable, Serializable {
 	 */
 	private static final long serialVersionUID = -6109031109498527081L;
 
-	/** La coordinata X **/
-	private final int x;
-	/** La coordinata Y **/
-	private final int y;
-
 	public final int getX() {
 		return x;
 	}
@@ -103,5 +98,10 @@ public final class Coordinates implements Cloneable, Serializable {
 		Coordinates other = (Coordinates) otherObject;
 		return x == other.x && y == other.y;
 	}
+	
+
+	private final int x;
+	private final int y;
+
 
 }

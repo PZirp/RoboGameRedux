@@ -3,7 +3,7 @@ package robotgameredux.gameobjects;
 import java.util.ArrayList;
 
 import robotgameredux.core.Coordinates;
-import robotgameredux.systemInterfaces.AttackInteractionSystem;
+import robotgameredux.systemInterfaces.InteractionSystem;
 import robotgameredux.systemInterfaces.BattleSystem;
 import robotgameredux.systemInterfaces.MovementSystem;
 import robotgameredux.systemsImplementations.StandardBattleSystem;
@@ -16,7 +16,7 @@ public class AttackRobot extends Actor {
 	 */
 	private static final long serialVersionUID = 649485930721818531L;
 
-	public AttackRobot(Coordinates coords, StandardBattleSystem bs, MovementSystem ms, AttackInteractionSystem is) {
+	public AttackRobot(Coordinates coords, StandardBattleSystem bs, MovementSystem ms, InteractionSystem is) {
 		super(coords, ms);
 		this.weapons = new ArrayList<Weapon>();
 		this.battleSystem = bs;
@@ -88,7 +88,7 @@ public class AttackRobot extends Actor {
 	 * @return il sistema di interazione usato
 	 */
 
-	public AttackInteractionSystem getInteractionSystem() {
+	public InteractionSystem getInteractionSystem() {
 		return interactionSystem;
 	}
 
@@ -120,7 +120,7 @@ public class AttackRobot extends Actor {
 		return clone;
 	}
 
-	private AttackInteractionSystem interactionSystem;
+	private InteractionSystem interactionSystem;
 	private BattleSystem battleSystem;
 	private ArrayList<Weapon> weapons;
 

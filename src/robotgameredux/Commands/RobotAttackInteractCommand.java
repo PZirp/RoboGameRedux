@@ -2,15 +2,16 @@ package robotgameredux.Commands;
 
 import java.io.Serializable;
 
-import robotgameredux.CommandsInterfaces.AtkInteractCommandInterface;
+import robotgameredux.CommandsInterfaces.InteractCommandInterface;
 import robotgameredux.core.Coordinates;
 import robotgameredux.enums.RobotStates;
 import robotgameredux.exceptions.InsufficientEnergyException;
 import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.gameobjects.AttackRobot;
+import robotgameredux.tools.UsableTool;
 import robotgameredux.weapons.Weapon;
 
-public class RobotAttackInteractCommand implements AtkInteractCommandInterface<AttackRobot>, Serializable {
+public class RobotAttackInteractCommand implements InteractCommandInterface<AttackRobot>, Serializable {
 
 	/*
 	 * Implementazione dell'interfaccia AtckInteractCommandInterface specifica
@@ -64,8 +65,8 @@ public class RobotAttackInteractCommand implements AtkInteractCommandInterface<A
 	/**
 	 * Aggiorna lo stato del robot che ha ricevuto il comando
 	 * 
-	 * @param il
-	 *            nuovo stato del robot (enum RobotStates)
+	 * @param state
+	 *            il nuovo stato del robot (enum RobotStates)
 	 */
 
 	@Override
@@ -76,8 +77,8 @@ public class RobotAttackInteractCommand implements AtkInteractCommandInterface<A
 	/**
 	 * Ritorna le coordinate del robot che ha ricevuto il comando
 	 * 
-	 * @param le
-	 *            coordinate del robot
+	 * @return coordinates
+	 *            le coordinate del robot
 	 */
 
 	@Override
@@ -88,8 +89,8 @@ public class RobotAttackInteractCommand implements AtkInteractCommandInterface<A
 	/**
 	 * Ritorna la forza del robot che ha ricevuto il comando
 	 * 
-	 * @param la
-	 *            forza del robot
+	 * @return strenght
+	 *            la forza del robot
 	 */
 
 	@Override
@@ -100,8 +101,8 @@ public class RobotAttackInteractCommand implements AtkInteractCommandInterface<A
 	/**
 	 * Aggiunge il quantitativo di energia indicata al robot (ricarica)
 	 * 
-	 * @param l'energia
-	 *            da aggiungere al robot
+	 * @param charge
+	 *             l'energia da aggiungere al robot
 	 */
 
 	@Override
@@ -113,8 +114,8 @@ public class RobotAttackInteractCommand implements AtkInteractCommandInterface<A
 	 * Rimuove l'energia (costo dell'azione) dal robot che ha ricevuto il
 	 * comando
 	 * 
-	 * @param l'energia
-	 *            da rimuovere
+	 * @param n
+	 *         l'energia da rimuovere
 	 */
 
 	@Override
@@ -125,8 +126,8 @@ public class RobotAttackInteractCommand implements AtkInteractCommandInterface<A
 	/**
 	 * Aggiunge l'arma scelta a quelle disponibili per il robot
 	 * 
-	 * @param l'arma
-	 *            da aggiungere al robot
+	 * @param w
+	 *          l'arma da aggiungere al robot
 	 */
 
 	@Override
@@ -147,5 +148,7 @@ public class RobotAttackInteractCommand implements AtkInteractCommandInterface<A
 
 	private AttackRobot robot;
 	private Coordinates target;
+
+	public void addTool(UsableTool t) {};
 
 }

@@ -2,15 +2,16 @@ package robotgameredux.Commands;
 
 import java.io.Serializable;
 
-import robotgameredux.CommandsInterfaces.SupInteractCommandInterface;
+import robotgameredux.CommandsInterfaces.InteractCommandInterface;
 import robotgameredux.core.Coordinates;
 import robotgameredux.enums.RobotStates;
 import robotgameredux.exceptions.InsufficientEnergyException;
 import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.gameobjects.SupportRobot;
 import robotgameredux.tools.UsableTool;
+import robotgameredux.weapons.Weapon;
 
-public class RobotSupportInteractCommand implements SupInteractCommandInterface<SupportRobot>, Serializable {
+public class RobotSupportInteractCommand implements InteractCommandInterface<SupportRobot>, Serializable {
 
 	/*
 	 * Implementazione dell'interfaccia SupInteractCommandInterface<T> per il
@@ -64,7 +65,7 @@ public class RobotSupportInteractCommand implements SupInteractCommandInterface<
 	/**
 	 * Aggiorna lo stato del robot che ha ricevuto il comando
 	 * 
-	 * @param il
+	 * @param state
 	 *            nuovo stato del robot (enum RobotStates)
 	 */
 
@@ -76,8 +77,7 @@ public class RobotSupportInteractCommand implements SupInteractCommandInterface<
 	/**
 	 * Ritorna le coordinate del robot che ha ricevuto il comando
 	 * 
-	 * @param le
-	 *            coordinate del robot
+	 * @return le coordinate del robot
 	 */
 
 	@Override
@@ -88,8 +88,7 @@ public class RobotSupportInteractCommand implements SupInteractCommandInterface<
 	/**
 	 * Ritorna la forza del robot che ha ricevuto il comando
 	 * 
-	 * @param la
-	 *            forza del robot
+	 * @return la forza del robot
 	 */
 
 	@Override
@@ -100,8 +99,8 @@ public class RobotSupportInteractCommand implements SupInteractCommandInterface<
 	/**
 	 * Aggiunge il quantitativo di energia indicata al robot (ricarica)
 	 * 
-	 * @param l'energia
-	 *            da aggiungere al robot
+	 * @param charge
+	 *            l'energia da aggiungere al robot
 	 */
 
 	@Override
@@ -113,8 +112,8 @@ public class RobotSupportInteractCommand implements SupInteractCommandInterface<
 	 * Rimuove l'energia (costo dell'azione) dal robot che ha ricevuto il
 	 * comando
 	 * 
-	 * @param l'energia
-	 *            da rimuovere
+	 * @param n
+	 *         l'energia da rimuovere
 	 */
 
 	@Override
@@ -125,8 +124,8 @@ public class RobotSupportInteractCommand implements SupInteractCommandInterface<
 	/**
 	 * Aggiunge l'oggett scelto a quelli disponibili per il robot
 	 * 
-	 * @param l'oggetto
-	 *            da aggiungere al robot
+	 * @param t
+	 *         l'oggetto da aggiungere al robot
 	 */
 
 	@Override
@@ -147,5 +146,7 @@ public class RobotSupportInteractCommand implements SupInteractCommandInterface<
 
 	private SupportRobot robot;
 	private Coordinates target;
+
+	public void addWeapon(Weapon w) {}
 
 }

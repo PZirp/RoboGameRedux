@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import robotgameredux.TargetImplementations.RobotTarget;
+import robotgameredux.TargetInterfaces.RobotTarget;
 import robotgameredux.enums.Faction;
 import robotgameredux.enums.RobotStates;
 import robotgameredux.exceptions.InsufficientEnergyException;
@@ -24,10 +24,10 @@ import robotgameredux.input.AttackRobotController;
 import robotgameredux.input.SupportRobotController;
 import robotgameredux.players.CPUController;
 import robotgameredux.players.Player;
-import robotgameredux.systemsImplementations.StandardAttackInteractionSystem;
+import robotgameredux.systemsImplementations.AttackInteractionSystem;
 import robotgameredux.systemsImplementations.StandardBattleSystem;
 import robotgameredux.systemsImplementations.StandardMovementSystem;
-import robotgameredux.systemsImplementations.StandardSupportInteractionSystem;
+import robotgameredux.systemsImplementations.SupportInteractionSystem;
 import robotgameredux.systemsImplementations.StandardSupportSystem;
 import robotgameredux.tools.HealthPack;
 import robotgameredux.weapons.AIGun;
@@ -61,12 +61,14 @@ public class ActorManager implements PropertyChangeListener, Serializable, IActo
 	 * gestito dalla CPU. In fine occupa la tile sulla quale si trova il robot
 	 * 
 	 * @param faction
+	 * 			la fazione a cui apparterrà il robot
 	 * @param position
+	 * 			la posizione di partenza del robot
 	 */
 
 	public void createStandardAttack(Faction faction, Coordinates position) {
 		AttackRobot newRobot = new AttackRobot(position, new StandardBattleSystem(this),
-				new StandardMovementSystem(gameWorld), new StandardAttackInteractionSystem(gameWorld));
+				new StandardMovementSystem(gameWorld), new AttackInteractionSystem(gameWorld));
 		newRobot.setFaction(faction);
 		Sprite spr;
 		this.robots.add(newRobot);
@@ -98,12 +100,13 @@ public class ActorManager implements PropertyChangeListener, Serializable, IActo
 	 * CPU. In fine occupa la tile sulla quale si trova il robot
 	 * 
 	 * @param faction
+	 * 			la fazione a cui apparterrà il robot
 	 * @param position
-	 */
+	 * 			la posizione di partenza del robot	 */
 
 	public void createSupport(Faction faction, Coordinates position) {
 		SupportRobot newRobot = new SupportRobot(position, new StandardMovementSystem(gameWorld),
-				new StandardSupportSystem(this), new StandardSupportInteractionSystem(gameWorld));
+				new StandardSupportSystem(this), new SupportInteractionSystem(gameWorld));
 		newRobot.setFaction(faction);
 		Sprite spr;
 		newRobot.addPropertyChangeListener(this);
@@ -149,8 +152,8 @@ public class ActorManager implements PropertyChangeListener, Serializable, IActo
 	 * Ritorna un oggetto RobotTarget che fornisce i metodi per interagire con
 	 * un robot quando è bersaglio di un attacco
 	 * 
-	 * @param le
-	 *            coordinate del target
+	 * @param target
+	 *           le coordinate del target
 	 * @return il robot se è nelle coordinate giuste, null altrimenti
 	 */
 
@@ -207,8 +210,10 @@ public class ActorManager implements PropertyChangeListener, Serializable, IActo
 	/**
 	 * Causa l'aggiornamento dello stato del robot attivo
 	 * 
-	 * @throws InsufficientEnergyException
 	 * @throws InvalidTargetException
+	 * 			Se il target non è valido
+	 * @throws InsufficientEnergyException
+	 * 			Se non c'è energia sufficiente per eseguire il comando
 	 */
 
 	public void updateActiveRobot() throws InsufficientEnergyException, InvalidTargetException {

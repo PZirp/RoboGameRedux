@@ -54,6 +54,7 @@ public class Obstacle extends GameObject {
 	 * Associa una sprite all'ostacolo
 	 * 
 	 * @param sprite
+	 * 		la sprite da associare
 	 */
 
 	public void setSprite(ObstacleSprite sprite) {

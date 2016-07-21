@@ -14,8 +14,9 @@ import robotgameredux.exceptions.InvalidTargetException;
 import robotgameredux.gameobjects.AttackRobot;
 import robotgameredux.gameobjects.Obstacle;
 import robotgameredux.gameobjects.Station;
-import robotgameredux.systemsImplementations.StandardAttackInteractionSystem;
+import robotgameredux.systemsImplementations.AttackInteractionSystem;
 import robotgameredux.tools.UsableTool;
+import robotgameredux.weapons.Pistol;
 import robotgameredux.weapons.Weapon;
 
 public class AtkInteractionTest implements IGameWorld {
@@ -28,7 +29,7 @@ public class AtkInteractionTest implements IGameWorld {
 		System.out.println(">>>INIZIO TEST<<<");
 		AtkInteractionTest tester = new AtkInteractionTest();
 		AttackRobot testRobot = new AttackRobot(new Coordinates(1, 1), null, null,
-				new StandardAttackInteractionSystem(tester));
+				new AttackInteractionSystem(tester));
 		testRobot.setFaction(Faction.FRIEND);
 		tester.createObstacle(new Coordinates(1, 2));
 		tester.createStation(new Coordinates(2, 1));
@@ -168,6 +169,7 @@ public class AtkInteractionTest implements IGameWorld {
 	public void createStation(Coordinates position) {
 		station = new Station(position);
 		occupyTile(position);
+		station.addWeapon(new Pistol());
 	}
 
 	@Override
@@ -218,6 +220,7 @@ public class AtkInteractionTest implements IGameWorld {
 			int selection = 0;
 			if (selection > -1) {
 				Weapon weapon = station.getWeapon(selection);
+				station.removeWeapon(selection);
 				return weapon;
 			}
 		}

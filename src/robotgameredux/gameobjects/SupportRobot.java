@@ -3,8 +3,8 @@ package robotgameredux.gameobjects;
 import java.util.ArrayList;
 
 import robotgameredux.core.Coordinates;
+import robotgameredux.systemInterfaces.InteractionSystem;
 import robotgameredux.systemInterfaces.MovementSystem;
-import robotgameredux.systemInterfaces.SupportInteractionSystem;
 import robotgameredux.systemInterfaces.SupportSystem;
 import robotgameredux.tools.UsableTool;
 
@@ -15,24 +15,13 @@ public class SupportRobot extends Actor {
 	 */
 	private static final long serialVersionUID = -6334439551075353024L;
 
-	public SupportRobot(Coordinates coords, MovementSystem ms, SupportSystem sm, SupportInteractionSystem is) {
+	public SupportRobot(Coordinates coords, MovementSystem ms, SupportSystem sm, InteractionSystem is) {
 		super(coords, ms);
 		this.tools = new ArrayList<UsableTool>();
 		this.supportSystem = sm;
 		this.interactionSystem = is;
 	}
 
-	/*
-	 * public void update() throws InvalidTargetException,
-	 * InsufficientEnergyException {
-	 * 
-	 * Boolean res = false; if (this.getCurrentCommand() != null) { res =
-	 * this.getCurrentCommand().execute(); } if (res == true) {
-	 * setState(RobotStates.TURN_OVER); } if (getEnergy() <= 0 && getState() !=
-	 * RobotStates.INACTIVE) { setState(RobotStates.INACTIVE);
-	 * getPropertyChange().firePropertyChange("DEACTIVATED", this, null);
-	 * return; } }
-	 */
 
 	/**
 	 * Aggiunge il tool specificato come parametro al robot.
@@ -96,7 +85,7 @@ public class SupportRobot extends Actor {
 	 * @return il sistema di interazione usato
 	 */
 
-	public SupportInteractionSystem getInteractionSystem() {
+	public InteractionSystem getInteractionSystem() {
 		return interactionSystem;
 	}
 
@@ -129,6 +118,6 @@ public class SupportRobot extends Actor {
 
 	private ArrayList<UsableTool> tools;
 	private SupportSystem supportSystem;
-	private SupportInteractionSystem interactionSystem;
+	private InteractionSystem interactionSystem;
 
 }

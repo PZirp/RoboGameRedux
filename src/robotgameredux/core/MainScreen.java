@@ -38,6 +38,10 @@ public class MainScreen {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Metodo per la scelta del file da cui caricare o salvare la partita
+	 */
+	
 	private void chooseFile() {
 		int returnValue = fileChooser.showOpenDialog(frame);
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -45,6 +49,10 @@ public class MainScreen {
 		}
 	}
 
+	/**
+	 * Genera il menù a tendina con i pulsanti per scegliere un livello, caricare e salvare la partita
+	 */
+	
 	private void makeMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Partita");
@@ -68,6 +76,13 @@ public class MainScreen {
 			}
 		});
 
+		liv2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				loadSecondLevel();
+			}
+		});
+		
 		ran.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -95,7 +110,13 @@ public class MainScreen {
 		frame.setJMenuBar(menuBar);
 	}
 
-	public void loadFirstLevel() {
+	/**
+	 * Metodo che effettua il caricamento del primo livello.
+	 * Controlla se c'è un altro livello caricato, se si rimuove i componenti grafici.
+	 * Carica il nuovo livello e ne aggiunge i componenti allo schermo
+	 */
+	
+	private void loadFirstLevel() {
 		if (gm != null) {
 			frame.getContentPane().removeAll();
 			gm = null;
@@ -107,10 +128,33 @@ public class MainScreen {
 		frame.revalidate();
 	}
 
-	public void generateRandomLevel() {
+	/**
+	 * Metodo che effettua il caricamento del secondo livello.
+	 * Controlla se c'è un altro livello caricato, se si rimuove i componenti grafici.
+	 * Carica il nuovo livello e ne aggiunge i componenti allo schermo
+	 */
+	
+	private void loadSecondLevel() {
 		if (gm != null) {
 			frame.getContentPane().removeAll();
-			// frame.remove(gm.getPane());
+			gm = null;
+		}
+		this.gm = new GameManager();
+		this.gm.secondLevel();
+		frame.add(gm.getPane(), BorderLayout.CENTER);
+		gm.createEndTurnButton();
+		frame.revalidate();
+	}
+
+	/**
+	 * Metodo che causa la generazione casuale di un livello.
+	 * Controlla se c'è un altro livello caricato, se si rimuove i componenti grafici.
+	 * Carica il nuovo livello e ne aggiunge i componenti allo schermo
+	 */
+	
+	private void generateRandomLevel() {
+		if (gm != null) {
+			frame.getContentPane().removeAll();
 			gm = null;
 		}
 		this.gm = new GameManager();
@@ -120,7 +164,11 @@ public class MainScreen {
 		frame.revalidate();
 	}
 
-	public void save() {
+	/**
+	 * Effettua il salvataggio della partita corrente nel file selezionato
+	 */
+	
+	private void save() {
 		try {
 			int returnValue = fileChooser.showSaveDialog(frame);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -134,8 +182,13 @@ public class MainScreen {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Carica la partita selezionata.
+	 * Se c'è un'altra partita in corso, la sovrascrive
+	 */
 
-	public void load() {
+	private void load() {
 		try {
 			if (openFile != null) {
 				FileInputStream fileIn = new FileInputStream(openFile);

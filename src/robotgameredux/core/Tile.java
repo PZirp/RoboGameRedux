@@ -21,6 +21,7 @@ public class Tile implements Serializable {
 	 * Imposta la sprite da usare per la tile
 	 * 
 	 * @param sprite
+	 * 			la sprite da aggiungere
 	 */
 
 	public void setSprite(Sprite sprite) {
@@ -30,7 +31,7 @@ public class Tile implements Serializable {
 	/**
 	 * Ritorna la sprite utilizzata dalla tile
 	 * 
-	 * @return
+	 * @return la sprite
 	 */
 
 	public Sprite getSprite() {
@@ -51,6 +52,7 @@ public class Tile implements Serializable {
 	 * Imposta lo stato della tile in base al parametro indicato
 	 * 
 	 * @param occupied
+	 * 			lo stato da impostare
 	 */
 
 	public void setOccupied(Boolean occupied) {
@@ -79,6 +81,7 @@ public class Tile implements Serializable {
 	 * Imposta lo stato della tile in base al parametro indicato
 	 * 
 	 * @param active
+	 * 			lo stato di attivazione da settare
 	 */
 	public void setActive(Boolean active) {
 		this.active = active;

@@ -116,8 +116,8 @@ public abstract class Actor extends GameObject {
 	/**
 	 * Rimuove la quantità specificata di energia dall'attore
 	 * 
-	 * @param l'energia
-	 *            da rimuovere
+	 * @param energy 
+	 * 			l'energia da rimuovere
 	 */
 
 	public void removeEnergy(int energy) {
@@ -133,8 +133,8 @@ public abstract class Actor extends GameObject {
 	 * senza energia, e quindi in stato INATTIVO, viene riattivato e un
 	 * PropertyChangeEvent è generato
 	 * 
-	 * @param l'energia
-	 *            da aggiungere
+	 * @param energy 
+	 * 		l'energia da aggiungere
 	 */
 
 	public void addEnergy(int energy) {
@@ -153,7 +153,7 @@ public abstract class Actor extends GameObject {
 	 * generato un PropertyChangeEvent per informare tutti i listener
 	 * dell'attore.
 	 * 
-	 * @param il
+	 * @param state
 	 *            nuovo stato dell'attore
 	 */
 
@@ -175,8 +175,8 @@ public abstract class Actor extends GameObject {
 	/**
 	 * Imposta la spirte dell'attore
 	 * 
-	 * @param la
-	 *            sprite
+	 * @param sprite
+	 *            la sprite da settare
 	 */
 
 	public void setSprite(Sprite sprite) {
@@ -215,7 +215,7 @@ public abstract class Actor extends GameObject {
 	 * di salute pari a 100, quindi se la quantià di salute aggiunta è maggiore,
 	 * la salute dell'attore si fermerà a 100
 	 * 
-	 * @param la
+	 * @param health
 	 *            salute da aggiungere.
 	 */
 
@@ -233,6 +233,7 @@ public abstract class Actor extends GameObject {
 	 * è generato un PropertyChangeEvent che notifica i listener
 	 * 
 	 * @param damage
+	 * 		il danno da applicare
 	 * @throws CriticalStatusException
 	 *             nel caso la salute scenda sotto il 25% del massimo
 	 */
@@ -267,6 +268,7 @@ public abstract class Actor extends GameObject {
 	 * implementazione ha un massimo di 20 punti.
 	 * 
 	 * @param defense
+	 * 			la difesa da aggiungere
 	 */
 
 	public void setDefense(int defense) {
