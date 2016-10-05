@@ -1,0 +1,15 @@
+robotgameredux.Commands
+robotgameredux.CommandsInterfaces
+robotgameredux.TargetInterfaces
+robotgameredux.core
+robotgameredux.enums
+robotgameredux.exceptions
+robotgameredux.gameobjects
+robotgameredux.graphic
+robotgameredux.input
+robotgameredux.players
+robotgameredux.systemInterfaces
+robotgameredux.systemsImplementations
+robotgameredux.test
+robotgameredux.tools
+robotgameredux.weapons
